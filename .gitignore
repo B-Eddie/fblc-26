@@ -1,0 +1,31 @@
+# Python files
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Distribution/packaging
+# dist/
+build/
+*.egg-info/
+
+# Virtual environment
+venv/
+env/
+ENV/
+
+# IDE
+.vscode/
+.idea/
+
+# Firebase
+firebase-debug.log
+firebase-service-account.json
+
+# Local files
+.DS_Store
+*.log
+firebaseconfig.json
+node_modules
+.env
+fblc/.next
+.next
