@@ -3,6 +3,7 @@
 import { useEffect, useState } from 'react'
 import Link from 'next/link'
 import { useRouter } from 'next/navigation'
+import { motion } from 'framer-motion'
 import { supabase } from '@/lib/supabase'
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from 'recharts'
 import { Clock, Bookmark, CheckCircle, TrendingUp, LogOut } from 'lucide-react'
@@ -103,104 +104,130 @@ export default function DashboardPage() {
   ]
 
   const statusColors: Record<string, string> = {
-    pending: 'bg-yellow-600/20 text-yellow-400',
-    accepted: 'bg-green-600/20 text-green-400',
-    rejected: 'bg-red-600/20 text-red-400',
-    completed: 'bg-blue-600/20 text-blue-400',
+    pending: 'bg-yellow-600/20 text-yellow-400 border border-yellow-600/30',
+    accepted: 'bg-green-600/20 text-green-400 border border-green-600/30',
+    rejected: 'bg-red-600/20 text-red-400 border border-red-600/30',
+    completed: 'bg-blue-600/20 text-blue-400 border border-blue-600/30',
   }
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-black flex items-center justify-center">
-        <div className="text-center">
-          <div className="inline-block animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600"></div>
-          <p className="mt-4 text-gray-400">Loading dashboard...</p>
-        </div>
+      <div className="min-h-screen bg-gradient-to-b from-black via-gray-950 to-black flex items-center justify-center">
+        <motion.div
+          animate={{ rotate: 360 }}
+          transition={{ duration: 2, repeat: Infinity }}
+          className="w-12 h-12 border-4 border-gray-700/30 border-t-gray-700 rounded-full"
+        />
       </div>
     )
   }
 
   return (
-    <div className="min-h-screen bg-black">
+    <div className="min-h-screen bg-gradient-to-b from-black via-gray-950 to-black text-white">
+      {/* Animated Background */}
+      <div className="fixed inset-0 overflow-hidden pointer-events-none">
+        <motion.div
+          className="absolute -top-40 -right-40 w-80 h-80 bg-gray-700/20 rounded-full blur-3xl"
+          animate={{ y: [0, 40, 0] }}
+          transition={{ duration: 8, repeat: Infinity }}
+        />
+        <motion.div
+          className="absolute -bottom-40 -left-40 w-80 h-80 bg-gray-600/20 rounded-full blur-3xl"
+          animate={{ y: [0, -40, 0] }}
+          transition={{ duration: 8, repeat: Infinity, delay: 1 }}
+        />
+      </div>
+
       {/* Header */}
-      <header className="bg-gray-950 border-b border-gray-800 backdrop-blur-sm sticky top-0 z-50">
+      <header className="border-b border-gray-800/50 sticky top-0 z-40 bg-black/80 backdrop-blur-lg">
         <nav className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
-          <div className="flex justify-between items-center">
-            <Link href="/" className="flex items-center space-x-2">
-              <div className="w-10 h-10 bg-white rounded-lg flex items-center justify-center">
-                <span className="text-black font-bold text-xl">V</span>
-              </div>
-              <span className="text-2xl font-bold text-white">Vertex</span>
+          <motion.div
+            className="flex justify-between items-center"
+            initial={{ opacity: 0, y: -20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.6 }}
+          >
+            <Link href="/" className="flex items-center space-x-3 hover:opacity-80 transition">
+              <motion.div
+                className="w-10 h-10 bg-gradient-to-br from-gray-700 to-gray-600 rounded-lg flex items-center justify-center"
+                whileHover={{ scale: 1.05 }}
+              >
+                <span className="text-white font-bold text-xl">V</span>
+              </motion.div>
+              <span className="text-2xl font-bold font-display bg-gradient-to-r from-gray-400 to-gray-300 bg-clip-text text-transparent">
+                Vertex
+              </span>
             </Link>
             <div className="flex items-center space-x-4">
-              <Link href="/browse" className="px-4 py-2 text-gray-400 hover:text-white transition">
+              <Link href="/browse" className="px-4 py-2 text-gray-300 hover:text-gray-100 transition font-medium">
                 Browse
               </Link>
-              <button
+              <motion.button
+                whileHover={{ scale: 1.02 }}
+                whileTap={{ scale: 0.98 }}
                 onClick={handleLogout}
-                className="flex items-center space-x-2 px-4 py-2 text-gray-400 hover:text-white transition"
+                className="flex items-center space-x-2 px-6 py-2 bg-gradient-to-r from-gray-700 to-gray-600 text-white rounded-lg font-semibold hover:shadow-lg hover:shadow-gray-600/50 transition"
               >
                 <LogOut className="w-4 h-4" />
                 <span>Logout</span>
-              </button>
+              </motion.button>
             </div>
-          </div>
+          </motion.div>
         </nav>
       </header>
 
-      <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+      <main className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
         {/* Welcome Section */}
-        <div className="mb-8">
-          <h1 className="text-4xl font-bold text-white">
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.6 }}
+          className="mb-12"
+        >
+          <h1 className="text-5xl md:text-6xl font-bold font-display bg-gradient-to-r from-white via-gray-300 to-gray-400 bg-clip-text text-transparent mb-3">
             Welcome back, {profile?.full_name || 'Student'}!
           </h1>
-          <p className="text-gray-400 mt-2">Track your volunteer hours and manage your applications</p>
-        </div>
+          <p className="text-gray-400 text-lg">Track your volunteer hours and manage your applications</p>
+        </motion.div>
 
         {/* Stats Cards */}
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
-          <div className="bg-gray-950 border border-gray-800 p-6 rounded-xl hover:border-blue-600/50 transition">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-sm text-gray-400">Total Hours</p>
-                <p className="text-3xl font-bold text-white mt-1">{totalHours}</p>
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.1, duration: 0.6 }}
+          className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8"
+        >
+          {[
+            { icon: Clock, label: 'Total Hours', value: totalHours, color: 'from-blue-600/20 to-blue-700/20 border-blue-600/30' },
+            { icon: TrendingUp, label: 'Goal Progress', value: `${Math.round((totalHours / goalHours) * 100)}%`, color: 'from-green-600/20 to-green-700/20 border-green-600/30' },
+            { icon: CheckCircle, label: 'Applications', value: applications.length, color: 'from-purple-600/20 to-purple-700/20 border-purple-600/30' },
+            { icon: Bookmark, label: 'Bookmarks', value: bookmarks.length, color: 'from-orange-600/20 to-orange-700/20 border-orange-600/30' },
+          ].map((stat, i) => (
+            <motion.div
+              key={i}
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.1 + i * 0.05, duration: 0.6 }}
+              className={`bg-gradient-to-br ${stat.color} border rounded-2xl p-6 backdrop-blur-sm hover:border-opacity-100 transition`}
+            >
+              <div className="flex items-center justify-between">
+                <div>
+                  <p className="text-sm text-gray-400 font-medium">{stat.label}</p>
+                  <p className="text-4xl font-bold text-white mt-2">{stat.value}</p>
+                </div>
+                <stat.icon className="w-12 h-12 text-gray-400 opacity-50" />
               </div>
-              <Clock className="w-12 h-12 text-blue-600" />
-            </div>
-          </div>
-          <div className="bg-gray-950 border border-gray-800 p-6 rounded-xl hover:border-blue-600/50 transition">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-sm text-gray-400">Goal Progress</p>
-                <p className="text-3xl font-bold text-white mt-1">
-                  {Math.round((totalHours / goalHours) * 100)}%
-                </p>
-              </div>
-              <TrendingUp className="w-12 h-12 text-green-500" />
-            </div>
-          </div>
-          <div className="bg-gray-950 border border-gray-800 p-6 rounded-xl hover:border-blue-600/50 transition">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-sm text-gray-400">Applications</p>
-                <p className="text-3xl font-bold text-white mt-1">{applications.length}</p>
-              </div>
-              <CheckCircle className="w-12 h-12 text-purple-500" />
-            </div>
-          </div>
-          <div className="bg-gray-950 border border-gray-800 p-6 rounded-xl hover:border-blue-600/50 transition">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-sm text-gray-400">Bookmarks</p>
-                <p className="text-3xl font-bold text-white mt-1">{bookmarks.length}</p>
-              </div>
-              <Bookmark className="w-12 h-12 text-orange-500" />
-            </div>
-          </div>
-        </div>
+            </motion.div>
+          ))}
+        </motion.div>
 
         {/* Progress Chart */}
-        <div className="bg-gray-950 border border-gray-800 p-6 rounded-xl mb-8">
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.2, duration: 0.6 }}
+          className="bg-gray-900/40 border border-gray-800/60 rounded-2xl p-8 mb-8 backdrop-blur-sm"
+        >
           <h2 className="text-2xl font-bold text-white mb-6">Hours Progress</h2>
           <div className="h-64">
             <ResponsiveContainer width="100%" height="100%">
@@ -212,79 +239,113 @@ export default function DashboardPage() {
                   contentStyle={{ backgroundColor: '#111827', border: '1px solid #374151', borderRadius: '8px', color: '#fff' }}
                 />
                 <Legend />
-                <Bar dataKey="hours" fill="#2563eb" />
+                <Bar dataKey="hours" fill="#6b7280" />
               </BarChart>
             </ResponsiveContainer>
           </div>
-          <div className="mt-4 p-4 bg-blue-600/20 border border-blue-600/30 rounded-lg">
+          <motion.div className="mt-6 p-4 bg-gradient-to-r from-gray-600/20 to-gray-700/20 border border-gray-600/30 rounded-xl">
             <p className="text-center text-gray-300">
-              <span className="font-bold text-blue-400">{Math.max(0, goalHours - totalHours)} hours</span> remaining to reach your goal of {goalHours} hours
+              <span className="font-bold text-gray-200">{Math.max(0, goalHours - totalHours)} hours</span> remaining to reach your goal of {goalHours} hours
             </p>
-          </div>
-        </div>
+          </motion.div>
+        </motion.div>
 
         {/* Recent Applications */}
-        <div className="bg-gray-950 border border-gray-800 p-6 rounded-xl mb-8">
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.3, duration: 0.6 }}
+          className="bg-gray-900/40 border border-gray-800/60 rounded-2xl p-8 mb-8 backdrop-blur-sm"
+        >
           <h2 className="text-2xl font-bold text-white mb-6">My Applications</h2>
           {applications.length === 0 ? (
-            <div className="text-center py-8">
-              <p className="text-gray-400 mb-4">You haven't applied to any opportunities yet</p>
-              <Link href="/browse" className="inline-block px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition">
-                Browse Opportunities
-              </Link>
-            </div>
+            <motion.div
+              initial={{ opacity: 0, scale: 0.95 }}
+              animate={{ opacity: 1, scale: 1 }}
+              className="text-center py-12"
+            >
+              <p className="text-gray-400 mb-6 text-lg">You haven't applied to any opportunities yet</p>
+              <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
+                <Link href="/browse" className="inline-block px-8 py-3 bg-gradient-to-r from-gray-700 to-gray-600 text-white rounded-lg font-semibold hover:shadow-lg hover:shadow-gray-600/50 transition">
+                  Browse Opportunities
+                </Link>
+              </motion.div>
+            </motion.div>
           ) : (
             <div className="space-y-4">
-              {applications.map((app) => (
-                <div key={app.id} className="border border-gray-800 rounded-lg p-4 hover:border-blue-600/50 transition bg-gray-900/50">
+              {applications.map((app, i) => (
+                <motion.div
+                  key={app.id}
+                  initial={{ opacity: 0, x: -20 }}
+                  animate={{ opacity: 1, x: 0 }}
+                  transition={{ delay: 0.3 + i * 0.05 }}
+                  className="border border-gray-800/60 rounded-xl p-6 hover:border-gray-600/40 transition bg-gray-800/20 backdrop-blur-sm"
+                >
                   <div className="flex justify-between items-start">
-                    <div>
-                      <h3 className="font-semibold text-lg text-white">{app.opportunity.title}</h3>
-                      <p className="text-gray-400">{app.opportunity.business.name}</p>
+                    <div className="flex-1">
+                      <Link href={`/opportunities/${app.opportunity.id || ''}`} className="hover:text-gray-300 transition">
+                        <h3 className="font-semibold text-lg text-white">{app.opportunity?.title || 'Unknown'}</h3>
+                      </Link>
+                      <p className="text-gray-400">{app.opportunity?.business?.name || 'Unknown'}</p>
                       <p className="text-sm text-gray-500 mt-1">
-                        Category: {app.opportunity.business.category}
+                        Category: {app.opportunity?.business?.category || 'N/A'}
                       </p>
                       {app.hours_completed > 0 && (
-                        <p className="text-sm text-blue-400 mt-1 font-medium">
-                          Completed: {app.hours_completed} hours
+                        <p className="text-sm text-blue-400 mt-2 font-medium">
+                          ✓ Completed: {app.hours_completed} hours
                         </p>
                       )}
                     </div>
-                    <span className={`px-3 py-1 rounded-full text-sm font-medium ${statusColors[app.status]}`}>
+                    <motion.span
+                      whileHover={{ scale: 1.05 }}
+                      className={`px-4 py-2 rounded-lg text-sm font-medium whitespace-nowrap ${statusColors[app.status] || statusColors.pending}`}
+                    >
                       {app.status.charAt(0).toUpperCase() + app.status.slice(1)}
-                    </span>
+                    </motion.span>
                   </div>
-                </div>
+                </motion.div>
               ))}
             </div>
           )}
-        </div>
+        </motion.div>
 
         {/* Bookmarked Opportunities */}
-        <div className="bg-gray-950 border border-gray-800 p-6 rounded-xl">
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.4, duration: 0.6 }}
+          className="bg-gray-900/40 border border-gray-800/60 rounded-2xl p-8 backdrop-blur-sm"
+        >
           <h2 className="text-2xl font-bold text-white mb-6">Saved Opportunities</h2>
           {bookmarks.length === 0 ? (
-            <div className="text-center py-8">
-              <p className="text-gray-400">No saved opportunities yet</p>
-            </div>
+            <motion.div className="text-center py-12">
+              <p className="text-gray-400 text-lg">No saved opportunities yet</p>
+            </motion.div>
           ) : (
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-              {bookmarks.map((bookmark) => (
-                <Link
+              {bookmarks.map((bookmark, i) => (
+                <motion.div
                   key={bookmark.id}
-                  href={`/opportunities/${bookmark.opportunity.id}`}
-                  className="border border-gray-800 rounded-lg p-4 hover:border-blue-600/50 transition bg-gray-900/50"
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ delay: 0.4 + i * 0.05 }}
+                  whileHover={{ y: -4 }}
                 >
-                  <h3 className="font-semibold text-white">{bookmark.opportunity.title}</h3>
-                  <p className="text-sm text-gray-400 mt-1">{bookmark.opportunity.business.name}</p>
-                  <p className="text-sm text-gray-500 mt-1">
-                    {bookmark.opportunity.hours_available} hours • {bookmark.opportunity.business.city}
-                  </p>
-                </Link>
+                  <Link
+                    href={`/opportunities/${bookmark.opportunity.id}`}
+                    className="border border-gray-800/60 rounded-xl p-6 hover:border-gray-600/40 transition bg-gray-800/20 backdrop-blur-sm h-full flex flex-col"
+                  >
+                    <h3 className="font-semibold text-white mb-2 line-clamp-2">{bookmark.opportunity.title}</h3>
+                    <p className="text-sm text-gray-400 mb-3">{bookmark.opportunity.business.name}</p>
+                    <p className="text-xs text-gray-500 mt-auto">
+                      {bookmark.opportunity.hours_available} hours • {bookmark.opportunity.business.city}
+                    </p>
+                  </Link>
+                </motion.div>
               ))}
             </div>
           )}
-        </div>
+        </motion.div>
       </main>
     </div>
   )

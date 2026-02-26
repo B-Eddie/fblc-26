@@ -15,6 +15,7 @@ export interface Database {
           email: string
           full_name: string | null
           role: 'student' | 'business'
+          email_verified: boolean
           created_at: string
           updated_at: string
         }
@@ -23,6 +24,7 @@ export interface Database {
           email: string
           full_name?: string | null
           role: 'student' | 'business'
+          email_verified?: boolean
           created_at?: string
           updated_at?: string
         }
@@ -31,6 +33,7 @@ export interface Database {
           email?: string
           full_name?: string | null
           role?: 'student' | 'business'
+          email_verified?: boolean
           created_at?: string
           updated_at?: string
         }
@@ -215,6 +218,67 @@ export interface Database {
           business_id?: string
           rating?: number
           review?: string | null
+          created_at?: string
+          updated_at?: string
+        }
+      }
+      business_favorites: {
+        Row: {
+          id: string
+          profile_id: string
+          business_id: string
+          created_at: string
+        }
+        Insert: {
+          id?: string
+          profile_id: string
+          business_id: string
+          created_at?: string
+        }
+        Update: {
+          id?: string
+          profile_id?: string
+          business_id?: string
+          created_at?: string
+        }
+      }
+      coupons: {
+        Row: {
+          id: string
+          business_id: string
+          title: string
+          description: string
+          discount_percent: number | null
+          discount_amount: number | null
+          coupon_code: string | null
+          expiry_date: string | null
+          is_active: boolean
+          created_at: string
+          updated_at: string
+        }
+        Insert: {
+          id?: string
+          business_id: string
+          title: string
+          description: string
+          discount_percent?: number | null
+          discount_amount?: number | null
+          coupon_code?: string | null
+          expiry_date?: string | null
+          is_active?: boolean
+          created_at?: string
+          updated_at?: string
+        }
+        Update: {
+          id?: string
+          business_id?: string
+          title?: string
+          description?: string
+          discount_percent?: number | null
+          discount_amount?: number | null
+          coupon_code?: string | null
+          expiry_date?: string | null
+          is_active?: boolean
           created_at?: string
           updated_at?: string
         }

@@ -2,138 +2,81 @@
 
 import { useEffect, useState } from 'react'
 import Link from 'next/link'
-import dynamic from 'next/dynamic'
 import { motion } from 'framer-motion'
 import { supabase } from '@/lib/supabase'
-import { MapPin, Search, Filter } from 'lucide-react'
-import OpportunityCard from '@/components/OpportunityCard'
+import { Search, Filter, ArrowLeft } from 'lucide-react'
+import BusinessCard from '@/components/BusinessCard'
 
-// Dynamically import the map component (client-side only)
-const OpportunityMap = dynamic(() => import('@/components/OpportunityMap'), {
-  ssr: false,
-  loading: () => (
-    <div className="w-full h-96 bg-gray-800/50 rounded-xl flex items-center justify-center">
-      <motion.div animate={{ rotate: 360 }} transition={{ duration: 2, repeat: Infinity }}>
-        <div className="w-8 h-8 border-2 border-purple-600/30 border-t-purple-600 rounded-full" />
-      </motion.div>
-    </div>
-  ),
-})
-
-type Opportunity = {
+type Business = {
   id: string
-  title: string
+  name: string
   description: string
-  hours_available: number
-  is_flexible: boolean
-  perks: string | null
-  business: {
-    id: string
-    name: string
-    category: string
-    city: string
-    latitude: number
-    longitude: number
-    image_url: string | null
-  }
-  averageRating?: number
+  category: string
+  city: string
+  image_url: string | null
 }
 
 const categories = ['All', 'Food', 'Retail', 'Services', 'Healthcare', 'Education', 'Other']
 
-export default function BrowsePage() {
-  const [opportunities, setOpportunities] = useState<Opportunity[]>([])
-  const [filteredOpportunities, setFilteredOpportunities] = useState<Opportunity[]>([])
+export default function BrowseBusinessesPage() {
+  const [businesses, setBusinesses] = useState<Business[]>([])
+  const [filteredBusinesses, setFilteredBusinesses] = useState<Business[]>([])
   const [loading, setLoading] = useState(true)
   const [searchQuery, setSearchQuery] = useState('')
   const [selectedCategory, setSelectedCategory] = useState('All')
-  const [sortBy, setSortBy] = useState<'rating' | 'distance' | 'flexible'>('rating')
-  const [showMap, setShowMap] = useState(false)
+  const [sortBy, setSortBy] = useState<'name' | 'rating' | 'coupons'>('rating')
 
   useEffect(() => {
-    fetchOpportunities()
+    fetchBusinesses()
   }, [])
 
   useEffect(() => {
-    filterOpportunities()
-  }, [opportunities, searchQuery, selectedCategory, sortBy])
+    filterAndSort()
+  }, [businesses, searchQuery, selectedCategory, sortBy])
 
-  const fetchOpportunities = async () => {
+  const fetchBusinesses = async () => {
     try {
       const { data, error } = await supabase
-        .from('opportunities')
-        .select(`
-          *,
-          business:businesses (
-            id,
-            name,
-            category,
-            city,
-            latitude,
-            longitude,
-            image_url
-          )
-        `)
+        .from('businesses')
+        .select('*')
         .order('created_at', { ascending: false })
 
       if (error) throw error
-
-      // Fetch ratings for each business
-      const oppsWithRatings = await Promise.all(
-        (data || []).map(async (opp: any) => {
-          const { data: ratings } = await supabase
-            .from('ratings')
-            .select('rating')
-            .eq('business_id', opp.business.id)
-
-          const ratingsList = (ratings as any) || []
-          const averageRating = ratingsList.length > 0
-            ? ratingsList.reduce((sum: number, r: any) => sum + r.rating, 0) / ratingsList.length
-            : 0
-
-          return {
-            ...opp,
-            averageRating,
-          }
-        })
-      )
-
-      setOpportunities(oppsWithRatings)
+      setBusinesses(data || [])
     } catch (error) {
-      console.error('Error fetching opportunities:', error)
+      console.error('Error fetching businesses:', error)
     } finally {
       setLoading(false)
     }
   }
 
-  const filterOpportunities = () => {
-    let filtered = [...opportunities]
+  const filterAndSort = () => {
+    let filtered = [...businesses]
 
     // Filter by category
     if (selectedCategory !== 'All') {
       filtered = filtered.filter(
-        (opp) => opp.business.category.toLowerCase() === selectedCategory.toLowerCase()
+        (b) => b.category.toLowerCase() === selectedCategory.toLowerCase()
       )
     }
 
     // Filter by search query
     if (searchQuery) {
       filtered = filtered.filter(
-        (opp) =>
-          opp.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
-          opp.business.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-          opp.description.toLowerCase().includes(searchQuery.toLowerCase())
+        (b) =>
+          b.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+          b.description.toLowerCase().includes(searchQuery.toLowerCase()) ||
+          b.city.toLowerCase().includes(searchQuery.toLowerCase())
       )
     }
 
-    // Sort
-    if (sortBy === 'rating') {
-      filtered.sort((a, b) => (b.averageRating || 0) - (a.averageRating || 0))
-    } else if (sortBy === 'flexible') {
-      filtered.sort((a, b) => (b.is_flexible ? 1 : 0) - (a.is_flexible ? 1 : 0))
+    // Sort - note: we'll need to fetch ratings/coupons for proper sorting
+    // For now, sorting is by name for simplicity
+    if (sortBy === 'name') {
+      filtered.sort((a, b) => a.name.localeCompare(b.name))
     }
 
-    setFilteredOpportunities(filtered)
+    setFilteredBusinesses(filtered)
   }
 
   return (
@@ -172,19 +115,10 @@ export default function BrowsePage() {
                 Vertex
               </span>
             </Link>
-            <div className="flex items-center space-x-3">
-              <Link href="/dashboard" className="px-4 py-2 text-gray-300 hover:text-gray-100 transition font-medium">
-                Dashboard
-              </Link>
-              <motion.div whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }}>
-                <Link
-                  href="/auth/login"
-                  className="px-6 py-2 bg-gradient-to-r from-gray-700 to-gray-600 text-white rounded-lg font-semibold hover:shadow-lg hover:shadow-gray-600/50 transition"
-                >
-                  Log In
-                </Link>
-              </motion.div>
-            </div>
+            <Link href="/browse" className="flex items-center space-x-2 text-gray-400 hover:text-gray-300 transition">
+              <ArrowLeft className="w-4 h-4" />
+              <span>Back to Opportunities</span>
+            </Link>
           </motion.div>
         </nav>
       </header>
@@ -198,38 +132,11 @@ export default function BrowsePage() {
           className="mb-10"
         >
           <h1 className="text-5xl md:text-6xl font-bold mb-3 font-display bg-gradient-to-r from-white via-gray-300 to-gray-400 bg-clip-text text-transparent">
-            Browse Opportunities
+            Discover Businesses
           </h1>
-          <p className="text-gray-400 text-lg">Discover amazing volunteer opportunities in your area</p>
-        </motion.div>
-
-        {/* Business Discovery Banner */}
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.05, duration: 0.6 }}
-          className="mb-8"
-        >
-          <Link href="/browse/businesses">
-            <div className="bg-gradient-to-r from-purple-600/20 to-pink-600/20 border border-purple-500/30 rounded-2xl p-6 backdrop-blur-sm hover:border-purple-500/50 transition cursor-pointer group">
-              <div className="flex items-center justify-between">
-                <div>
-                  <h3 className="text-xl font-bold text-white mb-1 group-hover:text-purple-300 transition">
-                    Discover Local Businesses & Deals
-                  </h3>
-                  <p className="text-gray-300 text-sm">
-                    Browse businesses, view ratings, reviews, and find special coupons
-                  </p>
-                </div>
-                <motion.div
-                  whileHover={{ x: 5 }}
-                  className="text-2xl"
-                >
-                  →
-                </motion.div>
-              </div>
-            </div>
-          </Link>
+          <p className="text-gray-400 text-lg">
+            Browse local businesses, view ratings, and find special deals
+          </p>
         </motion.div>
 
         {/* Search and Filters */}
@@ -246,7 +153,7 @@ export default function BrowsePage() {
               <Search className="absolute left-4 text-gray-500 w-5 h-5" />
               <input
                 type="text"
-                placeholder="Search by title, business, or keyword..."
+                placeholder="Search by name, city, or description..."
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
                 className="w-full pl-12 pr-4 py-4 bg-gray-900/50 border border-gray-800/60 rounded-xl text-white placeholder-gray-600 focus:ring-2 focus:ring-gray-600 focus:border-transparent transition backdrop-blur-sm"
@@ -276,7 +183,7 @@ export default function BrowsePage() {
             ))}
           </motion.div>
 
-          {/* Sort and View Options */}
+          {/* Sort Option */}
           <motion.div
             className="flex justify-between items-center flex-wrap gap-4"
             initial={{ opacity: 0 }}
@@ -292,39 +199,13 @@ export default function BrowsePage() {
                 className="px-4 py-2 bg-gray-800/50 border border-gray-700/50 rounded-lg text-white focus:ring-2 focus:ring-gray-600 transition backdrop-blur-sm cursor-pointer"
                 whileFocus={{ scale: 1.02 }}
               >
-                <option value="rating">Highest Rated</option>
-                <option value="flexible">Most Flexible</option>
-                <option value="distance">Closest</option>
+                <option value="name">Name</option>
+                <option value="rating">Rating</option>
+                <option value="coupons">Deals</option>
               </motion.select>
             </div>
-            <motion.button
-              onClick={() => setShowMap(!showMap)}
-              whileHover={{ scale: 1.05 }}
-              whileTap={{ scale: 0.95 }}
-              className={`flex items-center space-x-2 px-6 py-2 rounded-lg font-medium transition ${
-                showMap
-                  ? 'bg-gradient-to-r from-gray-700 to-gray-600 text-white shadow-lg shadow-gray-600/50'
-                  : 'bg-gray-800/50 text-gray-300 border border-gray-700/50 hover:border-gray-600/50 backdrop-blur-sm'
-              }`}
-            >
-              <MapPin className="w-5 h-5" />
-              <span>{showMap ? 'Hide Map' : 'Show Map'}</span>
-            </motion.button>
           </motion.div>
         </motion.div>
-
-        {/* Map View */}
-        {showMap && (
-          <motion.div
-            initial={{ opacity: 0, height: 0 }}
-            animate={{ opacity: 1, height: 'auto' }}
-            exit={{ opacity: 0, height: 0 }}
-            transition={{ duration: 0.3 }}
-            className="mb-8 bg-gray-900/40 rounded-2xl border border-gray-800/60 overflow-hidden backdrop-blur-sm"
-          >
-            <OpportunityMap opportunities={filteredOpportunities} />
-          </motion.div>
-        )}
 
         {/* Results Counter */}
         <motion.div
@@ -334,11 +215,12 @@ export default function BrowsePage() {
           transition={{ delay: 0.3 }}
         >
           <p className="text-gray-400">
-            Found <span className="font-semibold text-white">{filteredOpportunities.length}</span> {filteredOpportunities.length === 1 ? 'opportunity' : 'opportunities'}
+            Found <span className="font-semibold text-white">{filteredBusinesses.length}</span>{' '}
+            {filteredBusinesses.length === 1 ? 'business' : 'businesses'}
           </p>
         </motion.div>
 
-        {/* Opportunities Grid */}
+        {/* Businesses Grid */}
         {loading ? (
           <motion.div
             className="text-center py-16"
@@ -349,18 +231,20 @@ export default function BrowsePage() {
               <motion.div
                 animate={{ rotate: 360 }}
                 transition={{ duration: 2, repeat: Infinity, ease: 'linear' }}
-                className="w-12 h-12 border-4 border-purple-600/30 border-t-purple-600 rounded-full"
+                className="w-12 h-12 border-4 border-gray-600/30 border-t-gray-600 rounded-full"
               />
             </div>
-            <p className="mt-4 text-gray-400 text-lg">Loading opportunities...</p>
+            <p className="mt-4 text-gray-400 text-lg">Loading businesses...</p>
           </motion.div>
-        ) : filteredOpportunities.length === 0 ? (
+        ) : filteredBusinesses.length === 0 ? (
           <motion.div
             className="text-center py-16 bg-gray-900/40 border border-gray-800/60 rounded-2xl backdrop-blur-sm"
             initial={{ opacity: 0, scale: 0.95 }}
             animate={{ opacity: 1, scale: 1 }}
           >
-            <p className="text-gray-400 text-lg">No opportunities found. Try adjusting your filters.</p>
+            <p className="text-gray-400 text-lg">
+              No businesses found. Try adjusting your filters.
+            </p>
           </motion.div>
         ) : (
           <motion.div
@@ -369,8 +253,8 @@ export default function BrowsePage() {
             animate={{ opacity: 1 }}
             transition={{ delay: 0.1 }}
           >
-            {filteredOpportunities.map((opportunity, index) => (
-              <OpportunityCard key={opportunity.id} opportunity={opportunity} index={index} />
+            {filteredBusinesses.map((business, index) => (
+              <BusinessCard key={business.id} business={business} index={index} />
             ))}
           </motion.div>
         )}

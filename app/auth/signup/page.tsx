@@ -19,6 +19,8 @@ function SignUpContent() {
   )
   const [error, setError] = useState('')
   const [loading, setLoading] = useState(false)
+  const [signUpSuccess, setSignUpSuccess] = useState(false)
+  const [verificationEmail, setVerificationEmail] = useState('')
 
   const handleSignUp = async (e: React.FormEvent) => {
     e.preventDefault()
@@ -29,6 +31,9 @@ function SignUpContent() {
       const { data: authData, error: authError } = await supabase.auth.signUp({
         email,
         password,
+        options: {
+          emailRedirectTo: `${window.location.origin}/auth/verify-email`,
+        },
       })
 
       if (authError) throw authError
@@ -42,15 +47,17 @@ function SignUpContent() {
           email,
           full_name: fullName,
           role,
+          email_verified: false,
         }] as any)
 
       if (profileError) throw profileError
 
-      if (role === 'business') {
-        router.push('/business/dashboard')
-      } else {
-        router.push('/dashboard')
-      }
+      setSignUpSuccess(true)
+      setVerificationEmail(email)
+      // Clear form
+      setEmail('')
+      setPassword('')
+      setFullName('')
     } catch (error: any) {
       setError(error.message || 'Failed to sign up')
     } finally {
@@ -109,119 +116,163 @@ function SignUpContent() {
           transition={{ delay: 0.3, duration: 0.6 }}
           className="bg-gray-900/40 border border-gray-800/60 rounded-2xl p-8 backdrop-blur-sm"
         >
-          <form onSubmit={handleSignUp} className="space-y-6">
-            {error && (
-              <motion.div
-                initial={{ opacity: 0, x: -20 }}
-                animate={{ opacity: 1, x: 0 }}
-                className="bg-red-950/40 border border-red-800/60 text-red-400 px-4 py-3 rounded-lg text-sm backdrop-blur-sm"
-              >
-                {error}
-              </motion.div>
-            )}
-
-            <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.4 }}>
-              <label className="block text-sm font-medium text-gray-300 mb-4">
-                I am a...
-              </label>
-              <div className="grid grid-cols-2 gap-4">
-                <motion.button
-                  whileHover={{ scale: 1.02 }}
-                  whileTap={{ scale: 0.98 }}
-                  type="button"
-                  onClick={() => setRole('student')}
-                  className={`p-4 border-2 rounded-lg font-semibold transition ${
-                    role === 'student'
-                      ? 'border-gray-600 bg-gray-700/20 text-gray-300'
-                      : 'border-gray-700/50 text-gray-400 hover:border-gray-600'
-                  }`}
-                >
-                  Student
-                </motion.button>
-                <motion.button
-                  whileHover={{ scale: 1.02 }}
-                  whileTap={{ scale: 0.98 }}
-                  type="button"
-                  onClick={() => setRole('business')}
-                  className={`p-4 border-2 rounded-lg font-semibold transition ${
-                    role === 'business'
-                      ? 'border-gray-600 bg-gray-700/20 text-gray-300'
-                      : 'border-gray-700/50 text-gray-400 hover:border-gray-600'
-                  }`}
-                >
-                  Business
-                </motion.button>
-              </div>
-            </motion.div>
-
-            <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.45 }}>
-              <label htmlFor="fullName" className="block text-sm font-medium text-gray-300 mb-2">
-                Full Name
-              </label>
-              <input
-                id="fullName"
-                type="text"
-                value={fullName}
-                onChange={(e) => setFullName(e.target.value)}
-                required
-                className="w-full px-4 py-3 bg-gray-800/50 border border-gray-700/60 rounded-lg text-white placeholder-gray-500 focus:ring-2 focus:ring-gray-600 focus:border-transparent transition backdrop-blur-sm"
-                placeholder="John Doe"
-              />
-            </motion.div>
-
-            <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.5 }}>
-              <label htmlFor="email" className="block text-sm font-medium text-gray-300 mb-2">
-                Email
-              </label>
-              <input
-                id="email"
-                type="email"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                required
-                className="w-full px-4 py-3 bg-gray-800/50 border border-gray-700/60 rounded-lg text-white placeholder-gray-500 focus:ring-2 focus:ring-gray-600 focus:border-transparent transition backdrop-blur-sm"
-                placeholder="you@example.com"
-              />
-            </motion.div>
-
-            <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.55 }}>
-              <label htmlFor="password" className="block text-sm font-medium text-gray-300 mb-2">
-                Password
-              </label>
-              <input
-                id="password"
-                type="password"
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-                required
-                minLength={6}
-                className="w-full px-4 py-3 bg-gray-800/50 border border-gray-700/60 rounded-lg text-white placeholder-gray-500 focus:ring-2 focus:ring-gray-600 focus:border-transparent transition backdrop-blur-sm"
-                placeholder="••••••••"
-              />
-              <p className="text-sm text-gray-500 mt-1">Must be at least 6 characters</p>
-            </motion.div>
-
-            <motion.button
-              whileHover={{ scale: 1.02 }}
-              whileTap={{ scale: 0.98 }}
-              type="submit"
-              disabled={loading}
-              className="w-full py-3 bg-gradient-to-r from-gray-700 to-gray-600 text-white rounded-lg font-semibold hover:shadow-lg hover:shadow-gray-600/50 disabled:opacity-50 disabled:cursor-not-allowed transition"
+          {signUpSuccess ? (
+            <motion.div
+              initial={{ opacity: 0, scale: 0.95 }}
+              animate={{ opacity: 1, scale: 1 }}
+              className="text-center space-y-6"
             >
-              {loading ? (
-                <span className="flex items-center justify-center">
-                  <motion.div
-                    animate={{ rotate: 360 }}
-                    transition={{ duration: 1, repeat: Infinity }}
-                    className="w-4 h-4 border-2 border-gray-300 border-t-white rounded-full mr-2"
-                  />
-                  Creating account...
-                </span>
-              ) : (
-                'Sign Up'
+              <motion.div
+                animate={{ scale: [1, 1.1, 1] }}
+                transition={{ duration: 2, repeat: Infinity }}
+                className="w-16 h-16 bg-green-600/20 border border-green-600/30 rounded-full flex items-center justify-center mx-auto"
+              >
+                <svg className="w-8 h-8 text-green-400" fill="currentColor" viewBox="0 0 20 20">
+                  <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
+                </svg>
+              </motion.div>
+              <div>
+                <h2 className="text-2xl font-bold text-white mb-2">Account Created!</h2>
+                <p className="text-gray-400 mb-4">
+                  We've sent a verification email to <span className="font-semibold text-gray-300">{verificationEmail}</span>
+                </p>
+                <p className="text-gray-400 text-sm mb-6">
+                  Please check your inbox and click the verification link to complete your registration. This helps us prevent bot activity and keep our community safe.
+                </p>
+              </div>
+              <motion.button
+                whileHover={{ scale: 1.02 }}
+                whileTap={{ scale: 0.98 }}
+                onClick={() => router.push('/auth/login')}
+                className="w-full py-3 bg-gradient-to-r from-gray-700 to-gray-600 text-white rounded-lg font-semibold hover:shadow-lg hover:shadow-gray-600/50 transition"
+              >
+                Go to Login
+              </motion.button>
+              <p className="text-gray-500 text-sm">
+                Didn't receive the email? Check your spam folder or{' '}
+                <button
+                  onClick={() => setSignUpSuccess(false)}
+                  className="text-gray-300 hover:text-white font-semibold transition"
+                >
+                  try again
+                </button>
+              </p>
+            </motion.div>
+          ) : (
+            <form onSubmit={handleSignUp} className="space-y-6">
+              {error && (
+                <motion.div
+                  initial={{ opacity: 0, x: -20 }}
+                  animate={{ opacity: 1, x: 0 }}
+                  className="bg-red-950/40 border border-red-800/60 text-red-400 px-4 py-3 rounded-lg text-sm backdrop-blur-sm"
+                >
+                  {error}
+                </motion.div>
               )}
-            </motion.button>
-          </form>
+
+              <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.4 }}>
+                <label className="block text-sm font-medium text-gray-300 mb-4">
+                  I am a...
+                </label>
+                <div className="grid grid-cols-2 gap-4">
+                  <motion.button
+                    whileHover={{ scale: 1.02 }}
+                    whileTap={{ scale: 0.98 }}
+                    type="button"
+                    onClick={() => setRole('student')}
+                    className={`p-4 border-2 rounded-lg font-semibold transition ${
+                      role === 'student'
+                        ? 'border-gray-600 bg-gray-700/20 text-gray-300'
+                        : 'border-gray-700/50 text-gray-400 hover:border-gray-600'
+                    }`}
+                  >
+                    Student
+                  </motion.button>
+                  <motion.button
+                    whileHover={{ scale: 1.02 }}
+                    whileTap={{ scale: 0.98 }}
+                    type="button"
+                    onClick={() => setRole('business')}
+                    className={`p-4 border-2 rounded-lg font-semibold transition ${
+                      role === 'business'
+                        ? 'border-gray-600 bg-gray-700/20 text-gray-300'
+                        : 'border-gray-700/50 text-gray-400 hover:border-gray-600'
+                    }`}
+                  >
+                    Business
+                  </motion.button>
+                </div>
+              </motion.div>
+
+              <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.45 }}>
+                <label htmlFor="fullName" className="block text-sm font-medium text-gray-300 mb-2">
+                  Full Name
+                </label>
+                <input
+                  id="fullName"
+                  type="text"
+                  value={fullName}
+                  onChange={(e) => setFullName(e.target.value)}
+                  required
+                  className="w-full px-4 py-3 bg-gray-800/50 border border-gray-700/60 rounded-lg text-white placeholder-gray-500 focus:ring-2 focus:ring-gray-600 focus:border-transparent transition backdrop-blur-sm"
+                  placeholder="John Doe"
+                />
+              </motion.div>
+
+              <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.5 }}>
+                <label htmlFor="email" className="block text-sm font-medium text-gray-300 mb-2">
+                  Email
+                </label>
+                <input
+                  id="email"
+                  type="email"
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                  required
+                  className="w-full px-4 py-3 bg-gray-800/50 border border-gray-700/60 rounded-lg text-white placeholder-gray-500 focus:ring-2 focus:ring-gray-600 focus:border-transparent transition backdrop-blur-sm"
+                  placeholder="you@example.com"
+                />
+              </motion.div>
+
+              <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.55 }}>
+                <label htmlFor="password" className="block text-sm font-medium text-gray-300 mb-2">
+                  Password
+                </label>
+                <input
+                  id="password"
+                  type="password"
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                  required
+                  minLength={6}
+                  className="w-full px-4 py-3 bg-gray-800/50 border border-gray-700/60 rounded-lg text-white placeholder-gray-500 focus:ring-2 focus:ring-gray-600 focus:border-transparent transition backdrop-blur-sm"
+                  placeholder="••••••••"
+                />
+                <p className="text-sm text-gray-500 mt-1">Must be at least 6 characters</p>
+              </motion.div>
+
+              <motion.button
+                whileHover={{ scale: 1.02 }}
+                whileTap={{ scale: 0.98 }}
+                type="submit"
+                disabled={loading}
+                className="w-full py-3 bg-gradient-to-r from-gray-700 to-gray-600 text-white rounded-lg font-semibold hover:shadow-lg hover:shadow-gray-600/50 disabled:opacity-50 disabled:cursor-not-allowed transition"
+              >
+                {loading ? (
+                  <span className="flex items-center justify-center">
+                    <motion.div
+                      animate={{ rotate: 360 }}
+                      transition={{ duration: 1, repeat: Infinity }}
+                      className="w-4 h-4 border-2 border-gray-300 border-t-white rounded-full mr-2"
+                    />
+                    Creating account...
+                  </span>
+                ) : (
+                  'Sign Up'
+                )}
+              </motion.button>
+            </form>
+          )}
 
           <motion.div
             initial={{ opacity: 0 }}
