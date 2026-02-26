@@ -1,41 +1,43 @@
-'use client'
+"use client";
 
-import { motion } from 'framer-motion'
-import { Ticket, Copy, Check } from 'lucide-react'
-import { useState } from 'react'
+import { motion } from "framer-motion";
+import { Ticket, Copy, Check } from "lucide-react";
+import { useState } from "react";
 
 type Coupon = {
-  id: string
-  title: string
-  description: string
-  discount_percent: number | null
-  discount_amount: number | null
-  coupon_code: string | null
-  expiry_date: string | null
-}
+  id: string;
+  title: string;
+  description: string;
+  discount_percent: number | null;
+  discount_amount: number | null;
+  coupon_code: string | null;
+  expiry_date: string | null;
+};
 
 type CouponsDisplayProps = {
-  coupons: Coupon[]
-}
+  coupons: Coupon[];
+};
 
 export default function CouponsDisplay({ coupons }: CouponsDisplayProps) {
-  const [copiedId, setCopiedId] = useState<string | null>(null)
+  const [copiedId, setCopiedId] = useState<string | null>(null);
 
   if (!coupons || coupons.length === 0) {
-    return null
+    return null;
   }
 
   const handleCopyCoupon = (code: string, id: string) => {
-    navigator.clipboard.writeText(code)
-    setCopiedId(id)
-    setTimeout(() => setCopiedId(null), 2000)
-  }
+    navigator.clipboard.writeText(code);
+    setCopiedId(id);
+    setTimeout(() => setCopiedId(null), 2000);
+  };
 
   return (
     <div className="space-y-4">
       <div className="flex items-center space-x-2 mb-4">
         <Ticket className="w-5 h-5 text-purple-500" />
-        <h3 className="text-xl font-bold text-white">Special Deals & Coupons</h3>
+        <h3 className="text-xl font-bold text-white">
+          Special Deals & Coupons
+        </h3>
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -50,7 +52,9 @@ export default function CouponsDisplay({ coupons }: CouponsDisplayProps) {
             <div className="flex justify-between items-start mb-3">
               <div className="flex-1">
                 <h4 className="font-bold text-white text-lg">{coupon.title}</h4>
-                <p className="text-sm text-gray-300 mt-1">{coupon.description}</p>
+                <p className="text-sm text-gray-300 mt-1">
+                  {coupon.description}
+                </p>
               </div>
               {coupon.discount_percent && (
                 <div className="ml-4 bg-purple-600/40 rounded-lg px-3 py-2 text-center">
@@ -100,5 +104,5 @@ export default function CouponsDisplay({ coupons }: CouponsDisplayProps) {
         ))}
       </div>
     </div>
-  )
+  );
 }

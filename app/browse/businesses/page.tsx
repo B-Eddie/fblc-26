@@ -1,63 +1,71 @@
-'use client'
+"use client";
 
-import { useEffect, useState } from 'react'
-import Link from 'next/link'
-import { motion } from 'framer-motion'
-import { supabase } from '@/lib/supabase'
-import { Search, Filter, ArrowLeft } from 'lucide-react'
-import BusinessCard from '@/components/BusinessCard'
+import { useEffect, useState } from "react";
+import Link from "next/link";
+import { motion } from "framer-motion";
+import { supabase } from "@/lib/supabase";
+import { Search, Filter, ArrowLeft } from "lucide-react";
+import BusinessCard from "@/components/BusinessCard";
 
 type Business = {
-  id: string
-  name: string
-  description: string
-  category: string
-  city: string
-  image_url: string | null
-}
+  id: string;
+  name: string;
+  description: string;
+  category: string;
+  city: string;
+  image_url: string | null;
+};
 
-const categories = ['All', 'Food', 'Retail', 'Services', 'Healthcare', 'Education', 'Other']
+const categories = [
+  "All",
+  "Food",
+  "Retail",
+  "Services",
+  "Healthcare",
+  "Education",
+  "Other",
+];
 
 export default function BrowseBusinessesPage() {
-  const [businesses, setBusinesses] = useState<Business[]>([])
-  const [filteredBusinesses, setFilteredBusinesses] = useState<Business[]>([])
-  const [loading, setLoading] = useState(true)
-  const [searchQuery, setSearchQuery] = useState('')
-  const [selectedCategory, setSelectedCategory] = useState('All')
-  const [sortBy, setSortBy] = useState<'name' | 'rating' | 'coupons'>('rating')
+  const [businesses, setBusinesses] = useState<Business[]>([]);
+  const [filteredBusinesses, setFilteredBusinesses] = useState<Business[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [searchQuery, setSearchQuery] = useState("");
+  const [selectedCategory, setSelectedCategory] = useState("All");
+  const [sortBy, setSortBy] = useState<"name" | "rating" | "coupons">("rating");
 
   useEffect(() => {
-    fetchBusinesses()
-  }, [])
+    fetchBusinesses();
+  }, []);
 
   useEffect(() => {
-    filterAndSort()
-  }, [businesses, searchQuery, selectedCategory, sortBy])
+    filterAndSort();
+  }, [businesses, searchQuery, selectedCategory, sortBy]);
 
   const fetchBusinesses = async () => {
     try {
       const { data, error } = await supabase
-        .from('businesses')
-        .select('*')
-        .order('created_at', { ascending: false })
+        .from("businesses")
+        .select("*")
+        .order("created_at", { ascending: false });
 
-      if (error) throw error
-      setBusinesses(data || [])
+      if (error) throw error;
+      setBusinesses(data || []);
     } catch (error) {
-      console.error('Error fetching businesses:', error)
+      console.error("Error fetching businesses:", error);
     } finally {
-      setLoading(false)
+      setLoading(false);
     }
-  }
+  };
 
   const filterAndSort = () => {
-    let filtered = [...businesses]
+    let filtered = [...businesses];
 
     // Filter by category
-    if (selectedCategory !== 'All') {
+    if (selectedCategory !== "All") {
       filtered = filtered.filter(
-        (b) => b.category.toLowerCase() === selectedCategory.toLowerCase()
-      )
+        (b) => b.category.toLowerCase() === selectedCategory.toLowerCase(),
+      );
     }
 
     // Filter by search query
@@ -66,18 +74,18 @@ export default function BrowseBusinessesPage() {
         (b) =>
           b.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
           b.description.toLowerCase().includes(searchQuery.toLowerCase()) ||
-          b.city.toLowerCase().includes(searchQuery.toLowerCase())
-      )
+          b.city.toLowerCase().includes(searchQuery.toLowerCase()),
+      );
     }
 
     // Sort - note: we'll need to fetch ratings/coupons for proper sorting
     // For now, sorting is by name for simplicity
-    if (sortBy === 'name') {
-      filtered.sort((a, b) => a.name.localeCompare(b.name))
+    if (sortBy === "name") {
+      filtered.sort((a, b) => a.name.localeCompare(b.name));
     }
 
-    setFilteredBusinesses(filtered)
-  }
+    setFilteredBusinesses(filtered);
+  };
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-black via-gray-950 to-black text-white">
@@ -104,7 +112,10 @@ export default function BrowseBusinessesPage() {
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6 }}
           >
-            <Link href="/" className="flex items-center space-x-3 hover:opacity-80 transition">
+            <Link
+              href="/"
+              className="flex items-center space-x-3 hover:opacity-80 transition"
+            >
               <motion.div
                 className="w-10 h-10 bg-gradient-to-br from-gray-700 to-gray-600 rounded-lg flex items-center justify-center"
                 whileHover={{ scale: 1.05 }}
@@ -115,7 +126,10 @@ export default function BrowseBusinessesPage() {
                 Vertex
               </span>
             </Link>
-            <Link href="/browse" className="flex items-center space-x-2 text-gray-400 hover:text-gray-300 transition">
+            <Link
+              href="/browse"
+              className="flex items-center space-x-2 text-gray-400 hover:text-gray-300 transition"
+            >
               <ArrowLeft className="w-4 h-4" />
               <span>Back to Opportunities</span>
             </Link>
@@ -174,8 +188,8 @@ export default function BrowseBusinessesPage() {
                 transition={{ delay: i * 0.05 }}
                 className={`px-6 py-2 rounded-full font-medium transition whitespace-nowrap ${
                   selectedCategory === category
-                    ? 'bg-gradient-to-r from-gray-700 to-gray-600 text-white shadow-lg shadow-gray-600/50'
-                    : 'bg-gray-800/50 text-gray-300 hover:bg-gray-800 border border-gray-700/50 backdrop-blur-sm'
+                    ? "bg-gradient-to-r from-gray-700 to-gray-600 text-white shadow-lg shadow-gray-600/50"
+                    : "bg-gray-800/50 text-gray-300 hover:bg-gray-800 border border-gray-700/50 backdrop-blur-sm"
                 }`}
               >
                 {category}
@@ -192,7 +206,9 @@ export default function BrowseBusinessesPage() {
           >
             <div className="flex items-center space-x-4">
               <Filter className="w-5 h-5 text-gray-400" />
-              <label className="text-sm font-medium text-gray-300">Sort by:</label>
+              <label className="text-sm font-medium text-gray-300">
+                Sort by:
+              </label>
               <motion.select
                 value={sortBy}
                 onChange={(e) => setSortBy(e.target.value as any)}
@@ -215,8 +231,11 @@ export default function BrowseBusinessesPage() {
           transition={{ delay: 0.3 }}
         >
           <p className="text-gray-400">
-            Found <span className="font-semibold text-white">{filteredBusinesses.length}</span>{' '}
-            {filteredBusinesses.length === 1 ? 'business' : 'businesses'}
+            Found{" "}
+            <span className="font-semibold text-white">
+              {filteredBusinesses.length}
+            </span>{" "}
+            {filteredBusinesses.length === 1 ? "business" : "businesses"}
           </p>
         </motion.div>
 
@@ -230,7 +249,7 @@ export default function BrowseBusinessesPage() {
             <div className="inline-block">
               <motion.div
                 animate={{ rotate: 360 }}
-                transition={{ duration: 2, repeat: Infinity, ease: 'linear' }}
+                transition={{ duration: 2, repeat: Infinity, ease: "linear" }}
                 className="w-12 h-12 border-4 border-gray-600/30 border-t-gray-600 rounded-full"
               />
             </div>
@@ -254,11 +273,15 @@ export default function BrowseBusinessesPage() {
             transition={{ delay: 0.1 }}
           >
             {filteredBusinesses.map((business, index) => (
-              <BusinessCard key={business.id} business={business} index={index} />
+              <BusinessCard
+                key={business.id}
+                business={business}
+                index={index}
+              />
             ))}
           </motion.div>
         )}
       </main>
     </div>
-  )
+  );
 }

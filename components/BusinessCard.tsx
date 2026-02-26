@@ -1,83 +1,88 @@
-'use client'
+"use client";
 
-import { useState, useEffect } from 'react'
-import Link from 'next/link'
-import { motion } from 'framer-motion'
-import { MapPin, Star, Heart, Ticket } from 'lucide-react'
-import { supabase } from '@/lib/supabase'
-import BusinessFavoriteButton from './BusinessFavoriteButton'
+import { useState, useEffect } from "react";
+import Link from "next/link";
+import { motion } from "framer-motion";
+import { MapPin, Star, Heart, Ticket } from "lucide-react";
+import { supabase } from "@/lib/supabase";
+import BusinessFavoriteButton from "./BusinessFavoriteButton";
 
 type BusinessCardProps = {
   business: {
-    id: string
-    name: string
-    description: string
-    category: string
-    city: string
-    image_url: string | null
-  }
-  index?: number
-}
+    id: string;
+    name: string;
+    description: string;
+    category: string;
+    city: string;
+    image_url: string | null;
+  };
+  index?: number;
+};
 
-export default function BusinessCard({ business, index = 0 }: BusinessCardProps) {
-  const [averageRating, setAverageRating] = useState(0)
-  const [couponCount, setCouponCount] = useState(0)
-  const [isFavorited, setIsFavorited] = useState(false)
-  const [loading, setLoading] = useState(true)
+export default function BusinessCard({
+  business,
+  index = 0,
+}: BusinessCardProps) {
+  const [averageRating, setAverageRating] = useState(0);
+  const [couponCount, setCouponCount] = useState(0);
+  const [isFavorited, setIsFavorited] = useState(false);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    fetchBusinessData()
-  }, [business.id])
+    fetchBusinessData();
+  }, [business.id]);
 
   const fetchBusinessData = async () => {
     try {
       // Fetch ratings
       const { data: ratings } = await supabase
-        .from('ratings')
-        .select('rating')
-        .eq('business_id', business.id)
+        .from("ratings")
+        .select("rating")
+        .eq("business_id", business.id);
 
       if (ratings && ratings.length > 0) {
         const avg =
           ratings.reduce((sum: number, r: any) => sum + r.rating, 0) /
-          ratings.length
-        setAverageRating(avg)
+          ratings.length;
+        setAverageRating(avg);
       }
 
       // Fetch active coupons
       const { data: coupons } = await supabase
-        .from('coupons')
-        .select('id')
-        .eq('business_id', business.id)
-        .eq('is_active', true)
+        .from("coupons")
+        .select("id")
+        .eq("business_id", business.id)
+        .eq("is_active", true);
 
-      setCouponCount(coupons?.length || 0)
+      setCouponCount(coupons?.length || 0);
 
       // Check if favorited
-      const { data: { user } } = await supabase.auth.getUser()
+      const {
+        data: { user },
+      } = await supabase.auth.getUser();
       if (user) {
         const { data: fav } = await supabase
-          .from('business_favorites')
-          .select('id')
-          .eq('profile_id', user.id)
-          .eq('business_id', business.id)
-          .single()
+          .from("business_favorites")
+          .select("id")
+          .eq("profile_id", user.id)
+          .eq("business_id", business.id)
+          .single();
 
-        setIsFavorited(!!fav)
+        setIsFavorited(!!fav);
       }
     } catch (error) {
-      console.error('Error fetching business data:', error)
+      console.error("Error fetching business data:", error);
     } finally {
-      setLoading(false)
+      setLoading(false);
     }
-  }
+  };
 
   return (
     <Link href={`/business/${business.id}`}>
       <motion.div
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
-        transition={{ delay: index * 0.1, duration: 0.6, ease: 'easeOut' }}
+        transition={{ delay: index * 0.1, duration: 0.6, ease: "easeOut" }}
         whileHover={{ y: -8 }}
         className="group h-full"
       >
@@ -101,7 +106,11 @@ export default function BusinessCard({ business, index = 0 }: BusinessCardProps)
               <div className="w-full h-full flex items-center justify-center bg-gradient-to-br from-gray-600/20 via-gray-700/20 to-gray-600/20">
                 <motion.div
                   animate={{ rotate: 360 }}
-                  transition={{ duration: 20, repeat: Infinity, ease: 'linear' }}
+                  transition={{
+                    duration: 20,
+                    repeat: Infinity,
+                    ease: "linear",
+                  }}
                   className="text-gray-400 text-6xl font-bold opacity-30"
                 >
                   {business.name.charAt(0)}
@@ -148,7 +157,9 @@ export default function BusinessCard({ business, index = 0 }: BusinessCardProps)
               <h3 className="text-lg font-bold text-white line-clamp-2 group-hover:text-gray-100 transition">
                 {business.name}
               </h3>
-              <p className="text-sm text-gray-400 line-clamp-2">{business.description}</p>
+              <p className="text-sm text-gray-400 line-clamp-2">
+                {business.description}
+              </p>
             </div>
 
             <div className="flex items-center justify-between mt-auto pt-4 border-t border-gray-800/40">
@@ -170,5 +181,5 @@ export default function BusinessCard({ business, index = 0 }: BusinessCardProps)
         </div>
       </motion.div>
     </Link>
-  )
+  );
 }

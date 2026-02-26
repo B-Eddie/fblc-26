@@ -1,16 +1,16 @@
-'use client'
+"use client";
 
-import { useState } from 'react'
-import { motion } from 'framer-motion'
-import { Star, Send } from 'lucide-react'
-import { supabase } from '@/lib/supabase'
+import { useState } from "react";
+import { motion } from "framer-motion";
+import { Star, Send } from "lucide-react";
+import { supabase } from "@/lib/supabase";
 
 type RatingSubmissionFormProps = {
-  businessId: string
-  onRatingAdded?: () => void
-  existingRating?: number
-  existingReview?: string
-}
+  businessId: string;
+  onRatingAdded?: () => void;
+  existingRating?: number;
+  existingReview?: string;
+};
 
 export default function RatingSubmissionForm({
   businessId,
@@ -18,72 +18,72 @@ export default function RatingSubmissionForm({
   existingRating,
   existingReview,
 }: RatingSubmissionFormProps) {
-  const [rating, setRating] = useState(existingRating || 0)
-  const [hoverRating, setHoverRating] = useState(0)
-  const [review, setReview] = useState(existingReview || '')
-  const [submitting, setSubmitting] = useState(false)
-  const [error, setError] = useState('')
-  const [success, setSuccess] = useState(false)
+  const [rating, setRating] = useState(existingRating || 0);
+  const [hoverRating, setHoverRating] = useState(0);
+  const [review, setReview] = useState(existingReview || "");
+  const [submitting, setSubmitting] = useState(false);
+  const [error, setError] = useState("");
+  const [success, setSuccess] = useState(false);
 
   const handleSubmit = async () => {
     if (rating === 0) {
-      setError('Please select a rating')
-      return
+      setError("Please select a rating");
+      return;
     }
 
-    const { data: { user } } = await supabase.auth.getUser()
+    const {
+      data: { user },
+    } = await supabase.auth.getUser();
     if (!user) {
-      setError('Please log in to submit a rating')
-      return
+      setError("Please log in to submit a rating");
+      return;
     }
 
-    setSubmitting(true)
-    setError('')
-    setSuccess(false)
+    setSubmitting(true);
+    setError("");
+    setSuccess(false);
 
     try {
       if (existingRating) {
         // Update existing rating
         const { error: updateError } = await supabase
-          .from('ratings')
+          .from("ratings")
           .update({
             rating,
             review: review || null,
             updated_at: new Date().toISOString(),
           })
-          .eq('profile_id', user.id)
-          .eq('business_id', businessId)
+          .eq("profile_id", user.id)
+          .eq("business_id", businessId);
 
-        if (updateError) throw updateError
+        if (updateError) throw updateError;
       } else {
         // Insert new rating
-        const { error: insertError } = await supabase
-          .from('ratings')
-          .insert([
-            {
-              profile_id: user.id,
-              business_id: businessId,
-              rating,
-              review: review || null,
-            },
-          ] as any)
+        const { error: insertError } = await supabase.from("ratings").insert([
+          {
+            profile_id: user.id,
+            business_id: businessId,
+            rating,
+            review: review || null,
+          },
+        ] as any);
 
-        if (insertError) throw insertError
+        if (insertError) throw insertError;
       }
 
-      setSuccess(true)
-      setRating(0)
-      setReview('')
+      setSuccess(true);
+      setRating(0);
+      setReview("");
       setTimeout(() => {
-        setSuccess(false)
-        onRatingAdded?.()
-      }, 2000)
+        setSuccess(false);
+        onRatingAdded?.();
+      }, 2000);
     } catch (err: any) {
-      setError(err.message || 'Error submitting rating')
+      setError(err.message || "Error submitting rating");
     } finally {
-      setSubmitting(false)
+      setSubmitting(false);
     }
-  }
+  };
 
   return (
     <motion.div
@@ -112,8 +112,8 @@ export default function RatingSubmissionForm({
               <Star
                 className={`w-8 h-8 transition ${
                   star <= (hoverRating || rating)
-                    ? 'fill-yellow-500 text-yellow-500'
-                    : 'text-gray-600'
+                    ? "fill-yellow-500 text-yellow-500"
+                    : "text-gray-600"
                 }`}
               />
             </motion.button>
@@ -167,8 +167,8 @@ export default function RatingSubmissionForm({
         className="w-full flex items-center justify-center space-x-2 py-3 bg-yellow-600 hover:bg-yellow-700 disabled:bg-gray-700 disabled:text-gray-400 text-white rounded-lg font-semibold transition"
       >
         <Send className="w-4 h-4" />
-        <span>{submitting ? 'Submitting...' : 'Submit Review'}</span>
+        <span>{submitting ? "Submitting..." : "Submit Review"}</span>
       </motion.button>
     </motion.div>
-  )
+  );
 }

@@ -1,146 +1,152 @@
-'use client'
+"use client";
 
-import { useEffect, useState } from 'react'
-import Link from 'next/link'
-import { useRouter } from 'next/navigation'
-import { motion } from 'framer-motion'
-import { supabase } from '@/lib/supabase'
-import { ArrowLeft, Upload, AlertCircle } from 'lucide-react'
+import { useEffect, useState } from "react";
+import Link from "next/link";
+import { useRouter } from "next/navigation";
+import { motion } from "framer-motion";
+import { supabase } from "@/lib/supabase";
+import { ArrowLeft, Upload, AlertCircle } from "lucide-react";
 
 export default function NewOpportunityPage() {
-  const router = useRouter()
+  const router = useRouter();
   const [formData, setFormData] = useState({
-    title: '',
-    description: '',
-    requirements: '',
+    title: "",
+    description: "",
+    requirements: "",
     hours_available: 10,
     is_flexible: false,
-    perks: '',
-    start_date: '',
-    end_date: '',
-  })
-  const [loading, setLoading] = useState(true)
-  const [submitting, setSubmitting] = useState(false)
-  const [error, setError] = useState<string | null>(null)
-  const [business, setBusiness] = useState<any>(null)
+    perks: "",
+    start_date: "",
+    end_date: "",
+  });
+  const [loading, setLoading] = useState(true);
+  const [submitting, setSubmitting] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+  const [business, setBusiness] = useState<any>(null);
 
   useEffect(() => {
-    checkAuthAndBusiness()
-  }, [])
+    checkAuthAndBusiness();
+  }, []);
 
   const checkAuthAndBusiness = async () => {
-    const { data: { user } } = await supabase.auth.getUser()
-    
+    const {
+      data: { user },
+    } = await supabase.auth.getUser();
+
     if (!user) {
-      router.push('/auth/login')
-      return
+      router.push("/auth/login");
+      return;
     }
 
     try {
       // Get business profile
       const { data: profileData } = await supabase
-        .from('profiles')
-        .select('*')
-        .eq('id', user.id)
-        .single()
+        .from("profiles")
+        .select("*")
+        .eq("id", user.id)
+        .single();
 
-      if ((profileData as any)?.role !== 'business') {
-        router.push('/business/dashboard')
-        return
+      if ((profileData as any)?.role !== "business") {
+        router.push("/business/dashboard");
+        return;
       }
 
       const { data: businessData } = await supabase
-        .from('businesses')
-        .select('*')
-        .eq('profile_id', user.id)
-        .single()
+        .from("businesses")
+        .select("*")
+        .eq("profile_id", user.id)
+        .single();
 
       if (!businessData) {
-        router.push('/business/setup')
-        return
+        router.push("/business/setup");
+        return;
       }
 
-      setBusiness(businessData)
+      setBusiness(businessData);
     } catch (error) {
-      console.error('Error fetching business:', error)
-      router.push('/business/dashboard')
+      console.error("Error fetching business:", error);
+      router.push("/business/dashboard");
     } finally {
-      setLoading(false)
+      setLoading(false);
     }
-  }
+  };
 
-  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
-    const { name, value, type } = e.target
-    
-    if (type === 'checkbox') {
-      setFormData(prev => ({
+  const handleInputChange = (
+    e: React.ChangeEvent<
+      HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement
+    >,
+  ) => {
+    const { name, value, type } = e.target;
+
+    if (type === "checkbox") {
+      setFormData((prev) => ({
         ...prev,
-        [name]: (e.target as HTMLInputElement).checked
-      }))
-    } else if (type === 'number') {
-      setFormData(prev => ({
+        [name]: (e.target as HTMLInputElement).checked,
+      }));
+    } else if (type === "number") {
+      setFormData((prev) => ({
         ...prev,
-        [name]: parseInt(value) || 0
-      }))
+        [name]: parseInt(value) || 0,
+      }));
     } else {
-      setFormData(prev => ({
+      setFormData((prev) => ({
         ...prev,
-        [name]: value
-      }))
+        [name]: value,
+      }));
     }
-    setError(null)
-  }
+    setError(null);
+  };
 
   const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault()
-    setSubmitting(true)
-    setError(null)
+    e.preventDefault();
+    setSubmitting(true);
+    setError(null);
 
     try {
       // Validate required fields
       if (!formData.title.trim()) {
-        setError('Title is required')
-        setSubmitting(false)
-        return
+        setError("Title is required");
+        setSubmitting(false);
+        return;
       }
       if (!formData.description.trim()) {
-        setError('Description is required')
-        setSubmitting(false)
-        return
+        setError("Description is required");
+        setSubmitting(false);
+        return;
       }
       if (!formData.requirements.trim()) {
-        setError('Requirements are required')
-        setSubmitting(false)
-        return
+        setError("Requirements are required");
+        setSubmitting(false);
+        return;
       }
       if (formData.hours_available <= 0) {
-        setError('Hours available must be greater than 0')
-        setSubmitting(false)
-        return
+        setError("Hours available must be greater than 0");
+        setSubmitting(false);
+        return;
       }
       if (!formData.start_date) {
-        setError('Start date is required')
-        setSubmitting(false)
-        return
+        setError("Start date is required");
+        setSubmitting(false);
+        return;
       }
       if (!formData.end_date) {
-        setError('End date is required')
-        setSubmitting(false)
-        return
+        setError("End date is required");
+        setSubmitting(false);
+        return;
       }
 
-      const startDate = new Date(formData.start_date)
-      const endDate = new Date(formData.end_date)
-      
+      const startDate = new Date(formData.start_date);
+      const endDate = new Date(formData.end_date);
+
       if (endDate <= startDate) {
-        setError('End date must be after start date')
-        setSubmitting(false)
-        return
+        setError("End date must be after start date");
+        setSubmitting(false);
+        return;
       }
 
       // Create opportunity
       const { data, error: insertError } = await supabase
-        .from('opportunities')
+        .from("opportunities")
         .insert([
           {
             business_id: business.id,
@@ -151,23 +157,23 @@ export default function NewOpportunityPage() {
             is_flexible: formData.is_flexible,
             perks: formData.perks.trim() || null,
             start_date: formData.start_date,
-            end_date: formData.end_date
-          }
+            end_date: formData.end_date,
+          },
         ])
         .select()
-        .single()
+        .single();
 
-      if (insertError) throw insertError
+      if (insertError) throw insertError;
 
       // Redirect to the new opportunity
-      router.push(`/opportunities/${(data as any).id}`)
+      router.push(`/opportunities/${(data as any).id}`);
     } catch (error: any) {
-      console.error('Error creating opportunity:', error)
-      setError(error.message || 'Failed to create opportunity')
+      console.error("Error creating opportunity:", error);
+      setError(error.message || "Failed to create opportunity");
     } finally {
-      setSubmitting(false)
+      setSubmitting(false);
     }
-  }
+  };
 
   if (loading) {
     return (
@@ -178,7 +184,7 @@ export default function NewOpportunityPage() {
           className="w-12 h-12 border-4 border-gray-700/30 border-t-gray-700 rounded-full"
         />
       </div>
-    )
+    );
   }
 
   return (
@@ -206,10 +212,16 @@ export default function NewOpportunityPage() {
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6 }}
           >
-            <Link href="/business/dashboard" className="hover:opacity-80 transition">
+            <Link
+              href="/business/dashboard"
+              className="hover:opacity-80 transition"
+            >
               <ArrowLeft className="w-6 h-6" />
             </Link>
-            <Link href="/" className="flex items-center space-x-3 hover:opacity-80 transition">
+            <Link
+              href="/"
+              className="flex items-center space-x-3 hover:opacity-80 transition"
+            >
               <motion.div
                 className="w-10 h-10 bg-gradient-to-br from-gray-700 to-gray-600 rounded-lg flex items-center justify-center"
                 whileHover={{ scale: 1.05 }}
@@ -236,7 +248,8 @@ export default function NewOpportunityPage() {
             Post a New Opportunity
           </h1>
           <p className="text-gray-400 text-lg">
-            Create an opportunity for {business?.name || 'volunteers'} to get involved
+            Create an opportunity for {business?.name || "volunteers"} to get
+            involved
           </p>
         </motion.div>
 
@@ -278,7 +291,9 @@ export default function NewOpportunityPage() {
                 placeholder="e.g., Community Garden Assistant"
                 className="w-full px-4 py-3 bg-gray-800/50 border border-gray-700/50 rounded-lg text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-gray-600 focus:border-transparent transition"
               />
-              <p className="text-xs text-gray-500 mt-2">What do you want to call this opportunity?</p>
+              <p className="text-xs text-gray-500 mt-2">
+                What do you want to call this opportunity?
+              </p>
             </motion.div>
 
             {/* Description */}
@@ -298,7 +313,9 @@ export default function NewOpportunityPage() {
                 rows={5}
                 className="w-full px-4 py-3 bg-gray-800/50 border border-gray-700/50 rounded-lg text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-gray-600 focus:border-transparent transition resize-none"
               />
-              <p className="text-xs text-gray-500 mt-2">Provide a detailed description to attract the right volunteers</p>
+              <p className="text-xs text-gray-500 mt-2">
+                Provide a detailed description to attract the right volunteers
+              </p>
             </motion.div>
 
             {/* Requirements */}
@@ -318,7 +335,9 @@ export default function NewOpportunityPage() {
                 rows={4}
                 className="w-full px-4 py-3 bg-gray-800/50 border border-gray-700/50 rounded-lg text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-gray-600 focus:border-transparent transition resize-none"
               />
-              <p className="text-xs text-gray-500 mt-2">List any skills, certifications, or requirements needed</p>
+              <p className="text-xs text-gray-500 mt-2">
+                List any skills, certifications, or requirements needed
+              </p>
             </motion.div>
 
             {/* Hours and Flexibility */}
@@ -341,7 +360,9 @@ export default function NewOpportunityPage() {
                   max="1000"
                   className="w-full px-4 py-3 bg-gray-800/50 border border-gray-700/50 rounded-lg text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-gray-600 focus:border-transparent transition"
                 />
-                <p className="text-xs text-gray-500 mt-2">Total volunteer hours available</p>
+                <p className="text-xs text-gray-500 mt-2">
+                  Total volunteer hours available
+                </p>
               </div>
 
               <div className="flex items-end">
@@ -353,7 +374,9 @@ export default function NewOpportunityPage() {
                     onChange={handleInputChange}
                     className="w-4 h-4 bg-gray-800/50 border border-gray-700/50 rounded cursor-pointer"
                   />
-                  <span className="text-sm font-semibold text-gray-300">Flexible Schedule</span>
+                  <span className="text-sm font-semibold text-gray-300">
+                    Flexible Schedule
+                  </span>
                 </label>
               </div>
             </motion.div>
@@ -375,7 +398,9 @@ export default function NewOpportunityPage() {
                 rows={3}
                 className="w-full px-4 py-3 bg-gray-800/50 border border-gray-700/50 rounded-lg text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-gray-600 focus:border-transparent transition resize-none"
               />
-              <p className="text-xs text-gray-500 mt-2">What benefits do volunteers get? (optional)</p>
+              <p className="text-xs text-gray-500 mt-2">
+                What benefits do volunteers get? (optional)
+              </p>
             </motion.div>
 
             {/* Dates */}
@@ -423,7 +448,7 @@ export default function NewOpportunityPage() {
                 whileHover={{ scale: 1.02 }}
                 whileTap={{ scale: 0.98 }}
                 type="button"
-                onClick={() => router.push('/business/dashboard')}
+                onClick={() => router.push("/business/dashboard")}
                 className="flex-1 px-6 py-3 bg-gray-800/50 text-gray-300 rounded-lg font-semibold hover:bg-gray-700/50 transition"
               >
                 Cancel
@@ -435,7 +460,7 @@ export default function NewOpportunityPage() {
                 disabled={submitting}
                 className="flex-1 px-6 py-3 bg-gradient-to-r from-gray-700 to-gray-600 text-white rounded-lg font-semibold hover:shadow-lg hover:shadow-gray-600/50 transition disabled:opacity-50 disabled:cursor-not-allowed"
               >
-                {submitting ? 'Creating...' : 'Post Opportunity'}
+                {submitting ? "Creating..." : "Post Opportunity"}
               </motion.button>
             </motion.div>
           </div>
@@ -448,15 +473,21 @@ export default function NewOpportunityPage() {
           transition={{ delay: 0.6, duration: 0.6 }}
           className="mt-12 bg-gray-800/20 border border-gray-700/30 rounded-2xl p-8"
         >
-          <h3 className="text-lg font-semibold text-white mb-4">Tips for a Great Opportunity</h3>
+          <h3 className="text-lg font-semibold text-white mb-4">
+            Tips for a Great Opportunity
+          </h3>
           <ul className="space-y-3 text-gray-300">
             <li className="flex items-start space-x-3">
               <span className="text-gray-600 mt-0.5">•</span>
-              <span>Be specific about what volunteers will do and what they'll learn</span>
+              <span>
+                Be specific about what volunteers will do and what they'll learn
+              </span>
             </li>
             <li className="flex items-start space-x-3">
               <span className="text-gray-600 mt-0.5">•</span>
-              <span>Clearly list any requirements or specific skills needed</span>
+              <span>
+                Clearly list any requirements or specific skills needed
+              </span>
             </li>
             <li className="flex items-start space-x-3">
               <span className="text-gray-600 mt-0.5">•</span>
@@ -470,5 +501,5 @@ export default function NewOpportunityPage() {
         </motion.div>
       </main>
     </div>
-  )
+  );
 }

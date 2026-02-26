@@ -1,52 +1,64 @@
-'use client'
+"use client";
 
-import { useEffect, useState } from 'react'
-import Link from 'next/link'
-import { useRouter } from 'next/navigation'
-import { motion } from 'framer-motion'
-import { supabase } from '@/lib/supabase'
-import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from 'recharts'
-import { Clock, Bookmark, CheckCircle, TrendingUp, LogOut } from 'lucide-react'
+import { useEffect, useState } from "react";
+import Link from "next/link";
+import { useRouter } from "next/navigation";
+import { motion } from "framer-motion";
+import { supabase } from "@/lib/supabase";
+import {
+  BarChart,
+  Bar,
+  XAxis,
+  YAxis,
+  CartesianGrid,
+  Tooltip,
+  Legend,
+  ResponsiveContainer,
+} from "recharts";
+import { Clock, Bookmark, CheckCircle, TrendingUp, LogOut } from "lucide-react";
 
 export default function DashboardPage() {
-  const router = useRouter()
-  const [profile, setProfile] = useState<any>(null)
-  const [applications, setApplications] = useState<any[]>([])
-  const [bookmarks, setBookmarks] = useState<any[]>([])
-  const [loading, setLoading] = useState(true)
-  const [totalHours, setTotalHours] = useState(0)
-  const [goalHours, setGoalHours] = useState(40)
+  const router = useRouter();
+  const [profile, setProfile] = useState<any>(null);
+  const [applications, setApplications] = useState<any[]>([]);
+  const [bookmarks, setBookmarks] = useState<any[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [totalHours, setTotalHours] = useState(0);
+  const [goalHours, setGoalHours] = useState(40);
 
   useEffect(() => {
-    checkAuth()
-  }, [])
+    checkAuth();
+  }, []);
 
   const checkAuth = async () => {
-    const { data: { user } } = await supabase.auth.getUser()
-    
+    const {
+      data: { user },
+    } = await supabase.auth.getUser();
+
     if (!user) {
-      router.push('/auth/login')
-      return
+      router.push("/auth/login");
+      return;
     }
 
-    fetchDashboardData(user.id)
-  }
+    fetchDashboardData(user.id);
+  };
 
   const fetchDashboardData = async (userId: string) => {
     try {
       // Fetch profile
       const { data: profileData } = await supabase
-        .from('profiles')
-        .select('*')
-        .eq('id', userId)
-        .single()
+        .from("profiles")
+        .select("*")
+        .eq("id", userId)
+        .single();
 
-      setProfile(profileData)
+      setProfile(profileData);
 
       // Fetch applications with opportunity and business details
       const { data: appsData } = await supabase
-        .from('applications')
-        .select(`
+        .from("applications")
+        .select(
+          `
           *,
           opportunity:opportunities (
             title,
@@ -55,22 +67,29 @@ export default function DashboardPage() {
               category
             )
           )
-        `)
-        .eq('profile_id', userId)
-        .order('created_at', { ascending: false })
+        `,
+        )
+        .eq("profile_id", userId)
+        .order("created_at", { ascending: false });
 
-      setApplications(appsData || [])
+      setApplications(appsData || []);
 
       // Calculate total hours
-      const appsList = (appsData as any) || []
-      const completed = appsList.filter((app: any) => app.status === 'completed')
-      const total = completed.reduce((sum: number, app: any) => sum + (app.hours_completed || 0), 0)
-      setTotalHours(total)
+      const appsList = (appsData as any) || [];
+      const completed = appsList.filter(
+        (app: any) => app.status === "completed",
+      );
+      const total = completed.reduce(
+        (sum: number, app: any) => sum + (app.hours_completed || 0),
+        0,
+      );
+      setTotalHours(total);
 
       // Fetch bookmarks
       const { data: bookmarksData } = await supabase
-        .from('bookmarks')
-        .select(`
+        .from("bookmarks")
+        .select(
+          `
           *,
           opportunity:opportunities (
             id,
@@ -82,33 +101,34 @@ export default function DashboardPage() {
               city
             )
           )
-        `)
-        .eq('profile_id', userId)
+        `,
+        )
+        .eq("profile_id", userId);
 
-      setBookmarks(bookmarksData || [])
+      setBookmarks(bookmarksData || []);
     } catch (error) {
-      console.error('Error fetching dashboard data:', error)
+      console.error("Error fetching dashboard data:", error);
     } finally {
-      setLoading(false)
+      setLoading(false);
     }
-  }
+  };
 
   const handleLogout = async () => {
-    await supabase.auth.signOut()
-    router.push('/')
-  }
+    await supabase.auth.signOut();
+    router.push("/");
+  };
 
   const chartData = [
-    { month: 'Completed', hours: totalHours },
-    { month: 'Remaining', hours: Math.max(0, goalHours - totalHours) },
-  ]
+    { month: "Completed", hours: totalHours },
+    { month: "Remaining", hours: Math.max(0, goalHours - totalHours) },
+  ];
 
   const statusColors: Record<string, string> = {
-    pending: 'bg-yellow-600/20 text-yellow-400 border border-yellow-600/30',
-    accepted: 'bg-green-600/20 text-green-400 border border-green-600/30',
-    rejected: 'bg-red-600/20 text-red-400 border border-red-600/30',
-    completed: 'bg-blue-600/20 text-blue-400 border border-blue-600/30',
-  }
+    pending: "bg-yellow-600/20 text-yellow-400 border border-yellow-600/30",
+    accepted: "bg-green-600/20 text-green-400 border border-green-600/30",
+    rejected: "bg-red-600/20 text-red-400 border border-red-600/30",
+    completed: "bg-blue-600/20 text-blue-400 border border-blue-600/30",
+  };
 
   if (loading) {
     return (
@@ -119,7 +139,7 @@ export default function DashboardPage() {
           className="w-12 h-12 border-4 border-gray-700/30 border-t-gray-700 rounded-full"
         />
       </div>
-    )
+    );
   }
 
   return (
@@ -147,7 +167,10 @@ export default function DashboardPage() {
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6 }}
           >
-            <Link href="/" className="flex items-center space-x-3 hover:opacity-80 transition">
+            <Link
+              href="/"
+              className="flex items-center space-x-3 hover:opacity-80 transition"
+            >
               <motion.div
                 className="w-10 h-10 bg-gradient-to-br from-gray-700 to-gray-600 rounded-lg flex items-center justify-center"
                 whileHover={{ scale: 1.05 }}
@@ -159,7 +182,10 @@ export default function DashboardPage() {
               </span>
             </Link>
             <div className="flex items-center space-x-4">
-              <Link href="/browse" className="px-4 py-2 text-gray-300 hover:text-gray-100 transition font-medium">
+              <Link
+                href="/browse"
+                className="px-4 py-2 text-gray-300 hover:text-gray-100 transition font-medium"
+              >
                 Browse
               </Link>
               <motion.button
@@ -185,9 +211,11 @@ export default function DashboardPage() {
           className="mb-12"
         >
           <h1 className="text-5xl md:text-6xl font-bold font-display bg-gradient-to-r from-white via-gray-300 to-gray-400 bg-clip-text text-transparent mb-3">
-            Welcome back, {profile?.full_name || 'Student'}!
+            Welcome back, {profile?.full_name || "Student"}!
           </h1>
-          <p className="text-gray-400 text-lg">Track your volunteer hours and manage your applications</p>
+          <p className="text-gray-400 text-lg">
+            Track your volunteer hours and manage your applications
+          </p>
         </motion.div>
 
         {/* Stats Cards */}
@@ -198,10 +226,30 @@ export default function DashboardPage() {
           className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8"
         >
           {[
-            { icon: Clock, label: 'Total Hours', value: totalHours, color: 'from-blue-600/20 to-blue-700/20 border-blue-600/30' },
-            { icon: TrendingUp, label: 'Goal Progress', value: `${Math.round((totalHours / goalHours) * 100)}%`, color: 'from-green-600/20 to-green-700/20 border-green-600/30' },
-            { icon: CheckCircle, label: 'Applications', value: applications.length, color: 'from-purple-600/20 to-purple-700/20 border-purple-600/30' },
-            { icon: Bookmark, label: 'Bookmarks', value: bookmarks.length, color: 'from-orange-600/20 to-orange-700/20 border-orange-600/30' },
+            {
+              icon: Clock,
+              label: "Total Hours",
+              value: totalHours,
+              color: "from-blue-600/20 to-blue-700/20 border-blue-600/30",
+            },
+            {
+              icon: TrendingUp,
+              label: "Goal Progress",
+              value: `${Math.round((totalHours / goalHours) * 100)}%`,
+              color: "from-green-600/20 to-green-700/20 border-green-600/30",
+            },
+            {
+              icon: CheckCircle,
+              label: "Applications",
+              value: applications.length,
+              color: "from-purple-600/20 to-purple-700/20 border-purple-600/30",
+            },
+            {
+              icon: Bookmark,
+              label: "Bookmarks",
+              value: bookmarks.length,
+              color: "from-orange-600/20 to-orange-700/20 border-orange-600/30",
+            },
           ].map((stat, i) => (
             <motion.div
               key={i}
@@ -212,8 +260,12 @@ export default function DashboardPage() {
             >
               <div className="flex items-center justify-between">
                 <div>
-                  <p className="text-sm text-gray-400 font-medium">{stat.label}</p>
-                  <p className="text-4xl font-bold text-white mt-2">{stat.value}</p>
+                  <p className="text-sm text-gray-400 font-medium">
+                    {stat.label}
+                  </p>
+                  <p className="text-4xl font-bold text-white mt-2">
+                    {stat.value}
+                  </p>
                 </div>
                 <stat.icon className="w-12 h-12 text-gray-400 opacity-50" />
               </div>
@@ -235,8 +287,13 @@ export default function DashboardPage() {
                 <CartesianGrid strokeDasharray="3 3" stroke="#374151" />
                 <XAxis dataKey="month" stroke="#9ca3af" />
                 <YAxis stroke="#9ca3af" />
-                <Tooltip 
-                  contentStyle={{ backgroundColor: '#111827', border: '1px solid #374151', borderRadius: '8px', color: '#fff' }}
+                <Tooltip
+                  contentStyle={{
+                    backgroundColor: "#111827",
+                    border: "1px solid #374151",
+                    borderRadius: "8px",
+                    color: "#fff",
+                  }}
                 />
                 <Legend />
                 <Bar dataKey="hours" fill="#6b7280" />
@@ -245,7 +302,10 @@ export default function DashboardPage() {
           </div>
           <motion.div className="mt-6 p-4 bg-gradient-to-r from-gray-600/20 to-gray-700/20 border border-gray-600/30 rounded-xl">
             <p className="text-center text-gray-300">
-              <span className="font-bold text-gray-200">{Math.max(0, goalHours - totalHours)} hours</span> remaining to reach your goal of {goalHours} hours
+              <span className="font-bold text-gray-200">
+                {Math.max(0, goalHours - totalHours)} hours
+              </span>{" "}
+              remaining to reach your goal of {goalHours} hours
             </p>
           </motion.div>
         </motion.div>
@@ -257,16 +317,26 @@ export default function DashboardPage() {
           transition={{ delay: 0.3, duration: 0.6 }}
           className="bg-gray-900/40 border border-gray-800/60 rounded-2xl p-8 mb-8 backdrop-blur-sm"
         >
-          <h2 className="text-2xl font-bold text-white mb-6">My Applications</h2>
+          <h2 className="text-2xl font-bold text-white mb-6">
+            My Applications
+          </h2>
           {applications.length === 0 ? (
             <motion.div
               initial={{ opacity: 0, scale: 0.95 }}
               animate={{ opacity: 1, scale: 1 }}
               className="text-center py-12"
             >
-              <p className="text-gray-400 mb-6 text-lg">You haven't applied to any opportunities yet</p>
-              <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
-                <Link href="/browse" className="inline-block px-8 py-3 bg-gradient-to-r from-gray-700 to-gray-600 text-white rounded-lg font-semibold hover:shadow-lg hover:shadow-gray-600/50 transition">
+              <p className="text-gray-400 mb-6 text-lg">
+                You haven't applied to any opportunities yet
+              </p>
+              <motion.div
+                whileHover={{ scale: 1.05 }}
+                whileTap={{ scale: 0.95 }}
+              >
+                <Link
+                  href="/browse"
+                  className="inline-block px-8 py-3 bg-gradient-to-r from-gray-700 to-gray-600 text-white rounded-lg font-semibold hover:shadow-lg hover:shadow-gray-600/50 transition"
+                >
                   Browse Opportunities
                 </Link>
               </motion.div>
@@ -283,12 +353,19 @@ export default function DashboardPage() {
                 >
                   <div className="flex justify-between items-start">
                     <div className="flex-1">
-                      <Link href={`/opportunities/${app.opportunity.id || ''}`} className="hover:text-gray-300 transition">
-                        <h3 className="font-semibold text-lg text-white">{app.opportunity?.title || 'Unknown'}</h3>
+                      <Link
+                        href={`/opportunities/${app.opportunity.id || ""}`}
+                        className="hover:text-gray-300 transition"
+                      >
+                        <h3 className="font-semibold text-lg text-white">
+                          {app.opportunity?.title || "Unknown"}
+                        </h3>
                       </Link>
-                      <p className="text-gray-400">{app.opportunity?.business?.name || 'Unknown'}</p>
+                      <p className="text-gray-400">
+                        {app.opportunity?.business?.name || "Unknown"}
+                      </p>
                       <p className="text-sm text-gray-500 mt-1">
-                        Category: {app.opportunity?.business?.category || 'N/A'}
+                        Category: {app.opportunity?.business?.category || "N/A"}
                       </p>
                       {app.hours_completed > 0 && (
                         <p className="text-sm text-blue-400 mt-2 font-medium">
@@ -316,10 +393,14 @@ export default function DashboardPage() {
           transition={{ delay: 0.4, duration: 0.6 }}
           className="bg-gray-900/40 border border-gray-800/60 rounded-2xl p-8 backdrop-blur-sm"
         >
-          <h2 className="text-2xl font-bold text-white mb-6">Saved Opportunities</h2>
+          <h2 className="text-2xl font-bold text-white mb-6">
+            Saved Opportunities
+          </h2>
           {bookmarks.length === 0 ? (
             <motion.div className="text-center py-12">
-              <p className="text-gray-400 text-lg">No saved opportunities yet</p>
+              <p className="text-gray-400 text-lg">
+                No saved opportunities yet
+              </p>
             </motion.div>
           ) : (
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
@@ -335,10 +416,15 @@ export default function DashboardPage() {
                     href={`/opportunities/${bookmark.opportunity.id}`}
                     className="border border-gray-800/60 rounded-xl p-6 hover:border-gray-600/40 transition bg-gray-800/20 backdrop-blur-sm h-full flex flex-col"
                   >
-                    <h3 className="font-semibold text-white mb-2 line-clamp-2">{bookmark.opportunity.title}</h3>
-                    <p className="text-sm text-gray-400 mb-3">{bookmark.opportunity.business.name}</p>
+                    <h3 className="font-semibold text-white mb-2 line-clamp-2">
+                      {bookmark.opportunity.title}
+                    </h3>
+                    <p className="text-sm text-gray-400 mb-3">
+                      {bookmark.opportunity.business.name}
+                    </p>
                     <p className="text-xs text-gray-500 mt-auto">
-                      {bookmark.opportunity.hours_available} hours • {bookmark.opportunity.business.city}
+                      {bookmark.opportunity.hours_available} hours •{" "}
+                      {bookmark.opportunity.business.city}
                     </p>
                   </Link>
                 </motion.div>
@@ -348,5 +434,5 @@ export default function DashboardPage() {
         </motion.div>
       </main>
     </div>
-  )
+  );
 }

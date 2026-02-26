@@ -1,138 +1,144 @@
-'use client'
+"use client";
 
-import { useEffect, useState } from 'react'
-import { useRouter } from 'next/navigation'
-import Link from 'next/link'
-import { motion } from 'framer-motion'
-import { supabase } from '@/lib/supabase'
-import { MapPin, Phone, Mail, Globe, ArrowLeft, Star } from 'lucide-react'
-import RatingSubmissionForm from '@/components/RatingSubmissionForm'
-import CouponsDisplay from '@/components/CouponsDisplay'
-import BusinessFavoriteButton from '@/components/BusinessFavoriteButton'
+import { useEffect, useState } from "react";
+import { useRouter } from "next/navigation";
+import Link from "next/link";
+import { motion } from "framer-motion";
+import { supabase } from "@/lib/supabase";
+import { MapPin, Phone, Mail, Globe, ArrowLeft, Star } from "lucide-react";
+import RatingSubmissionForm from "@/components/RatingSubmissionForm";
+import CouponsDisplay from "@/components/CouponsDisplay";
+import BusinessFavoriteButton from "@/components/BusinessFavoriteButton";
 
 type Business = {
-  id: string
-  name: string
-  description: string
-  category: string
-  address: string
-  city: string
-  province: string
-  postal_code: string
-  phone: string | null
-  email: string | null
-  website: string | null
-  image_url: string | null
-  latitude: number
-  longitude: number
-}
+  id: string;
+  name: string;
+  description: string;
+  category: string;
+  address: string;
+  city: string;
+  province: string;
+  postal_code: string;
+  phone: string | null;
+  email: string | null;
+  website: string | null;
+  image_url: string | null;
+  latitude: number;
+  longitude: number;
+};
 
 type Coupon = {
-  id: string
-  title: string
-  description: string
-  discount_percent: number | null
-  discount_amount: number | null
-  coupon_code: string | null
-  expiry_date: string | null
-  is_active: boolean
-  created_at: string
-  updated_at: string
-}
+  id: string;
+  title: string;
+  description: string;
+  discount_percent: number | null;
+  discount_amount: number | null;
+  coupon_code: string | null;
+  expiry_date: string | null;
+  is_active: boolean;
+  created_at: string;
+  updated_at: string;
+};
 
 type Rating = {
-  id: string
-  rating: number
-  review: string | null
+  id: string;
+  rating: number;
+  review: string | null;
   profile: {
-    full_name: string | null
-  }
-  created_at: string
-}
+    full_name: string | null;
+  };
+  created_at: string;
+};
 
-export default function BusinessDetailPage({ params }: { params: { id: string } }) {
-  const router = useRouter()
-  const [business, setBusiness] = useState<Business | null>(null)
-  const [coupons, setCoupons] = useState<Coupon[]>([])
-  const [ratings, setRatings] = useState<Rating[]>([])
-  const [averageRating, setAverageRating] = useState(0)
-  const [loading, setLoading] = useState(true)
-  const [isFavorited, setIsFavorited] = useState(false)
-  const [userRating, setUserRating] = useState<Rating | null>(null)
+export default function BusinessDetailPage({
+  params,
+}: {
+  params: { id: string };
+}) {
+  const router = useRouter();
+  const [business, setBusiness] = useState<Business | null>(null);
+  const [coupons, setCoupons] = useState<Coupon[]>([]);
+  const [ratings, setRatings] = useState<Rating[]>([]);
+  const [averageRating, setAverageRating] = useState(0);
+  const [loading, setLoading] = useState(true);
+  const [isFavorited, setIsFavorited] = useState(false);
+  const [userRating, setUserRating] = useState<Rating | null>(null);
 
   useEffect(() => {
-    fetchBusinessDetails()
-  }, [params.id])
+    fetchBusinessDetails();
+  }, [params.id]);
 
   const fetchBusinessDetails = async () => {
     try {
       // Fetch business
       const { data: businessData, error: businessError } = await supabase
-        .from('businesses')
-        .select('*')
-        .eq('id', params.id)
-        .single()
+        .from("businesses")
+        .select("*")
+        .eq("id", params.id)
+        .single();
 
-      if (businessError) throw businessError
-      setBusiness(businessData)
+      if (businessError) throw businessError;
+      setBusiness(businessData);
 
       // Fetch coupons
       const { data: couponsData } = await supabase
-        .from('coupons')
-        .select('*')
-        .eq('business_id', params.id)
-        .eq('is_active', true)
-        .order('created_at', { ascending: false })
+        .from("coupons")
+        .select("*")
+        .eq("business_id", params.id)
+        .eq("is_active", true)
+        .order("created_at", { ascending: false });
 
-      setCoupons(couponsData || [])
+      setCoupons(couponsData || []);
 
       // Fetch ratings
       const { data: ratingsData } = await supabase
-        .from('ratings')
-        .select('*, profile:profiles(full_name)')
-        .eq('business_id', params.id)
-        .order('created_at', { ascending: false })
+        .from("ratings")
+        .select("*, profile:profiles(full_name)")
+        .eq("business_id", params.id)
+        .order("created_at", { ascending: false });
 
-      const ratingsList = (ratingsData as any) || []
-      setRatings(ratingsList)
+      const ratingsList = (ratingsData as any) || [];
+      setRatings(ratingsList);
 
       if (ratingsList.length > 0) {
         const avg =
           ratingsList.reduce((sum: number, r: any) => sum + r.rating, 0) /
-          ratingsList.length
-        setAverageRating(avg)
+          ratingsList.length;
+        setAverageRating(avg);
       }
 
       // Check if user has favorited this business
-      const { data: { user } } = await supabase.auth.getUser()
+      const {
+        data: { user },
+      } = await supabase.auth.getUser();
       if (user) {
         const { data: favoriteData } = await supabase
-          .from('business_favorites')
-          .select('*')
-          .eq('profile_id', user.id)
-          .eq('business_id', params.id)
-          .single()
+          .from("business_favorites")
+          .select("*")
+          .eq("profile_id", user.id)
+          .eq("business_id", params.id)
+          .single();
 
-        setIsFavorited(!!favoriteData)
+        setIsFavorited(!!favoriteData);
 
         // Check if user has rated this business
         const { data: userRatingData } = await supabase
-          .from('ratings')
-          .select('*, profile:profiles(full_name)')
-          .eq('profile_id', user.id)
-          .eq('business_id', params.id)
-          .single()
+          .from("ratings")
+          .select("*, profile:profiles(full_name)")
+          .eq("profile_id", user.id)
+          .eq("business_id", params.id)
+          .single();
 
         if (userRatingData) {
-          setUserRating(userRatingData)
+          setUserRating(userRatingData);
         }
       }
     } catch (error) {
-      console.error('Error fetching business details:', error)
+      console.error("Error fetching business details:", error);
     } finally {
-      setLoading(false)
+      setLoading(false);
     }
-  }
+  };
 
   if (loading) {
     return (
@@ -143,20 +149,25 @@ export default function BusinessDetailPage({ params }: { params: { id: string } 
           className="w-12 h-12 border-4 border-gray-700/30 border-t-gray-700 rounded-full"
         />
       </div>
-    )
+    );
   }
 
   if (!business) {
     return (
       <div className="min-h-screen bg-gradient-to-b from-black via-gray-950 to-black flex items-center justify-center">
         <div className="text-center">
-          <h1 className="text-2xl font-bold text-white mb-4">Business not found</h1>
-          <Link href="/browse" className="text-gray-400 hover:text-gray-300 transition">
+          <h1 className="text-2xl font-bold text-white mb-4">
+            Business not found
+          </h1>
+          <Link
+            href="/browse"
+            className="text-gray-400 hover:text-gray-300 transition"
+          >
             Back to Browse
           </Link>
         </div>
       </div>
-    )
+    );
   }
 
   return (
@@ -178,7 +189,10 @@ export default function BusinessDetailPage({ params }: { params: { id: string } 
             initial={{ opacity: 0, y: -20 }}
             animate={{ opacity: 1, y: 0 }}
           >
-            <Link href="/" className="flex items-center space-x-3 hover:opacity-80 transition">
+            <Link
+              href="/"
+              className="flex items-center space-x-3 hover:opacity-80 transition"
+            >
               <motion.div
                 className="w-10 h-10 bg-gradient-to-br from-gray-700 to-gray-600 rounded-lg flex items-center justify-center"
                 whileHover={{ scale: 1.05 }}
@@ -235,7 +249,9 @@ export default function BusinessDetailPage({ params }: { params: { id: string } 
             )}
           </div>
 
-          <p className="text-gray-300 text-lg mb-6 leading-relaxed">{business.description}</p>
+          <p className="text-gray-300 text-lg mb-6 leading-relaxed">
+            {business.description}
+          </p>
 
           {/* Contact Information */}
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4">
@@ -326,7 +342,9 @@ export default function BusinessDetailPage({ params }: { params: { id: string } 
             >
               <h2 className="text-2xl font-bold text-white mb-6">Reviews</h2>
               {ratings.length === 0 ? (
-                <p className="text-gray-400">No reviews yet. Be the first to review!</p>
+                <p className="text-gray-400">
+                  No reviews yet. Be the first to review!
+                </p>
               ) : (
                 <div className="space-y-6">
                   {ratings.map((rating, index) => (
@@ -345,14 +363,14 @@ export default function BusinessDetailPage({ params }: { params: { id: string } 
                                 key={i}
                                 className={`w-4 h-4 ${
                                   i < rating.rating
-                                    ? 'fill-yellow-500 text-yellow-500'
-                                    : 'text-gray-600'
+                                    ? "fill-yellow-500 text-yellow-500"
+                                    : "text-gray-600"
                                 }`}
                               />
                             ))}
                           </div>
                           <p className="text-sm text-gray-400 mt-2">
-                            {rating.profile.full_name || 'Anonymous'}
+                            {rating.profile.full_name || "Anonymous"}
                           </p>
                         </div>
                         <p className="text-xs text-gray-500">
@@ -360,7 +378,9 @@ export default function BusinessDetailPage({ params }: { params: { id: string } 
                         </p>
                       </div>
                       {rating.review && (
-                        <p className="text-gray-300 leading-relaxed">{rating.review}</p>
+                        <p className="text-gray-300 leading-relaxed">
+                          {rating.review}
+                        </p>
                       )}
                     </motion.div>
                   ))}
@@ -388,5 +408,5 @@ export default function BusinessDetailPage({ params }: { params: { id: string } 
         </div>
       </main>
     </div>
-  )
+  );
 }

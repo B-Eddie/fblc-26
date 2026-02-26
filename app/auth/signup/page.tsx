@@ -1,31 +1,31 @@
-'use client'
+"use client";
 
-import { useState, Suspense } from 'react'
-import Link from 'next/link'
-import { useRouter, useSearchParams } from 'next/navigation'
-import { motion } from 'framer-motion'
-import { supabase } from '@/lib/supabase'
+import { useState, Suspense } from "react";
+import Link from "next/link";
+import { useRouter, useSearchParams } from "next/navigation";
+import { motion } from "framer-motion";
+import { supabase } from "@/lib/supabase";
 
 function SignUpContent() {
-  const router = useRouter()
-  const searchParams = useSearchParams()
-  const roleParam = searchParams.get('role')
-  
-  const [email, setEmail] = useState('')
-  const [password, setPassword] = useState('')
-  const [fullName, setFullName] = useState('')
-  const [role, setRole] = useState<'student' | 'business'>(
-    roleParam === 'business' ? 'business' : 'student'
-  )
-  const [error, setError] = useState('')
-  const [loading, setLoading] = useState(false)
-  const [signUpSuccess, setSignUpSuccess] = useState(false)
-  const [verificationEmail, setVerificationEmail] = useState('')
+  const router = useRouter();
+  const searchParams = useSearchParams();
+  const roleParam = searchParams.get("role");
+
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [fullName, setFullName] = useState("");
+  const [role, setRole] = useState<"student" | "business">(
+    roleParam === "business" ? "business" : "student",
+  );
+  const [error, setError] = useState("");
+  const [loading, setLoading] = useState(false);
+  const [signUpSuccess, setSignUpSuccess] = useState(false);
+  const [verificationEmail, setVerificationEmail] = useState("");
 
   const handleSignUp = async (e: React.FormEvent) => {
-    e.preventDefault()
-    setError('')
-    setLoading(true)
+    e.preventDefault();
+    setError("");
+    setLoading(true);
 
     try {
       const { data: authData, error: authError } = await supabase.auth.signUp({
@@ -34,36 +34,36 @@ function SignUpContent() {
         options: {
           emailRedirectTo: `${window.location.origin}/auth/verify-email`,
         },
-      })
+      });
 
-      if (authError) throw authError
+      if (authError) throw authError;
 
-      if (!authData.user) throw new Error('No user data returned')
+      if (!authData.user) throw new Error("No user data returned");
 
-      const { error: profileError } = await supabase
-        .from('profiles')
-        .insert([{
+      const { error: profileError } = await supabase.from("profiles").insert([
+        {
           id: authData.user.id,
           email,
           full_name: fullName,
           role,
           email_verified: false,
-        }] as any)
+        },
+      ] as any);
 
-      if (profileError) throw profileError
+      if (profileError) throw profileError;
 
-      setSignUpSuccess(true)
-      setVerificationEmail(email)
+      setSignUpSuccess(true);
+      setVerificationEmail(email);
       // Clear form
-      setEmail('')
-      setPassword('')
-      setFullName('')
+      setEmail("");
+      setPassword("");
+      setFullName("");
     } catch (error: any) {
-      setError(error.message || 'Failed to sign up')
+      setError(error.message || "Failed to sign up");
     } finally {
-      setLoading(false)
+      setLoading(false);
     }
-  }
+  };
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-black via-gray-950 to-black flex items-center justify-center px-4 py-12 overflow-hidden">
@@ -93,11 +93,16 @@ function SignUpContent() {
             animate={{ scale: 1, opacity: 1 }}
             transition={{ delay: 0.1, duration: 0.6 }}
           >
-            <Link href="/" className="inline-flex items-center space-x-2 mb-8 hover:opacity-80 transition">
+            <Link
+              href="/"
+              className="inline-flex items-center space-x-2 mb-8 hover:opacity-80 transition"
+            >
               <div className="w-12 h-12 bg-gradient-to-br from-gray-700 to-gray-600 rounded-lg flex items-center justify-center">
                 <span className="text-white font-bold text-xl">V</span>
               </div>
-              <span className="text-3xl font-bold font-display bg-gradient-to-r from-gray-400 to-gray-300 bg-clip-text text-transparent">Vertex</span>
+              <span className="text-3xl font-bold font-display bg-gradient-to-r from-gray-400 to-gray-300 bg-clip-text text-transparent">
+                Vertex
+              </span>
             </Link>
           </motion.div>
           <motion.div
@@ -105,7 +110,9 @@ function SignUpContent() {
             animate={{ opacity: 1 }}
             transition={{ delay: 0.2, duration: 0.6 }}
           >
-            <h1 className="text-3xl font-bold text-white mt-8 font-display">Create Account</h1>
+            <h1 className="text-3xl font-bold text-white mt-8 font-display">
+              Create Account
+            </h1>
             <p className="text-gray-400 mt-2">Join Vertex today</p>
           </motion.div>
         </div>
@@ -127,29 +134,44 @@ function SignUpContent() {
                 transition={{ duration: 2, repeat: Infinity }}
                 className="w-16 h-16 bg-green-600/20 border border-green-600/30 rounded-full flex items-center justify-center mx-auto"
               >
-                <svg className="w-8 h-8 text-green-400" fill="currentColor" viewBox="0 0 20 20">
-                  <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
+                <svg
+                  className="w-8 h-8 text-green-400"
+                  fill="currentColor"
+                  viewBox="0 0 20 20"
+                >
+                  <path
+                    fillRule="evenodd"
+                    d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z"
+                    clipRule="evenodd"
+                  />
                 </svg>
               </motion.div>
               <div>
-                <h2 className="text-2xl font-bold text-white mb-2">Account Created!</h2>
+                <h2 className="text-2xl font-bold text-white mb-2">
+                  Account Created!
+                </h2>
                 <p className="text-gray-400 mb-4">
-                  We've sent a verification email to <span className="font-semibold text-gray-300">{verificationEmail}</span>
+                  We've sent a verification email to{" "}
+                  <span className="font-semibold text-gray-300">
+                    {verificationEmail}
+                  </span>
                 </p>
                 <p className="text-gray-400 text-sm mb-6">
-                  Please check your inbox and click the verification link to complete your registration. This helps us prevent bot activity and keep our community safe.
+                  Please check your inbox and click the verification link to
+                  complete your registration. This helps us prevent bot activity
+                  and keep our community safe.
                 </p>
               </div>
               <motion.button
                 whileHover={{ scale: 1.02 }}
                 whileTap={{ scale: 0.98 }}
-                onClick={() => router.push('/auth/login')}
+                onClick={() => router.push("/auth/login")}
                 className="w-full py-3 bg-gradient-to-r from-gray-700 to-gray-600 text-white rounded-lg font-semibold hover:shadow-lg hover:shadow-gray-600/50 transition"
               >
                 Go to Login
               </motion.button>
               <p className="text-gray-500 text-sm">
-                Didn't receive the email? Check your spam folder or{' '}
+                Didn't receive the email? Check your spam folder or{" "}
                 <button
                   onClick={() => setSignUpSuccess(false)}
                   className="text-gray-300 hover:text-white font-semibold transition"
@@ -170,7 +192,11 @@ function SignUpContent() {
                 </motion.div>
               )}
 
-              <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.4 }}>
+              <motion.div
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                transition={{ delay: 0.4 }}
+              >
                 <label className="block text-sm font-medium text-gray-300 mb-4">
                   I am a...
                 </label>
@@ -179,11 +205,11 @@ function SignUpContent() {
                     whileHover={{ scale: 1.02 }}
                     whileTap={{ scale: 0.98 }}
                     type="button"
-                    onClick={() => setRole('student')}
+                    onClick={() => setRole("student")}
                     className={`p-4 border-2 rounded-lg font-semibold transition ${
-                      role === 'student'
-                        ? 'border-gray-600 bg-gray-700/20 text-gray-300'
-                        : 'border-gray-700/50 text-gray-400 hover:border-gray-600'
+                      role === "student"
+                        ? "border-gray-600 bg-gray-700/20 text-gray-300"
+                        : "border-gray-700/50 text-gray-400 hover:border-gray-600"
                     }`}
                   >
                     Student
@@ -192,11 +218,11 @@ function SignUpContent() {
                     whileHover={{ scale: 1.02 }}
                     whileTap={{ scale: 0.98 }}
                     type="button"
-                    onClick={() => setRole('business')}
+                    onClick={() => setRole("business")}
                     className={`p-4 border-2 rounded-lg font-semibold transition ${
-                      role === 'business'
-                        ? 'border-gray-600 bg-gray-700/20 text-gray-300'
-                        : 'border-gray-700/50 text-gray-400 hover:border-gray-600'
+                      role === "business"
+                        ? "border-gray-600 bg-gray-700/20 text-gray-300"
+                        : "border-gray-700/50 text-gray-400 hover:border-gray-600"
                     }`}
                   >
                     Business
@@ -204,8 +230,15 @@ function SignUpContent() {
                 </div>
               </motion.div>
 
-              <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.45 }}>
-                <label htmlFor="fullName" className="block text-sm font-medium text-gray-300 mb-2">
+              <motion.div
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                transition={{ delay: 0.45 }}
+              >
+                <label
+                  htmlFor="fullName"
+                  className="block text-sm font-medium text-gray-300 mb-2"
+                >
                   Full Name
                 </label>
                 <input
@@ -219,8 +252,15 @@ function SignUpContent() {
                 />
               </motion.div>
 
-              <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.5 }}>
-                <label htmlFor="email" className="block text-sm font-medium text-gray-300 mb-2">
+              <motion.div
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                transition={{ delay: 0.5 }}
+              >
+                <label
+                  htmlFor="email"
+                  className="block text-sm font-medium text-gray-300 mb-2"
+                >
                   Email
                 </label>
                 <input
@@ -234,8 +274,15 @@ function SignUpContent() {
                 />
               </motion.div>
 
-              <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.55 }}>
-                <label htmlFor="password" className="block text-sm font-medium text-gray-300 mb-2">
+              <motion.div
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                transition={{ delay: 0.55 }}
+              >
+                <label
+                  htmlFor="password"
+                  className="block text-sm font-medium text-gray-300 mb-2"
+                >
                   Password
                 </label>
                 <input
@@ -248,7 +295,9 @@ function SignUpContent() {
                   className="w-full px-4 py-3 bg-gray-800/50 border border-gray-700/60 rounded-lg text-white placeholder-gray-500 focus:ring-2 focus:ring-gray-600 focus:border-transparent transition backdrop-blur-sm"
                   placeholder="••••••••"
                 />
-                <p className="text-sm text-gray-500 mt-1">Must be at least 6 characters</p>
+                <p className="text-sm text-gray-500 mt-1">
+                  Must be at least 6 characters
+                </p>
               </motion.div>
 
               <motion.button
@@ -268,7 +317,7 @@ function SignUpContent() {
                     Creating account...
                   </span>
                 ) : (
-                  'Sign Up'
+                  "Sign Up"
                 )}
               </motion.button>
             </form>
@@ -281,8 +330,11 @@ function SignUpContent() {
             className="mt-6 text-center"
           >
             <p className="text-gray-400">
-              Already have an account?{' '}
-              <Link href="/auth/login" className="text-gray-300 hover:text-white font-semibold transition">
+              Already have an account?{" "}
+              <Link
+                href="/auth/login"
+                className="text-gray-300 hover:text-white font-semibold transition"
+              >
                 Log in
               </Link>
             </p>
@@ -290,7 +342,7 @@ function SignUpContent() {
         </motion.div>
       </motion.div>
     </div>
-  )
+  );
 }
 
 export default function SignUpPage() {
@@ -298,5 +350,5 @@ export default function SignUpPage() {
     <Suspense fallback={<div className="min-h-screen bg-black" />}>
       <SignUpContent />
     </Suspense>
-  )
+  );
 }

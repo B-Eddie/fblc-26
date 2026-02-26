@@ -1,68 +1,84 @@
-'use client'
+"use client";
 
-import { useEffect, useState } from 'react'
-import Link from 'next/link'
-import dynamic from 'next/dynamic'
-import { motion } from 'framer-motion'
-import { supabase } from '@/lib/supabase'
-import { MapPin, Search, Filter } from 'lucide-react'
-import OpportunityCard from '@/components/OpportunityCard'
+import { useEffect, useState } from "react";
+import Link from "next/link";
+import dynamic from "next/dynamic";
+import { motion } from "framer-motion";
+import { supabase } from "@/lib/supabase";
+import { MapPin, Search, Filter } from "lucide-react";
+import OpportunityCard from "@/components/OpportunityCard";
 
 // Dynamically import the map component (client-side only)
-const OpportunityMap = dynamic(() => import('@/components/OpportunityMap'), {
+const OpportunityMap = dynamic(() => import("@/components/OpportunityMap"), {
   ssr: false,
   loading: () => (
     <div className="w-full h-96 bg-gray-800/50 rounded-xl flex items-center justify-center">
-      <motion.div animate={{ rotate: 360 }} transition={{ duration: 2, repeat: Infinity }}>
+      <motion.div
+        animate={{ rotate: 360 }}
+        transition={{ duration: 2, repeat: Infinity }}
+      >
         <div className="w-8 h-8 border-2 border-purple-600/30 border-t-purple-600 rounded-full" />
       </motion.div>
     </div>
   ),
-})
+});
 
 type Opportunity = {
-  id: string
-  title: string
-  description: string
-  hours_available: number
-  is_flexible: boolean
-  perks: string | null
+  id: string;
+  title: string;
+  description: string;
+  hours_available: number;
+  is_flexible: boolean;
+  perks: string | null;
   business: {
-    id: string
-    name: string
-    category: string
-    city: string
-    latitude: number
-    longitude: number
-    image_url: string | null
-  }
-  averageRating?: number
-}
+    id: string;
+    name: string;
+    category: string;
+    city: string;
+    latitude: number;
+    longitude: number;
+    image_url: string | null;
+  };
+  averageRating?: number;
+};
 
-const categories = ['All', 'Food', 'Retail', 'Services', 'Healthcare', 'Education', 'Other']
+const categories = [
+  "All",
+  "Food",
+  "Retail",
+  "Services",
+  "Healthcare",
+  "Education",
+  "Other",
+];
 
 export default function BrowsePage() {
-  const [opportunities, setOpportunities] = useState<Opportunity[]>([])
-  const [filteredOpportunities, setFilteredOpportunities] = useState<Opportunity[]>([])
-  const [loading, setLoading] = useState(true)
-  const [searchQuery, setSearchQuery] = useState('')
-  const [selectedCategory, setSelectedCategory] = useState('All')
-  const [sortBy, setSortBy] = useState<'rating' | 'distance' | 'flexible'>('rating')
-  const [showMap, setShowMap] = useState(false)
+  const [opportunities, setOpportunities] = useState<Opportunity[]>([]);
+  const [filteredOpportunities, setFilteredOpportunities] = useState<
+    Opportunity[]
+  >([]);
+  const [loading, setLoading] = useState(true);
+  const [searchQuery, setSearchQuery] = useState("");
+  const [selectedCategory, setSelectedCategory] = useState("All");
+  const [sortBy, setSortBy] = useState<"rating" | "distance" | "flexible">(
+    "rating",
+  );
+  const [showMap, setShowMap] = useState(false);
 
   useEffect(() => {
-    fetchOpportunities()
-  }, [])
+    fetchOpportunities();
+  }, []);
 
   useEffect(() => {
-    filterOpportunities()
-  }, [opportunities, searchQuery, selectedCategory, sortBy])
+    filterOpportunities();
+  }, [opportunities, searchQuery, selectedCategory, sortBy]);
 
   const fetchOpportunities = async () => {
     try {
       const { data, error } = await supabase
-        .from('opportunities')
-        .select(`
+        .from("opportunities")
+        .select(
+          `
           *,
           business:businesses (
             id,
@@ -73,47 +89,52 @@ export default function BrowsePage() {
             longitude,
             image_url
           )
-        `)
-        .order('created_at', { ascending: false })
+        `,
+        )
+        .order("created_at", { ascending: false });
 
-      if (error) throw error
+      if (error) throw error;
 
       // Fetch ratings for each business
       const oppsWithRatings = await Promise.all(
         (data || []).map(async (opp: any) => {
           const { data: ratings } = await supabase
-            .from('ratings')
-            .select('rating')
-            .eq('business_id', opp.business.id)
+            .from("ratings")
+            .select("rating")
+            .eq("business_id", opp.business.id);
 
-          const ratingsList = (ratings as any) || []
-          const averageRating = ratingsList.length > 0
-            ? ratingsList.reduce((sum: number, r: any) => sum + r.rating, 0) / ratingsList.length
-            : 0
+          const ratingsList = (ratings as any) || [];
+          const averageRating =
+            ratingsList.length > 0
+              ? ratingsList.reduce((sum: number, r: any) => sum + r.rating, 0) /
+                ratingsList.length
+              : 0;
 
           return {
             ...opp,
             averageRating,
-          }
-        })
-      )
+          };
+        }),
+      );
 
-      setOpportunities(oppsWithRatings)
+      setOpportunities(oppsWithRatings);
     } catch (error) {
-      console.error('Error fetching opportunities:', error)
+      console.error("Error fetching opportunities:", error);
     } finally {
-      setLoading(false)
+      setLoading(false);
     }
-  }
+  };
 
   const filterOpportunities = () => {
-    let filtered = [...opportunities]
+    let filtered = [...opportunities];
 
     // Filter by category
-    if (selectedCategory !== 'All') {
+    if (selectedCategory !== "All") {
       filtered = filtered.filter(
-        (opp) => opp.business.category.toLowerCase() === selectedCategory.toLowerCase()
-      )
+        (opp) =>
+          opp.business.category.toLowerCase() ===
+          selectedCategory.toLowerCase(),
+      );
     }
 
     // Filter by search query
@@ -122,19 +143,21 @@ export default function BrowsePage() {
         (opp) =>
           opp.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
           opp.business.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-          opp.description.toLowerCase().includes(searchQuery.toLowerCase())
-      )
+          opp.description.toLowerCase().includes(searchQuery.toLowerCase()),
+      );
     }
 
     // Sort
-    if (sortBy === 'rating') {
-      filtered.sort((a, b) => (b.averageRating || 0) - (a.averageRating || 0))
-    } else if (sortBy === 'flexible') {
-      filtered.sort((a, b) => (b.is_flexible ? 1 : 0) - (a.is_flexible ? 1 : 0))
+    if (sortBy === "rating") {
+      filtered.sort((a, b) => (b.averageRating || 0) - (a.averageRating || 0));
+    } else if (sortBy === "flexible") {
+      filtered.sort(
+        (a, b) => (b.is_flexible ? 1 : 0) - (a.is_flexible ? 1 : 0),
+      );
     }
 
-    setFilteredOpportunities(filtered)
-  }
+    setFilteredOpportunities(filtered);
+  };
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-black via-gray-950 to-black text-white">
@@ -161,7 +184,10 @@ export default function BrowsePage() {
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6 }}
           >
-            <Link href="/" className="flex items-center space-x-3 hover:opacity-80 transition">
+            <Link
+              href="/"
+              className="flex items-center space-x-3 hover:opacity-80 transition"
+            >
               <motion.div
                 className="w-10 h-10 bg-gradient-to-br from-gray-700 to-gray-600 rounded-lg flex items-center justify-center"
                 whileHover={{ scale: 1.05 }}
@@ -173,10 +199,16 @@ export default function BrowsePage() {
               </span>
             </Link>
             <div className="flex items-center space-x-3">
-              <Link href="/dashboard" className="px-4 py-2 text-gray-300 hover:text-gray-100 transition font-medium">
+              <Link
+                href="/dashboard"
+                className="px-4 py-2 text-gray-300 hover:text-gray-100 transition font-medium"
+              >
                 Dashboard
               </Link>
-              <motion.div whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }}>
+              <motion.div
+                whileHover={{ scale: 1.02 }}
+                whileTap={{ scale: 0.98 }}
+              >
                 <Link
                   href="/auth/login"
                   className="px-6 py-2 bg-gradient-to-r from-gray-700 to-gray-600 text-white rounded-lg font-semibold hover:shadow-lg hover:shadow-gray-600/50 transition"
@@ -200,7 +232,9 @@ export default function BrowsePage() {
           <h1 className="text-5xl md:text-6xl font-bold mb-3 font-display bg-gradient-to-r from-white via-gray-300 to-gray-400 bg-clip-text text-transparent">
             Browse Opportunities
           </h1>
-          <p className="text-gray-400 text-lg">Discover amazing volunteer opportunities in your area</p>
+          <p className="text-gray-400 text-lg">
+            Discover amazing volunteer opportunities in your area
+          </p>
         </motion.div>
 
         {/* Business Discovery Banner */}
@@ -218,13 +252,11 @@ export default function BrowsePage() {
                     Discover Local Businesses & Deals
                   </h3>
                   <p className="text-gray-300 text-sm">
-                    Browse businesses, view ratings, reviews, and find special coupons
+                    Browse businesses, view ratings, reviews, and find special
+                    coupons
                   </p>
                 </div>
-                <motion.div
-                  whileHover={{ x: 5 }}
-                  className="text-2xl"
-                >
+                <motion.div whileHover={{ x: 5 }} className="text-2xl">
                   →
                 </motion.div>
               </div>
@@ -267,8 +299,8 @@ export default function BrowsePage() {
                 transition={{ delay: i * 0.05 }}
                 className={`px-6 py-2 rounded-full font-medium transition whitespace-nowrap ${
                   selectedCategory === category
-                    ? 'bg-gradient-to-r from-gray-700 to-gray-600 text-white shadow-lg shadow-gray-600/50'
-                    : 'bg-gray-800/50 text-gray-300 hover:bg-gray-800 border border-gray-700/50 backdrop-blur-sm'
+                    ? "bg-gradient-to-r from-gray-700 to-gray-600 text-white shadow-lg shadow-gray-600/50"
+                    : "bg-gray-800/50 text-gray-300 hover:bg-gray-800 border border-gray-700/50 backdrop-blur-sm"
                 }`}
               >
                 {category}
@@ -285,7 +317,9 @@ export default function BrowsePage() {
           >
             <div className="flex items-center space-x-4">
               <Filter className="w-5 h-5 text-gray-400" />
-              <label className="text-sm font-medium text-gray-300">Sort by:</label>
+              <label className="text-sm font-medium text-gray-300">
+                Sort by:
+              </label>
               <motion.select
                 value={sortBy}
                 onChange={(e) => setSortBy(e.target.value as any)}
@@ -303,12 +337,12 @@ export default function BrowsePage() {
               whileTap={{ scale: 0.95 }}
               className={`flex items-center space-x-2 px-6 py-2 rounded-lg font-medium transition ${
                 showMap
-                  ? 'bg-gradient-to-r from-gray-700 to-gray-600 text-white shadow-lg shadow-gray-600/50'
-                  : 'bg-gray-800/50 text-gray-300 border border-gray-700/50 hover:border-gray-600/50 backdrop-blur-sm'
+                  ? "bg-gradient-to-r from-gray-700 to-gray-600 text-white shadow-lg shadow-gray-600/50"
+                  : "bg-gray-800/50 text-gray-300 border border-gray-700/50 hover:border-gray-600/50 backdrop-blur-sm"
               }`}
             >
               <MapPin className="w-5 h-5" />
-              <span>{showMap ? 'Hide Map' : 'Show Map'}</span>
+              <span>{showMap ? "Hide Map" : "Show Map"}</span>
             </motion.button>
           </motion.div>
         </motion.div>
@@ -317,7 +351,7 @@ export default function BrowsePage() {
         {showMap && (
           <motion.div
             initial={{ opacity: 0, height: 0 }}
-            animate={{ opacity: 1, height: 'auto' }}
+            animate={{ opacity: 1, height: "auto" }}
             exit={{ opacity: 0, height: 0 }}
             transition={{ duration: 0.3 }}
             className="mb-8 bg-gray-900/40 rounded-2xl border border-gray-800/60 overflow-hidden backdrop-blur-sm"
@@ -334,7 +368,13 @@ export default function BrowsePage() {
           transition={{ delay: 0.3 }}
         >
           <p className="text-gray-400">
-            Found <span className="font-semibold text-white">{filteredOpportunities.length}</span> {filteredOpportunities.length === 1 ? 'opportunity' : 'opportunities'}
+            Found{" "}
+            <span className="font-semibold text-white">
+              {filteredOpportunities.length}
+            </span>{" "}
+            {filteredOpportunities.length === 1
+              ? "opportunity"
+              : "opportunities"}
           </p>
         </motion.div>
 
@@ -348,11 +388,13 @@ export default function BrowsePage() {
             <div className="inline-block">
               <motion.div
                 animate={{ rotate: 360 }}
-                transition={{ duration: 2, repeat: Infinity, ease: 'linear' }}
+                transition={{ duration: 2, repeat: Infinity, ease: "linear" }}
                 className="w-12 h-12 border-4 border-purple-600/30 border-t-purple-600 rounded-full"
               />
             </div>
-            <p className="mt-4 text-gray-400 text-lg">Loading opportunities...</p>
+            <p className="mt-4 text-gray-400 text-lg">
+              Loading opportunities...
+            </p>
           </motion.div>
         ) : filteredOpportunities.length === 0 ? (
           <motion.div
@@ -360,7 +402,9 @@ export default function BrowsePage() {
             initial={{ opacity: 0, scale: 0.95 }}
             animate={{ opacity: 1, scale: 1 }}
           >
-            <p className="text-gray-400 text-lg">No opportunities found. Try adjusting your filters.</p>
+            <p className="text-gray-400 text-lg">
+              No opportunities found. Try adjusting your filters.
+            </p>
           </motion.div>
         ) : (
           <motion.div
@@ -370,11 +414,15 @@ export default function BrowsePage() {
             transition={{ delay: 0.1 }}
           >
             {filteredOpportunities.map((opportunity, index) => (
-              <OpportunityCard key={opportunity.id} opportunity={opportunity} index={index} />
+              <OpportunityCard
+                key={opportunity.id}
+                opportunity={opportunity}
+                index={index}
+              />
             ))}
           </motion.div>
         )}
       </main>
     </div>
-  )
+  );
 }
