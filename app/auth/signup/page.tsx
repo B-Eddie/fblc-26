@@ -5,6 +5,7 @@ import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
 import { motion } from "framer-motion";
 import { supabase } from "@/lib/supabase";
+import CaptchaVerification from "@/components/CaptchaVerification";
 
 function SignUpContent() {
   const router = useRouter();
@@ -21,19 +22,23 @@ function SignUpContent() {
   const [loading, setLoading] = useState(false);
   const [signUpSuccess, setSignUpSuccess] = useState(false);
   const [verificationEmail, setVerificationEmail] = useState("");
+  const [recaptchaToken, setRecaptchaToken] = useState<string | null>(null);
 
   const handleSignUp = async (e: React.FormEvent) => {
     e.preventDefault();
     setError("");
     setLoading(true);
 
+    if (!recaptchaToken) {
+      setError("Please complete the CAPTCHA verification");
+      setLoading(false);
+      return;
+    }
+
     try {
       const { data: authData, error: authError } = await supabase.auth.signUp({
         email,
         password,
-        options: {
-          emailRedirectTo: `${window.location.origin}/auth/verify-email`,
-        },
       });
 
       if (authError) throw authError;
@@ -46,7 +51,7 @@ function SignUpContent() {
           email,
           full_name: fullName,
           role,
-          email_verified: false,
+          email_verified: true,
         },
       ] as any);
 
@@ -151,15 +156,10 @@ function SignUpContent() {
                   Account Created!
                 </h2>
                 <p className="text-gray-400 mb-4">
-                  We've sent a verification email to{" "}
-                  <span className="font-semibold text-gray-300">
-                    {verificationEmail}
-                  </span>
+                  Welcome to Vertex, <span className="font-semibold text-gray-300">{verificationEmail}</span>!
                 </p>
                 <p className="text-gray-400 text-sm mb-6">
-                  Please check your inbox and click the verification link to
-                  complete your registration. This helps us prevent bot activity
-                  and keep our community safe.
+                  Your account has been successfully created. You can now log in and start exploring opportunities and businesses.
                 </p>
               </div>
               <motion.button
@@ -171,13 +171,13 @@ function SignUpContent() {
                 Go to Login
               </motion.button>
               <p className="text-gray-500 text-sm">
-                Didn't receive the email? Check your spam folder or{" "}
-                <button
-                  onClick={() => setSignUpSuccess(false)}
+                Already have an account?{" "}
+                <Link
+                  href="/auth/login"
                   className="text-gray-300 hover:text-white font-semibold transition"
                 >
-                  try again
-                </button>
+                  Log in
+                </Link>
               </p>
             </motion.div>
           ) : (
@@ -300,11 +300,19 @@ function SignUpContent() {
                 </p>
               </motion.div>
 
+              <motion.div
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                transition={{ delay: 0.6 }}
+              >
+                <CaptchaVerification onTokenReceived={setRecaptchaToken} />
+              </motion.div>
+
               <motion.button
                 whileHover={{ scale: 1.02 }}
                 whileTap={{ scale: 0.98 }}
                 type="submit"
-                disabled={loading}
+                disabled={loading || !recaptchaToken}
                 className="w-full py-3 bg-gradient-to-r from-gray-700 to-gray-600 text-white rounded-lg font-semibold hover:shadow-lg hover:shadow-gray-600/50 disabled:opacity-50 disabled:cursor-not-allowed transition"
               >
                 {loading ? (

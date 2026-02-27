@@ -34,24 +34,33 @@ export default function BusinessFavoriteButton({
     try {
       if (isFavorited) {
         // Remove from favorites
-        await supabase
+        const { error: deleteError } = await supabase
           .from("business_favorites")
           .delete()
           .eq("profile_id", user.id)
           .eq("business_id", businessId);
+        
+        if (deleteError) throw deleteError;
+        console.log("✅ Removed from favorites");
         setIsFavorited(false);
       } else {
         // Add to favorites
-        await supabase.from("business_favorites").insert([
-          {
-            profile_id: user.id,
-            business_id: businessId,
-          },
-        ] as any);
+        const { error: insertError } = await supabase
+          .from("business_favorites")
+          .insert([
+            {
+              profile_id: user.id,
+              business_id: businessId,
+            },
+          ] as any);
+        
+        if (insertError) throw insertError;
+        console.log("✅ Added to favorites");
         setIsFavorited(true);
       }
-    } catch (error) {
-      console.error("Error toggling favorite:", error);
+    } catch (error: any) {
+      console.error("❌ Error toggling favorite:", error.message || error);
+      alert("Failed to update favorite status");
     } finally {
       setIsLoading(false);
     }

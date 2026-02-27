@@ -3,7 +3,7 @@
 import { useState, useEffect } from "react";
 import Link from "next/link";
 import { motion } from "framer-motion";
-import { MapPin, Star, Heart, Ticket } from "lucide-react";
+import { MapPin, Star, Ticket } from "lucide-react";
 import { supabase } from "@/lib/supabase";
 import BusinessFavoriteButton from "./BusinessFavoriteButton";
 
@@ -26,7 +26,6 @@ export default function BusinessCard({
   const [averageRating, setAverageRating] = useState(0);
   const [couponCount, setCouponCount] = useState(0);
   const [isFavorited, setIsFavorited] = useState(false);
-  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     fetchBusinessData();
@@ -72,8 +71,6 @@ export default function BusinessCard({
       }
     } catch (error) {
       console.error("Error fetching business data:", error);
-    } finally {
-      setLoading(false);
     }
   };
 
@@ -129,13 +126,11 @@ export default function BusinessCard({
             </motion.span>
 
             {/* Favorite Button */}
-            <div className="absolute top-4 right-4 z-10">
-              <motion.div onClick={(e) => e.preventDefault()}>
-                <BusinessFavoriteButton
-                  businessId={business.id}
-                  isInitiallyFavorited={isFavorited}
-                />
-              </motion.div>
+            <div className="absolute top-4 right-4 z-10 pointer-events-auto">
+              <BusinessFavoriteButton
+                businessId={business.id}
+                isInitiallyFavorited={isFavorited}
+              />
             </div>
 
             {/* Coupon Badge */}

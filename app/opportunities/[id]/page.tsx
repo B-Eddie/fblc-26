@@ -305,38 +305,68 @@ export default function OpportunityDetailPage({
 
             {/* Ratings */}
             <div className="bg-gray-950 border border-gray-800 rounded-xl p-8">
-              <h2 className="text-2xl font-bold text-white mb-4">Reviews</h2>
-              {ratings.length === 0 ? (
-                <p className="text-gray-400">No reviews yet</p>
-              ) : (
-                <div className="space-y-4">
-                  {ratings.map((rating) => (
-                    <div
-                      key={rating.id}
-                      className="border-b border-gray-800 pb-4"
-                    >
-                      <div className="flex items-center space-x-2 mb-2">
-                        <div className="flex">
-                          {[...Array(5)].map((_, i) => (
-                            <Star
-                              key={i}
-                              className={`w-4 h-4 ${
-                                i < rating.rating
-                                  ? "fill-yellow-500 text-yellow-500"
-                                  : "text-gray-600"
-                              }`}
-                            />
-                          ))}
+              <div className="mb-8">
+                <h2 className="text-2xl font-bold text-white mb-2">Reviews & Ratings</h2>
+                <p className="text-gray-400 text-sm mb-6">
+                  {ratings.length > 0 
+                    ? `${ratings.length} review${ratings.length !== 1 ? 's' : ''} from students` 
+                    : 'Be the first to share your experience'}
+                </p>
+                
+                {/* Review Submission Form */}
+                <RatingSubmissionForm
+                  businessId={opportunity.business.id}
+                  onRatingAdded={fetchOpportunity}
+                  existingRating={userRating?.rating}
+                  existingReview={userRating?.review || undefined}
+                />
+              </div>
+
+              {/* Reviews List */}
+              {ratings.length > 0 && (
+                <div className="mt-8 pt-8 border-t border-gray-800">
+                  <h3 className="text-xl font-semibold text-white mb-6">What Others Are Saying</h3>
+                  <div className="space-y-6">
+                    {ratings.map((rating) => (
+                      <div
+                        key={rating.id}
+                        className="bg-gray-900/40 border border-gray-800/50 rounded-lg p-5 hover:border-gray-700/60 transition-colors"
+                      >
+                        <div className="flex items-start justify-between mb-3">
+                          <div>
+                            <div className="flex items-center gap-2 mb-1">
+                              <span className="font-medium text-white">
+                                {rating.profile.full_name}
+                              </span>
+                              <span className="text-xs text-gray-500">•</span>
+                              <span className="text-xs text-gray-500">
+                                {new Date(rating.created_at).toLocaleDateString('en-US', { 
+                                  month: 'short', 
+                                  day: 'numeric', 
+                                  year: 'numeric' 
+                                })}
+                              </span>
+                            </div>
+                            <div className="flex">
+                              {[...Array(5)].map((_, i) => (
+                                <Star
+                                  key={i}
+                                  className={`w-4 h-4 ${
+                                    i < rating.rating
+                                      ? "fill-amber-400 text-amber-400"
+                                      : "text-gray-600"
+                                  }`}
+                                />
+                              ))}
+                            </div>
+                          </div>
                         </div>
-                        <span className="text-sm text-gray-400">
-                          {rating.profile.full_name}
-                        </span>
+                        {rating.review && (
+                          <p className="text-gray-300 leading-relaxed">{rating.review}</p>
+                        )}
                       </div>
-                      {rating.review && (
-                        <p className="text-gray-300">{rating.review}</p>
-                      )}
-                    </div>
-                  ))}
+                    ))}
+                  </div>
                 </div>
               )}
             </div>
@@ -418,14 +448,6 @@ export default function OpportunityDetailPage({
                 </div>
               </div>
             </div>
-
-            {/* Rating Form */}
-            <RatingSubmissionForm
-              businessId={opportunity.business.id}
-              onRatingAdded={fetchOpportunity}
-              existingRating={userRating?.rating}
-              existingReview={userRating?.review || undefined}
-            />
           </div>
         </div>
       </main>

@@ -14,6 +14,18 @@ type Business = {
   category: string;
   city: string;
   image_url: string | null;
+  averageRating?: number;
+  couponCount?: number;
+};
+
+type Rating = {
+  business_id: string;
+  rating: number;
+};
+
+type Coupon = {
+  business_id: string;
+  is_active: boolean;
 };
 
 const categories = [
@@ -44,13 +56,54 @@ export default function BrowseBusinessesPage() {
 
   const fetchBusinesses = async () => {
     try {
-      const { data, error } = await supabase
+      const { data: businessData, error: businessError } = await supabase
         .from("businesses")
         .select("*")
         .order("created_at", { ascending: false });
 
-      if (error) throw error;
-      setBusinesses(data || []);
+      if (businessError) throw businessError;
+
+      // Fetch all ratings
+      const { data: ratingsData } = await supabase
+        .from("ratings")
+        .select("business_id, rating");
+
+      // Fetch all active coupons
+      const { data: couponsData } = await supabase
+        .from("coupons")
+        .select("business_id, is_active")
+        .eq("is_active", true);
+
+      // Calculate averages and counts
+      const ratingsMap: Record<string, { sum: number; count: number }> = {};
+      const couponsMap: Record<string, number> = {};
+
+      ratingsData?.forEach((rating: Rating) => {
+        if (!ratingsMap[rating.business_id]) {
+          ratingsMap[rating.business_id] = { sum: 0, count: 0 };
+        }
+        ratingsMap[rating.business_id].sum += rating.rating;
+        ratingsMap[rating.business_id].count += 1;
+      });
+
+      couponsData?.forEach((coupon: Coupon) => {
+        if (!couponsMap[coupon.business_id]) {
+          couponsMap[coupon.business_id] = 0;
+        }
+        couponsMap[coupon.business_id] += 1;
+      });
+
+      // Enrich business data with ratings and coupons
+      const enrichedBusinesses = businessData.map((business: any) => ({
+        ...business,
+        averageRating:
+          ratingsMap[business.id]?.count > 0
+            ? ratingsMap[business.id].sum / ratingsMap[business.id].count
+            : 0,
+        couponCount: couponsMap[business.id] || 0,
+      }));
+
+      setBusinesses(enrichedBusinesses);
     } catch (error) {
       console.error("Error fetching businesses:", error);
     } finally {
@@ -78,10 +131,13 @@ export default function BrowseBusinessesPage() {
       );
     }
 
-    // Sort - note: we'll need to fetch ratings/coupons for proper sorting
-    // For now, sorting is by name for simplicity
+    // Sort
     if (sortBy === "name") {
       filtered.sort((a, b) => a.name.localeCompare(b.name));
+    } else if (sortBy === "rating") {
+      filtered.sort((a, b) => (b.averageRating || 0) - (a.averageRating || 0));
+    } else if (sortBy === "coupons") {
+      filtered.sort((a, b) => (b.couponCount || 0) - (a.couponCount || 0));
     }
 
     setFilteredBusinesses(filtered);

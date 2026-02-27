@@ -1,5 +1,6 @@
 import type { Metadata } from 'next'
 import './globals.css'
+import RecaptchaProvider from '@/components/RecaptchaProvider'
 
 export const metadata: Metadata = {
   title: 'Vertex - Connect Students with Volunteering Opportunities',
@@ -13,7 +14,9 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en">
-      <body suppressHydrationWarning={true}>{children}</body>
+      <body suppressHydrationWarning={true}>
+        <RecaptchaProvider>{children}</RecaptchaProvider>
+      </body>
     </html>
   )
 }
