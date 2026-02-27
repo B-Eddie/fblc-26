@@ -33,9 +33,10 @@ export default function OpportunityMap({ opportunities }: { opportunities: Oppor
     // Initialize map centered on Toronto, Ontario
     const map = L.map(mapRef.current).setView([43.6532, -79.3832], 11)
 
-    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-      attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
-      maxZoom: 19,
+    L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png', {
+      attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors &copy; <a href="https://carto.com/">CARTO</a>',
+      maxZoom: 20,
+      subdomains: 'abcd',
     }).addTo(map)
 
     mapInstanceRef.current = map
@@ -64,11 +65,11 @@ export default function OpportunityMap({ opportunities }: { opportunities: Oppor
         const marker = L.marker([opp.business.latitude, opp.business.longitude])
           .addTo(mapInstanceRef.current!)
           .bindPopup(`
-            <div class="p-2">
-              <h3 class="font-bold text-lg">${opp.business.name}</h3>
-              <p class="text-sm text-gray-600">${opp.title}</p>
-              <p class="text-xs text-gray-500 mt-1">${opp.business.city}</p>
-              <a href="/opportunities/${opp.id}" class="text-blue-600 text-sm hover:underline mt-2 inline-block">View Details</a>
+            <div class="p-2" style="color:#e5e7eb;">
+              <h3 class="font-bold text-lg" style="color:#f9fafb;">${opp.business.name}</h3>
+              <p class="text-sm" style="color:#9ca3af;">${opp.title}</p>
+              <p class="text-xs mt-1" style="color:#6b7280;">${opp.business.city}</p>
+              <a href="/opportunities/${opp.id}" class="text-sm hover:underline mt-2 inline-block" style="color:#60a5fa;">View Details</a>
             </div>
           `)
       }

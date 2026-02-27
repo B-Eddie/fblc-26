@@ -215,5 +215,25 @@ h1, h2, h3, .display-text {
   }
 }
 
+/* Dark Leaflet map popups */
+.leaflet-popup-content-wrapper {
+  background: #1f2937 !important;
+  color: #e5e7eb !important;
+  border-radius: 0.75rem !important;
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.5) !important;
+}
+
+.leaflet-popup-tip {
+  background: #1f2937 !important;
+}
+
+.leaflet-popup-close-button {
+  color: #9ca3af !important;
+}
+
+.leaflet-popup-close-button:hover {
+  color: #f9fafb !important;
+}
+
 
 
