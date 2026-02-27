@@ -39,7 +39,7 @@ export default function BusinessFavoriteButton({
           .delete()
           .eq("profile_id", user.id)
           .eq("business_id", businessId);
-        
+
         if (deleteError) throw deleteError;
         console.log("✅ Removed from favorites");
         setIsFavorited(false);
@@ -53,7 +53,7 @@ export default function BusinessFavoriteButton({
               business_id: businessId,
             },
           ] as any);
-        
+
         if (insertError) throw insertError;
         console.log("✅ Added to favorites");
         setIsFavorited(true);

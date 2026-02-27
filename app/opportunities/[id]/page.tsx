@@ -306,13 +306,15 @@ export default function OpportunityDetailPage({
             {/* Ratings */}
             <div className="bg-gray-950 border border-gray-800 rounded-xl p-8">
               <div className="mb-8">
-                <h2 className="text-2xl font-bold text-white mb-2">Reviews & Ratings</h2>
+                <h2 className="text-2xl font-bold text-white mb-2">
+                  Reviews & Ratings
+                </h2>
                 <p className="text-gray-400 text-sm mb-6">
-                  {ratings.length > 0 
-                    ? `${ratings.length} review${ratings.length !== 1 ? 's' : ''} from students` 
-                    : 'Be the first to share your experience'}
+                  {ratings.length > 0
+                    ? `${ratings.length} review${ratings.length !== 1 ? "s" : ""} from students`
+                    : "Be the first to share your experience"}
                 </p>
-                
+
                 {/* Review Submission Form */}
                 <RatingSubmissionForm
                   businessId={opportunity.business.id}
@@ -325,7 +327,9 @@ export default function OpportunityDetailPage({
               {/* Reviews List */}
               {ratings.length > 0 && (
                 <div className="mt-8 pt-8 border-t border-gray-800">
-                  <h3 className="text-xl font-semibold text-white mb-6">What Others Are Saying</h3>
+                  <h3 className="text-xl font-semibold text-white mb-6">
+                    What Others Are Saying
+                  </h3>
                   <div className="space-y-6">
                     {ratings.map((rating) => (
                       <div
@@ -340,11 +344,14 @@ export default function OpportunityDetailPage({
                               </span>
                               <span className="text-xs text-gray-500">•</span>
                               <span className="text-xs text-gray-500">
-                                {new Date(rating.created_at).toLocaleDateString('en-US', { 
-                                  month: 'short', 
-                                  day: 'numeric', 
-                                  year: 'numeric' 
-                                })}
+                                {new Date(rating.created_at).toLocaleDateString(
+                                  "en-US",
+                                  {
+                                    month: "short",
+                                    day: "numeric",
+                                    year: "numeric",
+                                  },
+                                )}
                               </span>
                             </div>
                             <div className="flex">
@@ -362,7 +369,9 @@ export default function OpportunityDetailPage({
                           </div>
                         </div>
                         {rating.review && (
-                          <p className="text-gray-300 leading-relaxed">{rating.review}</p>
+                          <p className="text-gray-300 leading-relaxed">
+                            {rating.review}
+                          </p>
                         )}
                       </div>
                     ))}

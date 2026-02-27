@@ -156,10 +156,15 @@ function SignUpContent() {
                   Account Created!
                 </h2>
                 <p className="text-gray-400 mb-4">
-                  Welcome to Vertex, <span className="font-semibold text-gray-300">{verificationEmail}</span>!
+                  Welcome to Vertex,{" "}
+                  <span className="font-semibold text-gray-300">
+                    {verificationEmail}
+                  </span>
+                  !
                 </p>
                 <p className="text-gray-400 text-sm mb-6">
-                  Your account has been successfully created. You can now log in and start exploring opportunities and businesses.
+                  Your account has been successfully created. You can now log in
+                  and start exploring opportunities and businesses.
                 </p>
               </div>
               <motion.button

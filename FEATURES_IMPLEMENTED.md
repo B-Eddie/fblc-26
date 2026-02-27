@@ -5,9 +5,11 @@ This document summarizes all the required features that have been implemented in
 ## ✅ All Required Features Implemented
 
 ### 1. Sorting Businesses by Category
+
 **Status**: ✅ **COMPLETE**
 
 Businesses can be sorted by multiple categories:
+
 - Food
 - Retail
 - Services
@@ -17,6 +19,7 @@ Businesses can be sorted by multiple categories:
 - All
 
 **Location**: `/app/browse/businesses/page.tsx`
+
 - Category filter buttons display at the top of the businesses page
 - Clicking a category filters the displayed businesses
 - Users can click "All" to see all businesses
@@ -24,17 +27,20 @@ Businesses can be sorted by multiple categories:
 ---
 
 ### 2. Allowing Users to Leave Reviews or Ratings
+
 **Status**: ✅ **COMPLETE**
 
 Users can submit ratings and written reviews for businesses.
 
 **Location**: `/components/RatingSubmissionForm.tsx`
+
 - 5-star rating system with hover preview
 - Optional written review field
 - Users can update existing ratings
 - Real-time feedback on submission
 
 **Features**:
+
 - Requires user to be logged in
 - Data stored in `ratings` table
 - Includes timestamps for tracking
@@ -42,11 +48,13 @@ Users can submit ratings and written reviews for businesses.
 ---
 
 ### 3. Sorting Businesses by Reviews or Ratings
+
 **Status**: ✅ **COMPLETE**
 
 Businesses can now be sorted by their average rating.
 
 **Location**: `/app/browse/businesses/page.tsx`
+
 - New sorting mechanism in `filterAndSort()` function
 - Calculates average rating for each business
 - Sorts businesses by average rating (highest to lowest)
@@ -56,6 +64,7 @@ Businesses can now be sorted by their average rating.
   3. **Deals** - By number of active coupons (most first)
 
 **Implementation Details**:
+
 - Fetches all ratings on page load
 - Groups ratings by business ID
 - Calculates weighted average
@@ -64,11 +73,13 @@ Businesses can now be sorted by their average rating.
 ---
 
 ### 4. Saving or Bookmarking Favorite Businesses
+
 **Status**: ✅ **COMPLETE**
 
 Users can bookmark/favorite their preferred businesses.
 
 **Location**: `/components/BusinessFavoriteButton.tsx`
+
 - Heart icon button on each business card
 - Click to add/remove from favorites
 - Visual feedback (filled vs. unfilled heart)
@@ -78,11 +89,13 @@ Users can bookmark/favorite their preferred businesses.
 ---
 
 ### 5. Display Special Deals or Coupons
+
 **Status**: ✅ **COMPLETE**
 
 Businesses can offer and display special promotions.
 
 **Location**: `/components/CouponsDisplay.tsx`
+
 - Displays active coupons for each business
 - Shows discount percentage or fixed amount
 - Coupon code display with copy-to-clipboard functionality
@@ -90,6 +103,7 @@ Businesses can offer and display special promotions.
 - Visually prominent with purple gradient styling
 
 **Features**:
+
 - Only shows active/valid coupons
 - Sorted by relevance
 - Easy one-click coupon code copying
@@ -98,16 +112,19 @@ Businesses can offer and display special promotions.
 ---
 
 ### 6. CAPTCHA Verification to Prevent Bot Activity ⭐ **NEW**
+
 **Status**: ✅ **COMPLETE**
 
 reCAPTCHA v2 (Checkbox Challenge) has been integrated into the signup form to prevent automated bot registrations. Users must solve a visual CAPTCHA puzzle to create an account - no email verification required.
 
-**Location**: 
+**Location**:
+
 - `/components/CaptchaVerification.tsx` - reCAPTCHA v2 checkbox component
 - `/app/auth/signup/page.tsx` - CAPTCHA integrated in signup form
 - `/app/layout.tsx` - Provider integrated in root layout
 
 **Features**:
+
 - **reCAPTCHA v2 Checkbox** - Visible "I'm not a robot" challenge
 - **User interaction required** - Users must actively solve the puzzle
 - **Immediate account creation** - No email verification needed
@@ -116,6 +133,7 @@ reCAPTCHA v2 (Checkbox Challenge) has been integrated into the signup form to pr
 - **Dark theme styling** - Matches app's dark interface
 
 **Setup Required**:
+
 1. Register site at [Google reCAPTCHA Admin](https://www.google.com/recaptcha/admin) with **reCAPTCHA v2 - "I'm not a robot" Checkbox**
 2. Get your site key
 3. Add `NEXT_PUBLIC_RECAPTCHA_SITE_KEY` to `.env.local`
@@ -127,6 +145,7 @@ reCAPTCHA v2 (Checkbox Challenge) has been integrated into the signup form to pr
 ## Technology Stack
 
 ### Frontend Components
+
 - **React 18**: Component library
 - **Next.js 14**: Framework
 - **Framer Motion**: Animations
@@ -135,10 +154,12 @@ reCAPTCHA v2 (Checkbox Challenge) has been integrated into the signup form to pr
 - **react-google-recaptcha-v3**: CAPTCHA integration
 
 ### Backend Services
+
 - **Supabase**: Database and authentication
 - **PostgreSQL**: Data storage
 
 ### Database Tables Used
+
 - `businesses` - Business information
 - `ratings` - User reviews and ratings
 - `business_favorites` - Bookmarked businesses
@@ -186,6 +207,7 @@ reCAPTCHA v2 (Checkbox Challenge) has been integrated into the signup form to pr
 ## Files Modified/Created
 
 **Modified Components:**
+
 - `components/RecaptchaProvider.tsx` - Simplified for v2
 - `components/CaptchaVerification.tsx` - Now uses reCAPTCHA v2 checkbox
 - `app/layout.tsx` - Added RecaptchaProvider wrapper
@@ -194,6 +216,7 @@ reCAPTCHA v2 (Checkbox Challenge) has been integrated into the signup form to pr
 - `package.json` - Changed from react-google-recaptcha-v3 to react-google-recaptcha
 
 **Updated Documentation:**
+
 - `CAPTCHA_SETUP.md` - Now documents v2 checkbox setup
 - `FEATURES_IMPLEMENTED.md` - Updated to reflect v2 and no email verification
 - `.env.example` - Updated for v2 configuration

@@ -17,7 +17,7 @@ export default function CaptchaVerification({
   useEffect(() => {
     if (!siteKey) {
       console.warn(
-        "reCAPTCHA site key not found. Please set NEXT_PUBLIC_RECAPTCHA_SITE_KEY environment variable."
+        "reCAPTCHA site key not found. Please set NEXT_PUBLIC_RECAPTCHA_SITE_KEY environment variable.",
       );
       onTokenReceived(null);
     }
@@ -30,8 +30,8 @@ export default function CaptchaVerification({
         animate={{ opacity: 1 }}
         className="p-4 bg-red-950/40 border border-red-800/60 rounded-lg text-red-400 text-sm"
       >
-        ⚠️ reCAPTCHA not configured. Please add NEXT_PUBLIC_RECAPTCHA_SITE_KEY to
-        .env.local
+        ⚠️ reCAPTCHA not configured. Please add NEXT_PUBLIC_RECAPTCHA_SITE_KEY
+        to .env.local
       </motion.div>
     );
   }
