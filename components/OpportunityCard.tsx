@@ -29,6 +29,13 @@ type OpportunityCardProps = {
 
 export default function OpportunityCard({ opportunity, index = 0 }: OpportunityCardProps) {
   const [isBookmarked, setIsBookmarked] = useState(false)
+  const [imageError, setImageError] = useState(false)
+  // Prefer opportunity image; fallback to business image (read defensively in case API shape varies)
+  const imageSrc =
+    (opportunity as any).image_url ??
+    opportunity.image_url ??
+    opportunity.business?.image_url ??
+    null
 
   const handleBookmark = async (e: React.MouseEvent) => {
     e.preventDefault()
@@ -78,11 +85,13 @@ export default function OpportunityCard({ opportunity, index = 0 }: OpportunityC
             whileHover={{ scale: 1.05 }}
             transition={{ duration: 0.4 }}
           >
-            {(opportunity.image_url || opportunity.business.image_url) ? (
+            {imageSrc && !imageError ? (
               <img 
-                src={opportunity.image_url || opportunity.business.image_url || ""} 
+                src={imageSrc} 
                 alt={opportunity.business.name}
                 className="w-full h-full object-cover"
+                referrerPolicy="no-referrer"
+                onError={() => setImageError(true)}
               />
             ) : (
               <div className="w-full h-full flex items-center justify-center bg-gradient-to-br from-gray-600/20 via-gray-700/20 to-gray-600/20">

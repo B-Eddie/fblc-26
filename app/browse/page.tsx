@@ -105,7 +105,19 @@ export default function BrowsePage() {
         .from("opportunities")
         .select(
           `
-          *,
+          id,
+          title,
+          description,
+          requirements,
+          hours_available,
+          start_date,
+          end_date,
+          is_flexible,
+          perks,
+          image_url,
+          business_id,
+          created_at,
+          updated_at,
           business:businesses (
             id,
             name,

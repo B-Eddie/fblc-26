@@ -216,7 +216,14 @@ export default function EditOpportunityPage({
       let finalImageUrl: string | null = imageUrl;
       if (imageFile) {
         const uploaded = await uploadOpportunityImage();
-        if (uploaded) finalImageUrl = uploaded;
+        if (!uploaded) {
+          setError(
+            "Image upload failed. In Supabase Dashboard go to Storage, ensure the bucket 'opportunity-images' exists, is public, and allows authenticated uploads.",
+          );
+          setSubmitting(false);
+          return;
+        }
+        finalImageUrl = uploaded;
       }
 
       // Update opportunity

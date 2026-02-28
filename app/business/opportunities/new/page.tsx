@@ -182,6 +182,13 @@ export default function NewOpportunityPage() {
       let imageUrl: string | null = null;
       if (imageFile) {
         imageUrl = await uploadOpportunityImage();
+        if (!imageUrl) {
+          setError(
+            "Image upload failed. In Supabase Dashboard go to Storage, create a public bucket named 'opportunity-images', and add a policy allowing authenticated uploads.",
+          );
+          setSubmitting(false);
+          return;
+        }
       }
 
       // Create opportunity
