@@ -9,6 +9,7 @@ import { ArrowRight, MousePointer2 } from 'lucide-react';
 gsap.registerPlugin(ScrollTrigger);
 
 import { ShaderAnimation } from "@/components/ui/shader-animation";
+import { supabase } from "@/lib/supabase";
 
 export default function LandingPage() {
   const mainRef = useRef<HTMLDivElement>(null);
@@ -17,6 +18,26 @@ export default function LandingPage() {
   // Typewriter state
   const [typewriterText, setTypewriterText] = useState('');
   const fullText = "Scanning local opportunities...\nVerified role found.\nTransparent time commitment confirmed.";
+
+  // When logged in, redirect auth links to the user's dashboard
+  const [dashboardHref, setDashboardHref] = useState<string | null>(null);
+  useEffect(() => {
+    const checkAuth = async () => {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) return;
+      const { data: profile } = await supabase
+        .from("profiles")
+        .select("role")
+        .eq("id", user.id)
+        .single();
+      if ((profile as any)?.role === "business") {
+        setDashboardHref("/business/dashboard");
+      } else {
+        setDashboardHref("/dashboard");
+      }
+    };
+    checkAuth();
+  }, []);
 
   useEffect(() => {
     let shufflerInterval: NodeJS.Timeout;
@@ -154,12 +175,23 @@ export default function LandingPage() {
         <div className="hidden md:flex items-center gap-6 text-sm font-medium text-ink-muted">
           <Link href="#features" className="lift-hover hover:text-white">Features</Link>
           <Link href="#protocol" className="lift-hover hover:text-white">Protocol</Link>
-          <Link href="/auth/login" className="lift-hover hover:text-white">Log In</Link>
+          {dashboardHref ? (
+            <Link href={dashboardHref} className="lift-hover hover:text-white">Dashboard</Link>
+          ) : (
+            <Link href="/auth/login" className="lift-hover hover:text-white">Log In</Link>
+          )}
         </div>
-        <Link href="/auth/signup" className="btn-magnetic bg-white text-black px-5 py-2 rounded-full text-sm font-bold group hover:shadow-[0_0_20px_rgba(78,168,243,0.3)] transition-shadow">
-          <span className="relative z-10">Start Earning</span>
-          <span className="btn-bg bg-[#4EA8F3] rounded-full"></span>
-        </Link>
+        {dashboardHref ? (
+          <Link href={dashboardHref} className="btn-magnetic bg-white text-black px-5 py-2 rounded-full text-sm font-bold group hover:shadow-[0_0_20px_rgba(78,168,243,0.3)] transition-shadow">
+            <span className="relative z-10">Dashboard</span>
+            <span className="btn-bg bg-[#4EA8F3] rounded-full"></span>
+          </Link>
+        ) : (
+          <Link href="/auth/signup" className="btn-magnetic bg-white text-black px-5 py-2 rounded-full text-sm font-bold group hover:shadow-[0_0_20px_rgba(78,168,243,0.3)] transition-shadow">
+            <span className="relative z-10">Start Earning</span>
+            <span className="btn-bg bg-[#4EA8F3] rounded-full"></span>
+          </Link>
+        )}
       </nav>
 
       {/* B. HERO SECTION */}
@@ -188,9 +220,9 @@ export default function LandingPage() {
             Pilot is the fastest way for students to earn volunteer hours by working with local businesses. Real work. Verified hours. Zero friction.
           </p>
           <div className="hero-element pointer-events-auto">
-            <Link href="/auth/signup" className="btn-magnetic inline-flex items-center gap-3 bg-white text-black px-8 py-4 rounded-full text-lg font-bold group hover:shadow-[0_0_30px_rgba(78,168,243,0.4)] transition-shadow duration-500">
+            <Link href={dashboardHref || "/auth/signup"} className="btn-magnetic inline-flex items-center gap-3 bg-white text-black px-8 py-4 rounded-full text-lg font-bold group hover:shadow-[0_0_30px_rgba(78,168,243,0.4)] transition-shadow duration-500">
               <span className="relative z-10 flex items-center gap-2">
-                Start earning meaningful hours <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
+                {dashboardHref ? "Go to dashboard" : "Start earning meaningful hours"} <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
               </span>
               <span className="btn-bg bg-[#4EA8F3] rounded-full"></span>
             </Link>
@@ -363,9 +395,9 @@ export default function LandingPage() {
         <div className="text-center max-w-3xl relative z-10">
           <h2 className="font-heading font-bold text-5xl md:text-7xl mb-8">Ready to begin?</h2>
           <p className="text-ink-muted text-xl mb-12">Join Pilot today and start earning meaningful hours while making a real impact in your community.</p>
-          <Link href="/auth/signup" className="btn-magnetic inline-block bg-white text-black px-12 py-6 rounded-[2rem] text-xl font-bold group hover:shadow-[0_0_40px_rgba(78,168,243,0.3)] transition-shadow duration-500">
+          <Link href={dashboardHref || "/auth/signup"} className="btn-magnetic inline-block bg-white text-black px-12 py-6 rounded-[2rem] text-xl font-bold group hover:shadow-[0_0_40px_rgba(78,168,243,0.3)] transition-shadow duration-500">
             <span className="relative z-10 flex items-center gap-3">
-              Start earning meaningful hours <ArrowRight className="w-6 h-6 group-hover:translate-x-1 transition-transform" />
+              {dashboardHref ? "Go to dashboard" : "Start earning meaningful hours"} <ArrowRight className="w-6 h-6 group-hover:translate-x-1 transition-transform" />
             </span>
             <span className="btn-bg bg-[#4EA8F3] rounded-[2rem]"></span>
           </Link>
@@ -405,9 +437,9 @@ export default function LandingPage() {
             <h4 className="font-heading font-bold text-white mb-6 uppercase tracking-wider text-sm">Platform</h4>
             <ul className="space-y-4 text-ink-muted text-sm font-medium">
               <li><Link href="/browse" className="hover:text-[#4EA8F3] transition-colors flex items-center gap-2 group"><span className="w-0 overflow-hidden group-hover:w-2 transition-all duration-300 h-px bg-[#4EA8F3]"></span>Browse Roles</Link></li>
-              <li><Link href="/auth/signup?role=business" className="hover:text-[#4EA8F3] transition-colors flex items-center gap-2 group"><span className="w-0 overflow-hidden group-hover:w-2 transition-all duration-300 h-px bg-[#4EA8F3]"></span>For Businesses</Link></li>
-              <li><Link href="/auth/signup?role=student" className="hover:text-[#4EA8F3] transition-colors flex items-center gap-2 group"><span className="w-0 overflow-hidden group-hover:w-2 transition-all duration-300 h-px bg-[#4EA8F3]"></span>For Students</Link></li>
-              <li><Link href="/auth/login" className="hover:text-[#4EA8F3] transition-colors flex items-center gap-2 group"><span className="w-0 overflow-hidden group-hover:w-2 transition-all duration-300 h-px bg-[#4EA8F3]"></span>Log In</Link></li>
+              <li><Link href={dashboardHref || "/auth/signup?role=business"} className="hover:text-[#4EA8F3] transition-colors flex items-center gap-2 group"><span className="w-0 overflow-hidden group-hover:w-2 transition-all duration-300 h-px bg-[#4EA8F3]"></span>{dashboardHref ? "Dashboard" : "For Businesses"}</Link></li>
+              <li><Link href={dashboardHref || "/auth/signup?role=student"} className="hover:text-[#4EA8F3] transition-colors flex items-center gap-2 group"><span className="w-0 overflow-hidden group-hover:w-2 transition-all duration-300 h-px bg-[#4EA8F3]"></span>{dashboardHref ? "Dashboard" : "For Students"}</Link></li>
+              <li><Link href={dashboardHref || "/auth/login"} className="hover:text-[#4EA8F3] transition-colors flex items-center gap-2 group"><span className="w-0 overflow-hidden group-hover:w-2 transition-all duration-300 h-px bg-[#4EA8F3]"></span>{dashboardHref ? "Dashboard" : "Log In"}</Link></li>
             </ul>
           </div>
           

@@ -1,6 +1,6 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import Link from 'next/link'
 import { useRouter } from 'next/navigation'
 import { motion } from 'framer-motion'
@@ -13,6 +13,28 @@ export default function LoginPage() {
   const [password, setPassword] = useState('')
   const [error, setError] = useState('')
   const [loading, setLoading] = useState(false)
+  const [checkingAuth, setCheckingAuth] = useState(true)
+
+  useEffect(() => {
+    const redirectIfLoggedIn = async () => {
+      const { data: { user } } = await supabase.auth.getUser()
+      if (!user) {
+        setCheckingAuth(false)
+        return
+      }
+      const { data: profile } = await supabase
+        .from('profiles')
+        .select('role')
+        .eq('id', user.id)
+        .single()
+      if ((profile as any)?.role === 'business') {
+        router.replace('/business/dashboard')
+      } else {
+        router.replace('/dashboard')
+      }
+    }
+    redirectIfLoggedIn()
+  }, [router])
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault()
@@ -46,6 +68,14 @@ export default function LoginPage() {
     } finally {
       setLoading(false)
     }
+  }
+
+  if (checkingAuth) {
+    return (
+      <div className="min-h-screen bg-gradient-to-b from-black via-gray-950 to-black flex items-center justify-center">
+        <div className="w-10 h-10 border-2 border-gray-600 border-t-white rounded-full animate-spin" />
+      </div>
+    )
   }
 
   return (
