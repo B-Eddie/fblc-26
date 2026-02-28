@@ -360,10 +360,10 @@ export default function BusinessDashboardPage() {
                     whileTap={{ scale: 0.95 }}
                   >
                     <Link
-                      href={`/opportunities/${opp.id}`}
+                      href={`/business/opportunities/${opp.id}/edit`}
                       className="px-6 py-2 bg-gray-700/50 text-gray-300 rounded-lg hover:bg-gray-600/50 transition whitespace-nowrap ml-4"
                     >
-                      View Details
+                      Edit Details
                     </Link>
                   </motion.div>
                 </motion.div>
