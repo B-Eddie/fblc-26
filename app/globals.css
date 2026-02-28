@@ -1,6 +1,3 @@
-@import 'leaflet/dist/leaflet.css';
-@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&family=Inter:wght@400;500;600;700&family=Playfair+Display:wght@700;800&display=swap');
-
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
@@ -18,25 +15,25 @@ html {
 body {
   background: #0a0a0a;
   color: #ffffff;
-  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen', 'Ubuntu', 'Cantarell', sans-serif;
+  font-family: 'Space Grotesk', system-ui, sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+  overflow-x: hidden;
 }
 
-h1, h2, h3, .display-text {
-  font-family: 'Poppins', sans-serif;
+h1, h2, h3, h4 {
+  font-family: 'Space Grotesk', sans-serif;
   font-weight: 700;
-  letter-spacing: -0.5px;
+  letter-spacing: -0.03em;
 }
 
-/* Selection styling */
 ::selection {
-  background: #4b5563;
-  color: #ffffff;
+  background: #ffffff;
+  color: #000000;
 }
 
 ::-webkit-scrollbar {
-  width: 8px;
+  width: 6px;
 }
 
 ::-webkit-scrollbar-track {
@@ -44,178 +41,91 @@ h1, h2, h3, .display-text {
 }
 
 ::-webkit-scrollbar-thumb {
-  background: #333333;
-  border-radius: 4px;
-  transition: background 0.2s ease;
+  background: #2a2a2a;
+  border-radius: 3px;
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  background: #555555;
+  background: #444444;
 }
 
-/* Modern smooth animations */
-@keyframes fadeIn {
-  from {
-    opacity: 0;
-    transform: translateY(8px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
+/* Noise overlay */
+.noise-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  z-index: 9999;
+  opacity: 0.05;
 }
 
-@keyframes slideInUp {
-  from {
-    opacity: 0;
-    transform: translateY(20px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
+/* Magnetic button base */
+.btn-magnetic {
+  position: relative;
+  overflow: hidden;
+  transition: transform 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
 }
 
-@keyframes slideInDown {
-  from {
-    opacity: 0;
-    transform: translateY(-20px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
+.btn-magnetic:hover {
+  transform: scale(1.03);
 }
 
-@keyframes slideInLeft {
-  from {
-    opacity: 0;
-    transform: translateX(-20px);
-  }
-  to {
-    opacity: 1;
-    transform: translateX(0);
-  }
+.btn-magnetic .btn-bg {
+  position: absolute;
+  inset: 0;
+  transform: translateY(100%);
+  transition: transform 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
 }
 
-@keyframes slideInRight {
-  from {
-    opacity: 0;
-    transform: translateX(20px);
-  }
-  to {
-    opacity: 1;
-    transform: translateX(0);
-  }
+.btn-magnetic:hover .btn-bg {
+  transform: translateY(0);
 }
 
-@keyframes subtle-pulse {
+/* Interactive lift */
+.lift-hover {
+  transition: transform 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+}
+
+.lift-hover:hover {
+  transform: translateY(-1px);
+}
+
+/* Pulsing dot */
+@keyframes pulse-dot {
   0%, 100% {
     opacity: 1;
+    transform: scale(1);
   }
   50% {
-    opacity: 0.8;
+    opacity: 0.6;
+    transform: scale(1.3);
   }
 }
 
-@keyframes glow-pulse {
-  0%, 100% {
-    box-shadow: 0 0 20px rgba(139, 92, 246, 0);
-  }
-  50% {
-    box-shadow: 0 0 20px rgba(139, 92, 246, 0.3);
-  }
+.pulse-dot {
+  animation: pulse-dot 2s ease-in-out infinite;
 }
 
-@keyframes float {
-  0%, 100% {
-    transform: translateY(0px);
-  }
-  50% {
-    transform: translateY(-8px);
-  }
+/* Blinking cursor for typewriter */
+@keyframes blink-cursor {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0; }
 }
 
-@keyframes shimmer {
-  0% {
-    background-position: -1000px 0;
-  }
-  100% {
-    background-position: 1000px 0;
-  }
+.blink-cursor {
+  animation: blink-cursor 1s step-end infinite;
 }
 
-@keyframes spin-slow {
-  from {
-    transform: rotate(0deg);
-  }
-  to {
-    transform: rotate(360deg);
-  }
+/* Card surface style */
+.card-surface {
+  background: #111111;
+  border: 1px solid #2a2a2a;
+  border-radius: 2rem;
 }
 
-.fade-in {
-  animation: fadeIn 0.6s ease-out;
-}
-
-.slide-in-up {
-  animation: slideInUp 0.6s ease-out;
-}
-
-.slide-in-down {
-  animation: slideInDown 0.6s ease-out;
-}
-
-.slide-in-left {
-  animation: slideInLeft 0.6s ease-out;
-}
-
-.slide-in-right {
-  animation: slideInRight 0.6s ease-out;
-}
-
-.subtle-pulse {
-  animation: subtle-pulse 2s ease-in-out infinite;
-}
-
-.glow-pulse {
-  animation: glow-pulse 3s ease-in-out infinite;
-}
-
-.floating {
-  animation: float 3s ease-in-out infinite;
-}
-
-.spin-slow {
-  animation: spin-slow 20s linear infinite;
-}
-
-/* Modern button styles */
-@layer components {
-  .btn-primary {
-    @apply px-6 py-3 bg-gradient-to-r from-gray-700 to-gray-800 text-white rounded-lg font-semibold transition-all duration-300 hover:shadow-lg hover:shadow-gray-600/50 active:scale-95;
-  }
-
-  .btn-secondary {
-    @apply px-6 py-3 bg-gray-800 text-white rounded-lg font-semibold border border-gray-700 transition-all duration-300 hover:border-gray-600 hover:bg-gray-700 active:scale-95;
-  }
-
-  .btn-outline {
-    @apply px-6 py-3 text-white rounded-lg font-semibold border-2 border-white transition-all duration-300 hover:bg-white hover:text-black active:scale-95;
-  }
-
-  /* Modern card hover effect */
-  .card-hover {
-    @apply transition-all duration-300 hover:shadow-xl hover:shadow-gray-600/10 hover:-translate-y-1;
-  }
-
-  /* Glass morphism effect */
-  .glass {
-    @apply bg-white/10 backdrop-blur-md border border-white/20 rounded-xl;
-  }
-}
-
-/* Dark Leaflet map popups */
+/* Dark Leaflet map popups (for browse/dashboard) */
 .leaflet-popup-content-wrapper {
   background: #1f2937 !important;
   color: #e5e7eb !important;
@@ -234,6 +144,3 @@ h1, h2, h3, .display-text {
 .leaflet-popup-close-button:hover {
   color: #f9fafb !important;
 }
-
-
-
