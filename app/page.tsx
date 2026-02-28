@@ -53,11 +53,11 @@ export default function HomePage() {
           >
             <div className="flex items-center space-x-3">
               <motion.div
-                className="w-10 h-10 bg-gradient-to-br from-gray-700 to-gray-600 rounded-lg flex items-center justify-center"
+                className="w-8 h-8 flex items-center justify-center"
                 whileHover={{ scale: 1.05 }}
                 whileTap={{ scale: 0.95 }}
               >
-                <span className="text-white font-bold text-xl">V</span>
+                <img src="/image.png" alt="Logo" className="w-8 h-8 object-contain" />
               </motion.div>
               <span className="text-2xl font-bold font-display bg-gradient-to-r from-gray-400 to-gray-300 bg-clip-text text-transparent">
                 Vertex
@@ -282,7 +282,7 @@ export default function HomePage() {
             <motion.div variants={itemVariants} initial="hidden" whileInView="visible" viewport={{ once: true }}>
               <div className="flex items-center space-x-2 mb-4">
                 <div className="w-8 h-8 bg-gradient-to-br from-gray-700 to-gray-600 rounded-lg flex items-center justify-center">
-                  <span className="text-white font-bold text-sm">V</span>
+                  <img src="/image.png" alt="Logo" className="w-6 h-6 object-contain" />
                 </div>
                 <span className="text-lg font-bold">Vertex</span>
               </div>

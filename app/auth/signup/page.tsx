@@ -103,7 +103,7 @@ function SignUpContent() {
               className="inline-flex items-center space-x-2 mb-8 hover:opacity-80 transition"
             >
               <div className="w-12 h-12 bg-gradient-to-br from-gray-700 to-gray-600 rounded-lg flex items-center justify-center">
-                <span className="text-white font-bold text-xl">V</span>
+                <img src="/image.png" alt="Logo" className="w-12 h-12 object-contain" />
               </div>
               <span className="text-3xl font-bold font-display bg-gradient-to-r from-gray-400 to-gray-300 bg-clip-text text-transparent">
                 Vertex
@@ -139,17 +139,11 @@ function SignUpContent() {
                 transition={{ duration: 2, repeat: Infinity }}
                 className="w-16 h-16 bg-green-600/20 border border-green-600/30 rounded-full flex items-center justify-center mx-auto"
               >
-                <svg
-                  className="w-8 h-8 text-green-400"
-                  fill="currentColor"
-                  viewBox="0 0 20 20"
-                >
-                  <path
-                    fillRule="evenodd"
-                    d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z"
-                    clipRule="evenodd"
-                  />
-                </svg>
+                <img
+                  src="/image.png"
+                  alt="Logo"
+                  className="w-12 h-12 object-contain rounded-full"
+                />
               </motion.div>
               <div>
                 <h2 className="text-2xl font-bold text-white mb-2">
@@ -175,15 +169,7 @@ function SignUpContent() {
               >
                 Go to Login
               </motion.button>
-              <p className="text-gray-500 text-sm">
-                Already have an account?{" "}
-                <Link
-                  href="/auth/login"
-                  className="text-gray-300 hover:text-white font-semibold transition"
-                >
-                  Log in
-                </Link>
-              </p>
+              {/* Removed duplicate login link for Account Created page */}
             </motion.div>
           ) : (
             <form onSubmit={handleSignUp} className="space-y-6">

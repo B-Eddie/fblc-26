@@ -189,7 +189,7 @@ export default function OpportunityDetailPage({
           <div className="flex justify-between items-center">
             <Link href="/" className="flex items-center space-x-2">
               <div className="w-10 h-10 bg-gradient-to-br from-gray-700 to-gray-600 rounded-lg flex items-center justify-center">
-                <span className="text-white font-bold text-xl">V</span>
+                <img src="/image.png" alt="Logo" className="w-8 h-8 object-contain" />
               </div>
               <span className="text-2xl font-bold text-white">Vertex</span>
             </Link>
