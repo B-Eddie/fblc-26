@@ -432,7 +432,7 @@ export default function EditOpportunityPage({
                   name="start_date"
                   value={formData.start_date}
                   onChange={handleInputChange}
-                  className="w-full px-4 py-3 bg-gray-800/50 border border-gray-700/50 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-gray-600 focus:border-transparent transition"
+                  className="date-picker-icon-white w-full px-4 py-3 bg-gray-800/50 border border-gray-700/50 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-gray-600 focus:border-transparent transition"
                 />
               </div>
 
@@ -445,7 +445,7 @@ export default function EditOpportunityPage({
                   name="end_date"
                   value={formData.end_date}
                   onChange={handleInputChange}
-                  className="w-full px-4 py-3 bg-gray-800/50 border border-gray-700/50 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-gray-600 focus:border-transparent transition"
+                  className="date-picker-icon-white w-full px-4 py-3 bg-gray-800/50 border border-gray-700/50 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-gray-600 focus:border-transparent transition"
                 />
               </div>
             </motion.div>
