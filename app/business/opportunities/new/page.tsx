@@ -19,6 +19,8 @@ export default function NewOpportunityPage() {
     start_date: "",
     end_date: "",
   });
+  const [imageFile, setImageFile] = useState<File | null>(null);
+  const [imagePreview, setImagePreview] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -97,6 +99,39 @@ export default function NewOpportunityPage() {
     setError(null);
   };
 
+  const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      if (!file.type.startsWith("image/")) {
+        setError("Please select an image file (e.g. JPG, PNG)");
+        return;
+      }
+      setImageFile(file);
+      const reader = new FileReader();
+      reader.onloadend = () => setImagePreview(reader.result as string);
+      reader.readAsDataURL(file);
+      setError(null);
+    } else {
+      setImageFile(null);
+      setImagePreview(null);
+    }
+  };
+
+  const uploadOpportunityImage = async (): Promise<string | null> => {
+    if (!imageFile || !business?.id) return null;
+    const ext = imageFile.name.split(".").pop() || "jpg";
+    const path = `${business.id}/${Date.now()}-${Math.random().toString(36).slice(2)}.${ext}`;
+    const { error: uploadError } = await supabase.storage
+      .from("opportunity-images")
+      .upload(path, imageFile, { cacheControl: "3600", upsert: false });
+    if (uploadError) {
+      console.error("Image upload failed:", uploadError);
+      return null;
+    }
+    const { data: urlData } = supabase.storage.from("opportunity-images").getPublicUrl(path);
+    return urlData.publicUrl;
+  };
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setSubmitting(true);
@@ -144,6 +179,11 @@ export default function NewOpportunityPage() {
         return;
       }
 
+      let imageUrl: string | null = null;
+      if (imageFile) {
+        imageUrl = await uploadOpportunityImage();
+      }
+
       // Create opportunity
       const { data, error: insertError } = await supabase
         .from("opportunities")
@@ -158,6 +198,7 @@ export default function NewOpportunityPage() {
             perks: formData.perks.trim() || null,
             start_date: formData.start_date,
             end_date: formData.end_date,
+            image_url: imageUrl,
           },
         ])
         .select()
@@ -165,8 +206,8 @@ export default function NewOpportunityPage() {
 
       if (insertError) throw insertError;
 
-      // Redirect to the new opportunity
-      router.push(`/opportunities/${(data as any).id}`);
+      // Redirect to business dashboard so they see their new opportunity there
+      router.push("/business/dashboard");
     } catch (error: any) {
       console.error("Error creating opportunity:", error);
       setError(error.message || "Failed to create opportunity");
@@ -274,6 +315,37 @@ export default function NewOpportunityPage() {
           className="bg-gray-900/40 border border-gray-800/60 rounded-2xl p-8 backdrop-blur-sm"
         >
           <div className="space-y-8">
+            {/* Opportunity image (displayed on marketplace) */}
+            <motion.div
+              initial={{ opacity: 0, x: -20 }}
+              animate={{ opacity: 1, x: 0 }}
+              transition={{ delay: 0.15 }}
+            >
+              <label className="block text-sm font-semibold text-gray-300 mb-3">
+                Opportunity image
+              </label>
+              <p className="text-xs text-gray-500 mb-3">
+                This image will be shown on the marketplace for this opportunity. Optional.
+              </p>
+              <div className="flex flex-col sm:flex-row gap-4 items-start">
+                <label className="flex-shrink-0 cursor-pointer px-4 py-3 bg-gray-800/50 border border-gray-700/50 rounded-lg text-gray-300 hover:bg-gray-700/50 transition flex items-center gap-2">
+                  <Upload className="w-5 h-5" />
+                  <span>{imageFile ? imageFile.name : "Choose image"}</span>
+                  <input
+                    type="file"
+                    accept="image/*"
+                    onChange={handleImageChange}
+                    className="hidden"
+                  />
+                </label>
+                {imagePreview && (
+                  <div className="relative w-40 h-28 rounded-lg overflow-hidden border border-gray-700/50 bg-gray-800/50">
+                    <img src={imagePreview} alt="Preview" className="w-full h-full object-cover" />
+                  </div>
+                )}
+              </div>
+            </motion.div>
+
             {/* Title */}
             <motion.div
               initial={{ opacity: 0, x: -20 }}

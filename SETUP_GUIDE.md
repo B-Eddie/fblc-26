@@ -37,12 +37,13 @@ npm install
 
 ### 2.3 Storage Setup (Optional)
 
-If you want businesses to upload images:
+For business and opportunity images:
 
-1. Go to Storage in Supabase dashboard
-2. Create a new bucket called `business-images`
-3. Set it to public
-4. Update the image upload functionality in the app
+1. Go to **Storage** in the Supabase dashboard.
+2. Create a bucket named **`opportunity-images`** (for opportunity listing images).
+3. Set the bucket to **Public** so marketplace cards can show images.
+4. Under **Policies**, add a policy to allow authenticated uploads (e.g. "Allow authenticated users to INSERT" with `bucket_id = 'opportunity-images'`).
+5. If you use business profile images, create a bucket **`business-images`** and set it to public.
 
 ## Step 3: Environment Variables ✅
 

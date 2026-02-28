@@ -25,10 +25,33 @@ export default function OpportunityDetailPage({
   const [submitting, setSubmitting] = useState(false);
   const [isFavorited, setIsFavorited] = useState(false);
   const [userRating, setUserRating] = useState<any>(null);
+  const [checkingRole, setCheckingRole] = useState(true);
 
   useEffect(() => {
+    const redirectBusinessUser = async () => {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) {
+        setCheckingRole(false);
+        return;
+      }
+      const { data: profile } = await supabase
+        .from("profiles")
+        .select("role")
+        .eq("id", user.id)
+        .single();
+      if ((profile as any)?.role === "business") {
+        router.replace("/business/dashboard");
+        return;
+      }
+      setCheckingRole(false);
+    };
+    redirectBusinessUser();
+  }, [router]);
+
+  useEffect(() => {
+    if (checkingRole) return;
     fetchOpportunity();
-  }, [params.id]);
+  }, [params.id, checkingRole]);
 
   const fetchOpportunity = async () => {
     try {
@@ -152,6 +175,14 @@ export default function OpportunityDetailPage({
     }
   };
 
+  if (checkingRole) {
+    return (
+      <div className="min-h-screen bg-gradient-to-b from-black via-gray-950 to-black flex items-center justify-center">
+        <div className="w-10 h-10 border-2 border-gray-600 border-t-white rounded-full animate-spin" />
+      </div>
+    );
+  }
+
   if (loading) {
     return (
       <div className="min-h-screen bg-gradient-to-b from-black via-gray-950 to-black flex items-center justify-center">
@@ -258,6 +289,16 @@ export default function OpportunityDetailPage({
             )}
           </div>
         </div>
+
+        {(opportunity as any).image_url && (
+          <div className="rounded-xl overflow-hidden border border-gray-800/60 mb-8 h-64 md:h-80">
+            <img
+              src={(opportunity as any).image_url}
+              alt={opportunity.title}
+              className="w-full h-full object-cover"
+            />
+          </div>
+        )}
 
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
           {/* Main Content */}

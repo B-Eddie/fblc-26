@@ -52,6 +52,11 @@ export default function DashboardPage() {
         .eq("id", userId)
         .single();
 
+      if ((profileData as any)?.role === "business") {
+        router.replace("/business/dashboard");
+        return;
+      }
+
       setProfile(profileData);
 
       // Fetch applications with opportunity and business details

@@ -14,6 +14,7 @@ type OpportunityCardProps = {
     hours_available: number
     is_flexible: boolean
     perks: string | null
+    image_url?: string | null
     business: {
       id: string
       name: string
@@ -77,9 +78,9 @@ export default function OpportunityCard({ opportunity, index = 0 }: OpportunityC
             whileHover={{ scale: 1.05 }}
             transition={{ duration: 0.4 }}
           >
-            {opportunity.business.image_url ? (
+            {(opportunity.image_url || opportunity.business.image_url) ? (
               <img 
-                src={opportunity.business.image_url} 
+                src={opportunity.image_url || opportunity.business.image_url || ""} 
                 alt={opportunity.business.name}
                 className="w-full h-full object-cover"
               />

@@ -5,7 +5,7 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { motion } from "framer-motion";
 import { supabase } from "@/lib/supabase";
-import { ArrowLeft, AlertCircle } from "lucide-react";
+import { ArrowLeft, AlertCircle, Upload } from "lucide-react";
 
 export default function EditOpportunityPage({
   params,
@@ -23,6 +23,9 @@ export default function EditOpportunityPage({
     start_date: "",
     end_date: "",
   });
+  const [imageUrl, setImageUrl] = useState<string | null>(null);
+  const [imageFile, setImageFile] = useState<File | null>(null);
+  const [imagePreview, setImagePreview] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -95,6 +98,7 @@ export default function EditOpportunityPage({
         start_date: oppData.start_date || "",
         end_date: oppData.end_date || "",
       });
+      setImageUrl(oppData.image_url || null);
     } catch (error) {
       console.error("Error fetching opportunity:", error);
       router.push("/business/dashboard");
@@ -127,6 +131,39 @@ export default function EditOpportunityPage({
       }));
     }
     setError(null);
+  };
+
+  const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      if (!file.type.startsWith("image/")) {
+        setError("Please select an image file (e.g. JPG, PNG)");
+        return;
+      }
+      setImageFile(file);
+      const reader = new FileReader();
+      reader.onloadend = () => setImagePreview(reader.result as string);
+      reader.readAsDataURL(file);
+      setError(null);
+    } else {
+      setImageFile(null);
+      setImagePreview(null);
+    }
+  };
+
+  const uploadOpportunityImage = async (): Promise<string | null> => {
+    if (!imageFile || !business?.id) return null;
+    const ext = imageFile.name.split(".").pop() || "jpg";
+    const path = `${business.id}/${Date.now()}-${Math.random().toString(36).slice(2)}.${ext}`;
+    const { error: uploadError } = await supabase.storage
+      .from("opportunity-images")
+      .upload(path, imageFile, { cacheControl: "3600", upsert: false });
+    if (uploadError) {
+      console.error("Image upload failed:", uploadError);
+      return null;
+    }
+    const { data: urlData } = supabase.storage.from("opportunity-images").getPublicUrl(path);
+    return urlData.publicUrl;
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -176,6 +213,12 @@ export default function EditOpportunityPage({
         return;
       }
 
+      let finalImageUrl: string | null = imageUrl;
+      if (imageFile) {
+        const uploaded = await uploadOpportunityImage();
+        if (uploaded) finalImageUrl = uploaded;
+      }
+
       // Update opportunity
       const { error: updateError } = await supabase
         .from("opportunities")
@@ -188,6 +231,7 @@ export default function EditOpportunityPage({
           perks: formData.perks.trim() || null,
           start_date: formData.start_date,
           end_date: formData.end_date,
+          image_url: finalImageUrl,
           updated_at: new Date().toISOString(),
         })
         .eq("id", params.id);
@@ -302,6 +346,41 @@ export default function EditOpportunityPage({
           className="bg-gray-900/40 border border-gray-800/60 rounded-2xl p-8 backdrop-blur-sm"
         >
           <div className="space-y-8">
+            {/* Opportunity image (displayed on marketplace) */}
+            <motion.div
+              initial={{ opacity: 0, x: -20 }}
+              animate={{ opacity: 1, x: 0 }}
+              transition={{ delay: 0.15 }}
+            >
+              <label className="block text-sm font-semibold text-gray-300 mb-3">
+                Opportunity image
+              </label>
+              <p className="text-xs text-gray-500 mb-3">
+                This image is shown on the marketplace. Upload a new image to change it.
+              </p>
+              <div className="flex flex-col sm:flex-row gap-4 items-start">
+                <label className="flex-shrink-0 cursor-pointer px-4 py-3 bg-gray-800/50 border border-gray-700/50 rounded-lg text-gray-300 hover:bg-gray-700/50 transition flex items-center gap-2">
+                  <Upload className="w-5 h-5" />
+                  <span>{imageFile ? imageFile.name : "Choose new image"}</span>
+                  <input
+                    type="file"
+                    accept="image/*"
+                    onChange={handleImageChange}
+                    className="hidden"
+                  />
+                </label>
+                {(imagePreview || imageUrl) && (
+                  <div className="relative w-40 h-28 rounded-lg overflow-hidden border border-gray-700/50 bg-gray-800/50">
+                    <img
+                      src={imagePreview || imageUrl || ""}
+                      alt="Opportunity"
+                      className="w-full h-full object-cover"
+                    />
+                  </div>
+                )}
+              </div>
+            </motion.div>
+
             {/* Title */}
             <motion.div
               initial={{ opacity: 0, x: -20 }}

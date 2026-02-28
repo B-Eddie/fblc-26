@@ -42,6 +42,7 @@ CREATE TABLE opportunities (
   end_date DATE,
   is_flexible BOOLEAN DEFAULT false,
   perks TEXT,
+  image_url TEXT,
   created_at TIMESTAMP WITH TIME ZONE DEFAULT TIMEZONE('utc', NOW()),
   updated_at TIMESTAMP WITH TIME ZONE DEFAULT TIMEZONE('utc', NOW())
 );

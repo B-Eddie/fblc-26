@@ -127,6 +127,7 @@ export interface Database {
           end_date: string | null;
           is_flexible: boolean;
           perks: string | null;
+          image_url: string | null;
           created_at: string;
           updated_at: string;
         };
@@ -141,6 +142,7 @@ export interface Database {
           end_date?: string | null;
           is_flexible?: boolean;
           perks?: string | null;
+          image_url?: string | null;
           created_at?: string;
           updated_at?: string;
         };
@@ -155,6 +157,7 @@ export interface Database {
           end_date?: string | null;
           is_flexible?: boolean;
           perks?: string | null;
+          image_url?: string | null;
           created_at?: string;
           updated_at?: string;
         };

@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import dynamic from "next/dynamic";
 import { motion } from "framer-motion";
 import { supabase } from "@/lib/supabase";
@@ -30,6 +31,7 @@ type Opportunity = {
   hours_available: number;
   is_flexible: boolean;
   perks: string | null;
+  image_url: string | null;
   business: {
     id: string;
     name: string;
@@ -53,6 +55,7 @@ const categories = [
 ];
 
 export default function BrowsePage() {
+  const router = useRouter();
   const [opportunities, setOpportunities] = useState<Opportunity[]>([]);
   const [filteredOpportunities, setFilteredOpportunities] = useState<
     Opportunity[]
@@ -64,10 +67,33 @@ export default function BrowsePage() {
     "rating",
   );
   const [showMap, setShowMap] = useState(false);
+  const [checkingRole, setCheckingRole] = useState(true);
 
   useEffect(() => {
+    const redirectBusinessUser = async () => {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) {
+        setCheckingRole(false);
+        return;
+      }
+      const { data: profile } = await supabase
+        .from("profiles")
+        .select("role")
+        .eq("id", user.id)
+        .single();
+      if ((profile as any)?.role === "business") {
+        router.replace("/business/dashboard");
+        return;
+      }
+      setCheckingRole(false);
+    };
+    redirectBusinessUser();
+  }, [router]);
+
+  useEffect(() => {
+    if (checkingRole) return;
     fetchOpportunities();
-  }, []);
+  }, [checkingRole]);
 
   useEffect(() => {
     filterOpportunities();
@@ -172,6 +198,14 @@ export default function BrowsePage() {
       listener?.subscription.unsubscribe();
     };
   }, []);
+
+  if (checkingRole) {
+    return (
+      <div className="min-h-screen bg-gradient-to-b from-black via-gray-950 to-black flex items-center justify-center">
+        <div className="w-10 h-10 border-2 border-gray-600 border-t-white rounded-full animate-spin" />
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-black via-gray-950 to-black text-white">
