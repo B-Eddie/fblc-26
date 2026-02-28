@@ -17,6 +17,7 @@ export default function LandingPage() {
   const fullText = "Scanning local opportunities...\nVerified role found.\nTransparent time commitment confirmed.";
 
   useEffect(() => {
+    let shufflerInterval: NodeJS.Timeout;
     const ctx = gsap.context(() => {
       // --- A. NAVBAR ---
       ScrollTrigger.create({
@@ -34,7 +35,7 @@ export default function LandingPage() {
 
       // --- C. FEATURES ---
       // Card 1: Diagnostic Shuffler
-      const shufflerInterval = setInterval(() => {
+      shufflerInterval = setInterval(() => {
         const cards = gsap.utils.toArray('.shuffler-card') as HTMLElement[];
         if (cards.length === 0) return;
         
