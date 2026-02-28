@@ -102,7 +102,7 @@ function SignUpContent() {
               href="/"
               className="inline-flex items-center space-x-2 mb-8 hover:opacity-80 transition"
             >
-              <div className="w-12 h-12 bg-gradient-to-br from-gray-700 to-gray-600 rounded-lg flex items-center justify-center">
+              <div className="w-12 h-12 rounded-lg flex items-center justify-center">
                 <img src="/image.png" alt="Logo" className="w-12 h-12 object-contain" />
               </div>
               <span className="text-3xl font-bold font-display bg-gradient-to-r from-gray-400 to-gray-300 bg-clip-text text-transparent">

@@ -159,6 +159,20 @@ export default function BrowsePage() {
     setFilteredOpportunities(filtered);
   };
 
+  const [session, setSession] = useState<any>(null);
+
+  useEffect(() => {
+    supabase.auth.getSession().then(({ data: { session } }) => {
+      setSession(session);
+    });
+    const { data: listener } = supabase.auth.onAuthStateChange((_event, session) => {
+      setSession(session);
+    });
+    return () => {
+      listener?.subscription.unsubscribe();
+    };
+  }, []);
+
   return (
     <div className="min-h-screen bg-gradient-to-b from-black via-gray-950 to-black text-white">
       {/* Animated Background Elements */}
@@ -205,17 +219,19 @@ export default function BrowsePage() {
               >
                 Dashboard
               </Link>
-              <motion.div
-                whileHover={{ scale: 1.02 }}
-                whileTap={{ scale: 0.98 }}
-              >
-                <Link
-                  href="/auth/login"
-                  className="px-6 py-2 bg-gradient-to-r from-gray-700 to-gray-600 text-white rounded-lg font-semibold hover:shadow-lg hover:shadow-gray-600/50 transition"
+              {!session && (
+                <motion.div
+                  whileHover={{ scale: 1.02 }}
+                  whileTap={{ scale: 0.98 }}
                 >
-                  Log In
-                </Link>
-              </motion.div>
+                  <Link
+                    href="/auth/login"
+                    className="px-6 py-2 bg-gradient-to-r from-gray-700 to-gray-600 text-white rounded-lg font-semibold hover:shadow-lg hover:shadow-gray-600/50 transition"
+                  >
+                    Log In
+                  </Link>
+                </motion.div>
+              )}
             </div>
           </motion.div>
         </nav>
