@@ -29,6 +29,9 @@ npm install
 
 4. Click "Run" to create all tables, policies, and indexes
 
+5. If your database was created before the opportunity image feature was added, run the migration to add the image column:
+   - Open **SQL Editor** again and run the contents of `supabase-migrations/add_opportunity_image_url.sql` (or run: `ALTER TABLE opportunities ADD COLUMN IF NOT EXISTS image_url TEXT;`)
+
 ### 2.2 Authentication Setup
 
 1. In Supabase dashboard, go to Authentication > Settings
