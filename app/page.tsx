@@ -8,6 +8,8 @@ import { ArrowRight, MousePointer2 } from 'lucide-react';
 
 gsap.registerPlugin(ScrollTrigger);
 
+import { ShaderAnimation } from "@/components/ui/shader-animation";
+
 export default function LandingPage() {
   const mainRef = useRef<HTMLDivElement>(null);
   const navRef = useRef<HTMLElement>(null);
@@ -18,6 +20,8 @@ export default function LandingPage() {
 
   useEffect(() => {
     let shufflerInterval: NodeJS.Timeout;
+    let typeInterval: NodeJS.Timeout;
+
     const ctx = gsap.context(() => {
       // --- A. NAVBAR ---
       ScrollTrigger.create({
@@ -54,7 +58,6 @@ export default function LandingPage() {
       }, 3000);
 
       // Card 2: Telemetry Typewriter
-      let typeInterval: NodeJS.Timeout;
       ScrollTrigger.create({
         trigger: '.typewriter-container',
         start: 'top 80%',
@@ -75,12 +78,13 @@ export default function LandingPage() {
         .to('.animated-cursor', { opacity: 1, duration: 0.3 })
         .to('.animated-cursor', { x: 120, y: 60, duration: 1, ease: 'power2.inOut' })
         .to('.animated-cursor', { scale: 0.8, duration: 0.1, yoyo: true, repeat: 1 })
-        .to('.day-cell-active', { backgroundColor: '#ffffff', color: '#000000', duration: 0.2 }, '-=0.1')
+        .to('.day-cell-active', { backgroundColor: '#4EA8F3', color: '#000000', duration: 0.2 }, '-=0.1')
         .to('.animated-cursor', { x: 200, y: 140, duration: 0.8, ease: 'power2.inOut', delay: 0.5 })
         .to('.animated-cursor', { scale: 0.8, duration: 0.1, yoyo: true, repeat: 1 })
-        .to('.save-btn-active', { scale: 0.95, duration: 0.1, yoyo: true, repeat: 1 }, '-=0.1')
+        .to('.save-btn-active', { backgroundColor: '#4EA8F3', scale: 0.95, duration: 0.1, yoyo: true, repeat: 1 }, '-=0.1')
         .to('.animated-cursor', { opacity: 0, duration: 0.3, delay: 0.5 })
-        .set('.day-cell-active', { backgroundColor: 'transparent', color: '#ffffff' });
+        .set('.day-cell-active', { backgroundColor: 'transparent', color: '#ffffff' })
+        .set('.save-btn-active', { backgroundColor: '#222' });
 
       // --- D. PHILOSOPHY ---
       gsap.fromTo(
@@ -125,8 +129,8 @@ export default function LandingPage() {
     }, mainRef);
 
     return () => {
-      clearInterval(shufflerInterval);
-      if (typeof typeInterval !== 'undefined') clearInterval(typeInterval);
+      if (shufflerInterval) clearInterval(shufflerInterval);
+      if (typeInterval) clearInterval(typeInterval);
       ctx.revert();
     };
   }, []);
@@ -143,52 +147,59 @@ export default function LandingPage() {
 
       {/* A. NAVBAR */}
       <nav ref={navRef} className="fixed top-6 left-1/2 -translate-x-1/2 z-50 transition-all duration-500 rounded-full px-6 py-3 flex items-center gap-8 border border-transparent [&.nav-scrolled]:bg-[#0a0a0a]/80 [&.nav-scrolled]:backdrop-blur-xl [&.nav-scrolled]:border-[#222]">
-        <div className="font-heading font-bold text-xl tracking-tight">Pilot</div>
+        <div className="flex items-center gap-2">
+          <img src="/logo.png" alt="Pilot Logo" className="w-8 h-8 object-contain" />
+          <div className="font-heading font-bold text-xl tracking-tight">Pilot</div>
+        </div>
         <div className="hidden md:flex items-center gap-6 text-sm font-medium text-ink-muted">
           <Link href="#features" className="lift-hover hover:text-white">Features</Link>
           <Link href="#protocol" className="lift-hover hover:text-white">Protocol</Link>
           <Link href="/auth/login" className="lift-hover hover:text-white">Log In</Link>
         </div>
-        <Link href="/auth/signup" className="btn-magnetic bg-white text-black px-5 py-2 rounded-full text-sm font-bold">
+        <Link href="/auth/signup" className="btn-magnetic bg-white text-black px-5 py-2 rounded-full text-sm font-bold group hover:shadow-[0_0_20px_rgba(78,168,243,0.3)] transition-shadow">
           <span className="relative z-10">Start Earning</span>
-          <span className="btn-bg bg-[#e0e0e0] rounded-full"></span>
+          <span className="btn-bg bg-[#4EA8F3] rounded-full"></span>
         </Link>
       </nav>
 
       {/* B. HERO SECTION */}
-      <section className="relative h-[100dvh] w-full flex flex-col justify-end pb-24 px-6 md:px-16 overflow-hidden">
-        {/* Background Image with Heavy Gradient */}
-        <div 
-          className="absolute inset-0 z-0 bg-cover bg-center bg-no-repeat opacity-40 grayscale"
-          style={{ backgroundImage: 'url("https://images.unsplash.com/photo-1600585154340-be6161a56a0c?q=80&w=2940&auto=format&fit=crop")' }}
-        />
-        <div className="absolute inset-0 z-0 bg-gradient-to-t from-[#050505] via-[#050505]/80 to-transparent" />
+      <section className="relative h-[100dvh] w-full flex flex-col justify-center items-center pb-24 px-6 md:px-16 overflow-hidden bg-[#050505]">
+        {/* WebGL Shader Background */}
+        <div className="absolute inset-0 z-0 opacity-60">
+          <ShaderAnimation />
+        </div>
         
-        <div className="relative z-10 max-w-5xl">
-          <h1 className="hero-element flex flex-col gap-2 mb-8">
-            <span className="font-heading font-bold text-5xl md:text-7xl tracking-tighter text-white">
+        {/* Gradients to ensure text readability */}
+        <div className="absolute inset-0 z-0 bg-gradient-to-t from-[#050505] via-transparent to-[#050505]/40 pointer-events-none" />
+        
+        {/* Blue accent glow overlay */}
+        <div className="absolute inset-0 z-0 bg-[#4EA8F3] mix-blend-overlay opacity-10 pointer-events-none" />
+        
+        <div className="relative z-10 max-w-5xl pointer-events-none text-center flex flex-col items-center">
+          <h1 className="hero-element flex flex-col gap-2 mb-8 pointer-events-auto">
+            <span className="font-heading font-bold text-6xl md:text-8xl tracking-tighter text-white">
               Accelerate your
             </span>
-            <span className="font-drama italic text-7xl md:text-9xl text-white leading-[0.8]">
+            <span className="font-heading font-bold text-6xl md:text-8xl tracking-tighter text-[#4EA8F3] leading-[0.9]">
               Impact.
             </span>
           </h1>
-          <p className="hero-element font-mono text-ink-muted max-w-xl text-sm md:text-base mb-10 leading-relaxed">
+          <p className="hero-element font-mono text-ink-muted max-w-2xl text-sm md:text-base mb-10 leading-relaxed pointer-events-auto mx-auto">
             Pilot is the fastest way for students to earn volunteer hours by working with local businesses. Real work. Verified hours. Zero friction.
           </p>
-          <div className="hero-element">
-            <Link href="/auth/signup" className="btn-magnetic inline-flex items-center gap-3 bg-white text-black px-8 py-4 rounded-full text-lg font-bold">
+          <div className="hero-element pointer-events-auto">
+            <Link href="/auth/signup" className="btn-magnetic inline-flex items-center gap-3 bg-white text-black px-8 py-4 rounded-full text-lg font-bold group hover:shadow-[0_0_30px_rgba(78,168,243,0.4)] transition-shadow duration-500">
               <span className="relative z-10 flex items-center gap-2">
-                Start earning meaningful hours <ArrowRight className="w-5 h-5" />
+                Start earning meaningful hours <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
               </span>
-              <span className="btn-bg bg-[#e0e0e0] rounded-full"></span>
+              <span className="btn-bg bg-[#4EA8F3] rounded-full"></span>
             </Link>
           </div>
         </div>
       </section>
 
       {/* C. FEATURES */}
-      <section id="features" className="py-32 px-6 md:px-16 max-w-7xl mx-auto">
+      <section id="features" className="py-32 px-6 md:px-16 max-w-7xl mx-auto relative z-10 bg-transparent">
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
           
           {/* Card 1: Diagnostic Shuffler */}
@@ -201,10 +212,10 @@ export default function LandingPage() {
                 <div className="shuffler-card absolute inset-0 bg-[#1a1a1a] border border-[#333] rounded-2xl p-4 flex items-center justify-center text-center shadow-2xl" style={{ zIndex: 1, transform: 'translateY(20px) scale(0.9)', opacity: 0.5 }}>
                   <span className="font-mono text-xs text-ink-muted">Box-checking eliminated</span>
                 </div>
-                <div className="shuffler-card absolute inset-0 bg-[#222] border border-[#444] rounded-2xl p-4 flex items-center justify-center text-center shadow-2xl" style={{ zIndex: 2, transform: 'translateY(10px) scale(0.95)', opacity: 0.8 }}>
-                  <span className="font-mono text-xs text-ink-muted">High-need local work</span>
+                <div className="shuffler-card absolute inset-0 bg-[#1e293b] border border-[#4EA8F3]/30 rounded-2xl p-4 flex items-center justify-center text-center shadow-2xl" style={{ zIndex: 2, transform: 'translateY(10px) scale(0.95)', opacity: 0.8 }}>
+                  <span className="font-mono text-xs text-[#4EA8F3]">High-need local work</span>
                 </div>
-                <div className="shuffler-card absolute inset-0 bg-white text-black border border-white rounded-2xl p-4 flex items-center justify-center text-center shadow-2xl" style={{ zIndex: 3, transform: 'translateY(0) scale(1)', opacity: 1 }}>
+                <div className="shuffler-card absolute inset-0 bg-[#4EA8F3] text-black border border-[#4EA8F3] rounded-2xl p-4 flex items-center justify-center text-center shadow-[0_0_30px_rgba(78,168,243,0.3)]" style={{ zIndex: 3, transform: 'translateY(0) scale(1)', opacity: 1 }}>
                   <span className="font-mono text-sm font-bold">Meaningful Contribution</span>
                 </div>
               </div>
@@ -219,15 +230,15 @@ export default function LandingPage() {
                 <p className="text-ink-muted text-sm">Legitimate local opportunities found quickly.</p>
               </div>
               <div className="flex items-center gap-2 bg-[#1a1a1a] px-3 py-1 rounded-full border border-[#333]">
-                <div className="w-2 h-2 rounded-full bg-white pulse-dot" />
-                <span className="font-mono text-[10px] uppercase tracking-wider">Live Feed</span>
+                <div className="w-2 h-2 rounded-full bg-[#4EA8F3] pulse-dot" />
+                <span className="font-mono text-[10px] uppercase tracking-wider text-[#4EA8F3]">Live Feed</span>
               </div>
             </div>
             
             <div className="mt-auto bg-[#0a0a0a] rounded-xl p-6 border border-[#222] h-48 overflow-hidden">
               <pre className="font-mono text-sm text-ink-muted whitespace-pre-wrap leading-relaxed">
                 {typewriterText}
-                <span className="inline-block w-2 h-4 bg-white align-middle ml-1 blink-cursor" />
+                <span className="inline-block w-2 h-4 bg-[#4EA8F3] align-middle ml-1 blink-cursor" />
               </pre>
             </div>
           </div>
@@ -276,7 +287,7 @@ export default function LandingPage() {
           </p>
           <h2 className="philosophy-text font-drama italic text-5xl md:text-8xl leading-[1.1] text-white">
             We focus on: <br/>
-            <span className="font-heading not-italic font-bold tracking-tighter text-white">tangible alignment.</span>
+            <span className="font-heading not-italic font-bold tracking-tighter text-[#4EA8F3]">tangible alignment.</span>
           </h2>
         </div>
       </section>
@@ -291,8 +302,8 @@ export default function LandingPage() {
             visual: (
               <div className="w-64 h-64 border border-[#333] rounded-full flex items-center justify-center relative animate-[spin_20s_linear_infinite]">
                 <div className="w-48 h-48 border border-[#444] rounded-full absolute" />
-                <div className="w-32 h-32 border border-white border-dashed rounded-full absolute" />
-                <div className="w-2 h-2 bg-white rounded-full absolute top-0" />
+                <div className="w-32 h-32 border border-[#4EA8F3]/50 border-dashed rounded-full absolute" />
+                <div className="w-2 h-2 bg-[#4EA8F3] rounded-full absolute top-0 shadow-[0_0_10px_rgba(78,168,243,0.8)]" />
               </div>
             )
           },
@@ -303,9 +314,9 @@ export default function LandingPage() {
             visual: (
               <div className="w-64 h-64 border border-[#333] rounded-2xl relative overflow-hidden flex items-center justify-center">
                 <div className="absolute inset-0 grid grid-cols-8 grid-rows-8 gap-1 p-2 opacity-20">
-                  {Array.from({ length: 64 }).map((_, i) => <div key={i} className="bg-white rounded-sm" />)}
+                  {Array.from({ length: 64 }).map((_, i) => <div key={i} className={`rounded-sm ${i % 7 === 0 ? 'bg-[#4EA8F3]' : 'bg-white'}`} />)}
                 </div>
-                <div className="absolute top-0 left-0 w-full h-1 bg-white shadow-[0_0_20px_rgba(255,255,255,0.8)] animate-[scan_3s_ease-in-out_infinite_alternate]" />
+                <div className="absolute top-0 left-0 w-full h-1 bg-[#4EA8F3] shadow-[0_0_20px_rgba(78,168,243,0.8)] animate-[scan_3s_ease-in-out_infinite_alternate]" />
               </div>
             )
           },
@@ -318,11 +329,12 @@ export default function LandingPage() {
                 <path 
                   d="M0,50 L50,50 L60,20 L70,80 L80,50 L200,50" 
                   fill="none" 
-                  stroke="#ffffff" 
+                  stroke="#4EA8F3" 
                   strokeWidth="2"
                   className="animate-[dash_2s_linear_infinite]"
                   strokeDasharray="200"
                   strokeDashoffset="200"
+                  style={{ filter: 'drop-shadow(0 0 8px rgba(78,168,243,0.5))' }}
                 />
               </svg>
             )
@@ -344,46 +356,100 @@ export default function LandingPage() {
       </section>
 
       {/* F. GET STARTED */}
-      <section className="py-40 px-6 md:px-16 flex items-center justify-center bg-[#0a0a0a] border-t border-[#111]">
-        <div className="text-center max-w-3xl">
+      <section className="py-40 px-6 md:px-16 flex items-center justify-center bg-[#050505] border-t border-[#111] relative overflow-hidden">
+        <div className="absolute inset-0 z-0">
+          <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[60vw] h-[60vw] bg-[#4EA8F3] rounded-full mix-blend-screen filter blur-[150px] opacity-[0.15] pointer-events-none" />
+        </div>
+        <div className="text-center max-w-3xl relative z-10">
           <h2 className="font-heading font-bold text-5xl md:text-7xl mb-8">Ready to begin?</h2>
           <p className="text-ink-muted text-xl mb-12">Join Pilot today and start earning meaningful hours while making a real impact in your community.</p>
-          <Link href="/auth/signup" className="btn-magnetic inline-block bg-white text-black px-12 py-6 rounded-[2rem] text-xl font-bold">
-            <span className="relative z-10">Start earning meaningful hours</span>
-            <span className="btn-bg bg-[#e0e0e0] rounded-[2rem]"></span>
+          <Link href="/auth/signup" className="btn-magnetic inline-block bg-white text-black px-12 py-6 rounded-[2rem] text-xl font-bold group hover:shadow-[0_0_40px_rgba(78,168,243,0.3)] transition-shadow duration-500">
+            <span className="relative z-10 flex items-center gap-3">
+              Start earning meaningful hours <ArrowRight className="w-6 h-6 group-hover:translate-x-1 transition-transform" />
+            </span>
+            <span className="btn-bg bg-[#4EA8F3] rounded-[2rem]"></span>
           </Link>
         </div>
       </section>
 
       {/* G. FOOTER */}
-      <footer className="bg-[#000000] rounded-t-[4rem] pt-24 pb-12 px-6 md:px-16 border-t border-[#111]">
-        <div className="max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-4 gap-12 mb-24">
-          <div className="col-span-1 md:col-span-2">
-            <div className="font-heading font-bold text-3xl mb-4">Pilot</div>
-            <p className="text-ink-muted max-w-sm">The fastest way for students to earn volunteer hours by working with local businesses.</p>
+      <footer className="bg-[#000000] rounded-t-[4rem] pt-32 pb-12 px-6 md:px-16 border-t border-[#111] relative overflow-hidden">
+        {/* Decorative background element for footer */}
+        <div className="absolute top-0 left-1/2 -translate-x-1/2 w-full max-w-3xl h-px bg-gradient-to-r from-transparent via-[#4EA8F3]/50 to-transparent" />
+        <div className="absolute top-0 left-1/2 -translate-x-1/2 w-full max-w-lg h-[200px] bg-[#4EA8F3] mix-blend-screen filter blur-[150px] opacity-[0.15] pointer-events-none" />
+
+        <div className="max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-12 gap-12 lg:gap-8 mb-24 relative z-10">
+          <div className="md:col-span-12 lg:col-span-5 flex flex-col justify-between">
+            <div>
+              <div className="flex items-center gap-3 mb-6">
+                <img src="/logo.png" alt="Pilot Logo" className="w-10 h-10 object-contain filter grayscale brightness-200" />
+                <div className="font-heading font-bold text-3xl tracking-tight">Pilot</div>
+              </div>
+              <p className="text-ink-muted max-w-sm text-base leading-relaxed mb-8">
+                The fastest way for students to earn volunteer hours by working with local businesses. Real work. Verified hours. Zero friction.
+              </p>
+            </div>
+            
+            <div className="flex items-center gap-4">
+              {/* Social Icons */}
+              {['Twitter', 'Instagram', 'LinkedIn'].map((social) => (
+                <a key={social} href="#" className="w-10 h-10 rounded-full border border-[#222] bg-[#111] flex items-center justify-center text-ink-muted hover:text-white hover:border-[#4EA8F3] hover:bg-[#4EA8F3]/10 transition-colors">
+                  <span className="sr-only">{social}</span>
+                  <div className="w-4 h-4 bg-current" style={{ maskImage: social === 'Twitter' ? 'url("data:image/svg+xml,%3Csvg xmlns=\'http://www.w3.org/2000/svg\' viewBox=\'0 0 24 24\' fill=\'none\' stroke=\'currentColor\' stroke-width=\'2\' stroke-linecap=\'round\' stroke-linejoin=\'round\'%3E%3Cpath d=\'M22 4s-.7 2.1-2 3.4c1.6 10-9.4 17.3-18 11.6 2.2.1 4.4-.6 6-2C3 15.5.5 9.6 3 5c2.2 2.6 5.6 4.1 9 4-.9-4.2 4-6.6 7-3.8 1.1 0 3-1.2 3-1.2z\'/%3E%3C/svg%3E")' : social === 'Instagram' ? 'url("data:image/svg+xml,%3Csvg xmlns=\'http://www.w3.org/2000/svg\' viewBox=\'0 0 24 24\' fill=\'none\' stroke=\'currentColor\' stroke-width=\'2\' stroke-linecap=\'round\' stroke-linejoin=\'round\'%3E%3Crect x=\'2\' y=\'2\' width=\'20\' height=\'20\' rx=\'5\' ry=\'5\'/%3E%3Cpath d=\'M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z\'/%3E%3Cline x1=\'17.5\' y1=\'6.5\' x2=\'17.51\' y2=\'6.5\'/%3E%3C/svg%3E")' : 'url("data:image/svg+xml,%3Csvg xmlns=\'http://www.w3.org/2000/svg\' viewBox=\'0 0 24 24\' fill=\'none\' stroke=\'currentColor\' stroke-width=\'2\' stroke-linecap=\'round\' stroke-linejoin=\'round\'%3E%3Cpath d=\'M16 8a6 6 0 0 1 6 6v7h-4v-7a2 2 0 0 0-2-2 2 2 0 0 0-2 2v7h-4v-7a6 6 0 0 1 6-6z\'/%3E%3Crect x=\'2\' y=\'9\' width=\'4\' height=\'12\'/%3E%3Ccircle cx=\'4\' cy=\'4\' r=\'2\'/%3E%3C/svg%3E")', WebkitMaskImage: social === 'Twitter' ? 'url("data:image/svg+xml,%3Csvg xmlns=\'http://www.w3.org/2000/svg\' viewBox=\'0 0 24 24\' fill=\'none\' stroke=\'currentColor\' stroke-width=\'2\' stroke-linecap=\'round\' stroke-linejoin=\'round\'%3E%3Cpath d=\'M22 4s-.7 2.1-2 3.4c1.6 10-9.4 17.3-18 11.6 2.2.1 4.4-.6 6-2C3 15.5.5 9.6 3 5c2.2 2.6 5.6 4.1 9 4-.9-4.2 4-6.6 7-3.8 1.1 0 3-1.2 3-1.2z\'/%3E%3C/svg%3E")' : social === 'Instagram' ? 'url("data:image/svg+xml,%3Csvg xmlns=\'http://www.w3.org/2000/svg\' viewBox=\'0 0 24 24\' fill=\'none\' stroke=\'currentColor\' stroke-width=\'2\' stroke-linecap=\'round\' stroke-linejoin=\'round\'%3E%3Crect x=\'2\' y=\'2\' width=\'20\' height=\'20\' rx=\'5\' ry=\'5\'/%3E%3Cpath d=\'M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z\'/%3E%3Cline x1=\'17.5\' y1=\'6.5\' x2=\'17.51\' y2=\'6.5\'/%3E%3C/svg%3E")' : 'url("data:image/svg+xml,%3Csvg xmlns=\'http://www.w3.org/2000/svg\' viewBox=\'0 0 24 24\' fill=\'none\' stroke=\'currentColor\' stroke-width=\'2\' stroke-linecap=\'round\' stroke-linejoin=\'round\'%3E%3Cpath d=\'M16 8a6 6 0 0 1 6 6v7h-4v-7a2 2 0 0 0-2-2 2 2 0 0 0-2 2v7h-4v-7a6 6 0 0 1 6-6z\'/%3E%3Crect x=\'2\' y=\'9\' width=\'4\' height=\'12\'/%3E%3Ccircle cx=\'4\' cy=\'4\' r=\'2\'/%3E%3C/svg%3E")', maskSize: 'contain', WebkitMaskSize: 'contain', maskRepeat: 'no-repeat', WebkitMaskRepeat: 'no-repeat', maskPosition: 'center', WebkitMaskPosition: 'center' }} />
+                </a>
+              ))}
+            </div>
           </div>
-          <div>
-            <h4 className="font-mono text-sm text-white mb-6">Platform</h4>
-            <ul className="space-y-4 text-ink-muted text-sm">
-              <li><Link href="/browse" className="hover:text-white transition-colors">Browse Roles</Link></li>
-              <li><Link href="/auth/signup?role=business" className="hover:text-white transition-colors">For Businesses</Link></li>
-              <li><Link href="/auth/login" className="hover:text-white transition-colors">Log In</Link></li>
+          
+          <div className="md:col-span-4 lg:col-span-2">
+            <h4 className="font-heading font-bold text-white mb-6 uppercase tracking-wider text-sm">Platform</h4>
+            <ul className="space-y-4 text-ink-muted text-sm font-medium">
+              <li><Link href="/browse" className="hover:text-[#4EA8F3] transition-colors flex items-center gap-2 group"><span className="w-0 overflow-hidden group-hover:w-2 transition-all duration-300 h-px bg-[#4EA8F3]"></span>Browse Roles</Link></li>
+              <li><Link href="/auth/signup?role=business" className="hover:text-[#4EA8F3] transition-colors flex items-center gap-2 group"><span className="w-0 overflow-hidden group-hover:w-2 transition-all duration-300 h-px bg-[#4EA8F3]"></span>For Businesses</Link></li>
+              <li><Link href="/auth/signup?role=student" className="hover:text-[#4EA8F3] transition-colors flex items-center gap-2 group"><span className="w-0 overflow-hidden group-hover:w-2 transition-all duration-300 h-px bg-[#4EA8F3]"></span>For Students</Link></li>
+              <li><Link href="/auth/login" className="hover:text-[#4EA8F3] transition-colors flex items-center gap-2 group"><span className="w-0 overflow-hidden group-hover:w-2 transition-all duration-300 h-px bg-[#4EA8F3]"></span>Log In</Link></li>
             </ul>
           </div>
-          <div>
-            <h4 className="font-mono text-sm text-white mb-6">Legal</h4>
-            <ul className="space-y-4 text-ink-muted text-sm">
-              <li><Link href="/privacy" className="hover:text-white transition-colors">Privacy Policy</Link></li>
-              <li><Link href="/terms" className="hover:text-white transition-colors">Terms of Service</Link></li>
+          
+          <div className="md:col-span-4 lg:col-span-2">
+            <h4 className="font-heading font-bold text-white mb-6 uppercase tracking-wider text-sm">Company</h4>
+            <ul className="space-y-4 text-ink-muted text-sm font-medium">
+              <li><Link href="/about" className="hover:text-[#4EA8F3] transition-colors flex items-center gap-2 group"><span className="w-0 overflow-hidden group-hover:w-2 transition-all duration-300 h-px bg-[#4EA8F3]"></span>About Us</Link></li>
+              <li><Link href="/contact" className="hover:text-[#4EA8F3] transition-colors flex items-center gap-2 group"><span className="w-0 overflow-hidden group-hover:w-2 transition-all duration-300 h-px bg-[#4EA8F3]"></span>Contact</Link></li>
+              <li><Link href="/careers" className="hover:text-[#4EA8F3] transition-colors flex items-center gap-2 group"><span className="w-0 overflow-hidden group-hover:w-2 transition-all duration-300 h-px bg-[#4EA8F3]"></span>Careers</Link></li>
             </ul>
+          </div>
+          
+          <div className="md:col-span-4 lg:col-span-3">
+            <h4 className="font-heading font-bold text-white mb-6 uppercase tracking-wider text-sm">Stay Updated</h4>
+            <p className="text-ink-muted text-sm mb-4">Subscribe to our newsletter for the latest opportunities and platform updates.</p>
+            <form className="relative mt-2" onSubmit={(e) => e.preventDefault()}>
+              <input 
+                type="email" 
+                placeholder="Enter your email" 
+                className="w-full bg-[#111] border border-[#333] rounded-xl py-3 px-4 text-sm text-white focus:outline-none focus:border-[#4EA8F3] transition-colors"
+              />
+              <button 
+                type="submit" 
+                className="absolute right-2 top-2 bottom-2 bg-[#222] hover:bg-[#4EA8F3] hover:text-black text-white rounded-lg px-3 flex items-center justify-center transition-colors"
+              >
+                <ArrowRight className="w-4 h-4" />
+              </button>
+            </form>
           </div>
         </div>
         
-        <div className="max-w-7xl mx-auto pt-8 border-t border-[#222] flex flex-col md:flex-row items-center justify-between gap-4">
-          <p className="text-ink-faint text-sm">© {new Date().getFullYear()} Pilot. All rights reserved.</p>
-          <div className="flex items-center gap-3 bg-[#111] px-4 py-2 rounded-full border border-[#222]">
-            <div className="w-2 h-2 rounded-full bg-white pulse-dot" />
-            <span className="font-mono text-xs text-ink-muted">System Operational</span>
+        <div className="max-w-7xl mx-auto pt-8 border-t border-[#222] flex flex-col md:flex-row items-center justify-between gap-6 relative z-10">
+          <div className="flex items-center gap-6 text-ink-faint text-sm">
+            <p>© {new Date().getFullYear()} Pilot. All rights reserved.</p>
+            <div className="hidden md:flex gap-4">
+              <Link href="/privacy" className="hover:text-white transition-colors">Privacy Policy</Link>
+              <Link href="/terms" className="hover:text-white transition-colors">Terms of Service</Link>
+            </div>
+          </div>
+          <div className="flex items-center gap-3 bg-[#111] px-4 py-2 rounded-full border border-[#222] shadow-[0_0_15px_rgba(0,0,0,0.5)]">
+            <div className="w-2 h-2 rounded-full bg-[#4EA8F3] pulse-dot shadow-[0_0_8px_rgba(78,168,243,0.8)]" />
+            <span className="font-mono text-xs text-ink-muted font-medium">System Operational</span>
           </div>
         </div>
       </footer>
@@ -395,6 +461,10 @@ export default function LandingPage() {
         }
         @keyframes dash {
           to { stroke-dashoffset: 0; }
+        }
+        @keyframes float {
+          0%, 100% { transform: translateY(0) scale(1); }
+          50% { transform: translateY(-20px) scale(1.05); }
         }
       `}</style>
     </div>
