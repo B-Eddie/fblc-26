@@ -192,7 +192,7 @@ export default function BusinessDetailPage({
                 <img src="/logo.png" alt="Logo" className="w-8 h-8 object-contain filter grayscale brightness-200" />
               </motion.div>
               <span className="text-xl font-bold font-heading tracking-tight text-white">
-                Pilot
+                Vertex
               </span>
             </Link>
             <Link

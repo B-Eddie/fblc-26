@@ -265,7 +265,7 @@ export default function ApplyPage({ params }: { params: { id: string } }) {
                 <div className="w-8 h-8 rounded-lg flex items-center justify-center">
                   <img src="/logo.png" alt="Logo" className="w-8 h-8 object-contain" />
                 </div>
-                <span className="text-xl font-bold font-heading text-white">Pilot</span>
+                <span className="text-xl font-bold font-heading text-white">Vertex</span>
               </Link>
             </div>
           </nav>
@@ -334,7 +334,7 @@ export default function ApplyPage({ params }: { params: { id: string } }) {
                   <img src="/logo.png" alt="Logo" className="w-8 h-8 object-contain" />
                 </div>
                 <span className="text-xl font-bold font-heading tracking-tight text-white">
-                  Pilot
+                  Vertex
                 </span>
               </Link>
             </div>

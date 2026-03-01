@@ -297,7 +297,7 @@ export default function JobDetailPage({ params }: { params: { id: string } }) {
                 />
               </motion.div>
               <span className="text-xl font-bold font-heading tracking-tight text-white">
-                Pilot
+                Vertex
               </span>
             </Link>
             <Link

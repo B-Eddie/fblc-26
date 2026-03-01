@@ -193,7 +193,7 @@ export default function OpportunityDetailPage({
               <div className="w-8 h-8 flex items-center justify-center">
                 <img src="/logo.png" alt="Logo" className="w-8 h-8 object-contain filter grayscale brightness-200" />
               </div>
-              <span className="text-xl font-bold font-heading tracking-tight text-white">Pilot</span>
+              <span className="text-xl font-bold font-heading tracking-tight text-white">Vertex</span>
             </Link>
             <Link
               href="/browse"

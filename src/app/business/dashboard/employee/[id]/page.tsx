@@ -308,7 +308,7 @@ export default function EmployeeManagementPage({
                 />
               </motion.div>
               <span className="text-xl font-bold font-heading tracking-tight text-white">
-                Pilot
+                Vertex
               </span>
             </Link>
             <Link

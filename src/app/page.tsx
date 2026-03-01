@@ -162,8 +162,8 @@ export default function LandingPage() {
       {/* A. NAVBAR */}
       <nav ref={navRef} className="fixed top-6 left-1/2 -translate-x-1/2 z-50 transition-all duration-500 rounded-full px-6 py-3 flex items-center gap-8 border border-transparent [&.nav-scrolled]:bg-[#0a0a0a]/80 [&.nav-scrolled]:backdrop-blur-xl [&.nav-scrolled]:border-[#222]">
         <div className="flex items-center gap-2">
-          <img src="/logo.png" alt="Pilot Logo" className="w-8 h-8 object-contain" />
-          <div className="font-heading font-bold text-xl tracking-tight">Pilot</div>
+          <img src="/logo.png" alt="Vertex Logo" className="w-8 h-8 object-contain" />
+          <div className="font-heading font-bold text-xl tracking-tight">Vertex</div>
         </div>
         <div className="hidden md:flex items-center gap-6 text-sm font-medium text-ink-muted">
           <Link href="#features" className="lift-hover hover:text-white">Features</Link>
@@ -208,7 +208,7 @@ export default function LandingPage() {
             </span>
           </h1>
           <p className="hero-element font-mono text-ink-muted max-w-2xl text-sm md:text-base mb-10 leading-relaxed pointer-events-auto mx-auto">
-            Pilot is the fastest way for students to earn volunteer hours by working with local businesses. Real work. Verified hours. Zero friction.
+            Vertex is the fastest way for students to earn volunteer hours by working with local businesses. Real work. Verified hours. Zero friction.
           </p>
           <div className="hero-element pointer-events-auto">
             <Link href={dashboardHref || "/auth/signup"} className="btn-magnetic inline-flex items-center gap-3 bg-white text-black px-8 py-4 rounded-full text-lg font-bold group hover:shadow-[0_0_30px_rgba(78,168,243,0.4)] transition-shadow duration-500">
@@ -401,7 +401,7 @@ export default function LandingPage() {
         </div>
         <div className="text-center max-w-3xl relative z-10">
           <h2 className="font-heading font-bold text-5xl md:text-7xl mb-8">Ready to begin?</h2>
-          <p className="text-ink-muted text-xl mb-12">Join Pilot today and start earning meaningful hours while making a real impact in your community.</p>
+          <p className="text-ink-muted text-xl mb-12">Join Vertex today and start earning meaningful hours while making a real impact in your community.</p>
           <Link href={dashboardHref || "/auth/signup"} className="btn-magnetic inline-block bg-white text-black px-12 py-6 rounded-[2rem] text-xl font-bold group hover:shadow-[0_0_40px_rgba(78,168,243,0.3)] transition-shadow duration-500">
             <span className="relative z-10 flex items-center gap-3">
               {dashboardHref ? "Go to dashboard" : "Start earning meaningful hours"} <ArrowRight className="w-6 h-6 group-hover:translate-x-1 transition-transform" />
@@ -421,8 +421,8 @@ export default function LandingPage() {
           <div className="md:col-span-12 lg:col-span-5 flex flex-col justify-between">
             <div>
               <div className="flex items-center gap-3 mb-6">
-                <img src="/logo.png" alt="Pilot Logo" className="w-10 h-10 object-contain filter grayscale brightness-200" />
-                <div className="font-heading font-bold text-3xl tracking-tight">Pilot</div>
+                <img src="/logo.png" alt="Vertex Logo" className="w-10 h-10 object-contain filter grayscale brightness-200" />
+                <div className="font-heading font-bold text-3xl tracking-tight">Vertex</div>
               </div>
               <p className="text-ink-muted max-w-sm text-base leading-relaxed mb-8">
                 The fastest way for students to earn volunteer hours by working with local businesses. Real work. Verified hours. Zero friction.
@@ -480,7 +480,7 @@ export default function LandingPage() {
         
         <div className="max-w-7xl mx-auto pt-8 border-t border-[#222] flex flex-col md:flex-row items-center justify-between gap-6 relative z-10">
           <div className="flex items-center gap-6 text-ink-faint text-sm">
-            <p>© {new Date().getFullYear()} Pilot. All rights reserved.</p>
+            <p>© {new Date().getFullYear()} Vertex. All rights reserved.</p>
             <div className="hidden md:flex gap-4">
               <Link href="/privacy" className="hover:text-white transition-colors">Privacy Policy</Link>
               <Link href="/terms" className="hover:text-white transition-colors">Terms of Service</Link>

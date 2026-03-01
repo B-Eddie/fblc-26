@@ -53,8 +53,8 @@ export default function FloatingNav() {
   return (
     <nav className="fixed top-6 left-1/2 -translate-x-1/2 z-50 transition-all duration-500 rounded-full px-6 py-3 flex items-center gap-8 bg-[#0a0a0a]/80 backdrop-blur-xl border border-[#222] shadow-[0_0_30px_rgba(0,0,0,0.5)]">
       <Link href="/" className="flex items-center gap-2 hover:opacity-80 transition">
-        <img src="/logo.png" alt="Pilot Logo" className="w-8 h-8 object-contain filter grayscale brightness-200" />
-        <div className="font-heading font-bold text-xl tracking-tight text-white">Pilot</div>
+        <img src="/logo.png" alt="Vertex Logo" className="w-8 h-8 object-contain filter grayscale brightness-200" />
+        <div className="font-heading font-bold text-xl tracking-tight text-white">Vertex</div>
       </Link>
       
       <div className="hidden md:flex items-center gap-6 text-sm font-medium text-ink-muted">

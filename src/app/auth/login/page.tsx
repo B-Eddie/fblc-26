@@ -97,7 +97,7 @@ export default function LoginPage() {
           >
             <Link href="/" className="inline-flex items-center space-x-3 mb-8 hover:opacity-80 transition">
               <img src="/logo.png" alt="Logo" className="w-10 h-10 object-contain filter grayscale brightness-200" />
-              <span className="text-3xl font-bold font-heading text-white tracking-tight">Pilot</span>
+              <span className="text-3xl font-bold font-heading text-white tracking-tight">Vertex</span>
             </Link>
           </motion.div>
           <motion.div

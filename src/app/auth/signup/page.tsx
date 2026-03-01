@@ -121,7 +121,7 @@ function SignUpContent() {
             >
               <img src="/logo.png" alt="Logo" className="w-10 h-10 object-contain filter grayscale brightness-200" />
               <span className="text-3xl font-bold font-heading text-white tracking-tight">
-                Pilot
+                Vertex
               </span>
             </Link>
           </motion.div>

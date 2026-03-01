@@ -3,9 +3,9 @@ import "./globals.css";
 import RecaptchaProvider from "@/components/RecaptchaProvider";
 
 export const metadata: Metadata = {
-  title: "Pilot — The fastest way for students to earn volunteer hours",
+  title: "Vertex — The fastest way for students to earn volunteer hours",
   description:
-    "Pilot connects students with meaningful volunteer opportunities at local businesses. Earn real hours, gain experience, make an impact.",
+    "Vertex connects students with meaningful volunteer opportunities at local businesses. Earn real hours, gain experience, make an impact.",
 };
 
 export default function RootLayout({

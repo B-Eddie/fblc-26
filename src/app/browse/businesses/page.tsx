@@ -217,7 +217,7 @@ export default function BrowseBusinessesPage() {
                 <img src="/logo.png" alt="Logo" className="w-8 h-8 object-contain" />
               </motion.div>
               <span className="text-xl font-bold font-heading tracking-tight text-white">
-                Pilot
+                Vertex
               </span>
             </Link>
             <Link
