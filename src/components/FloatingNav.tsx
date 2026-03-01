@@ -58,12 +58,14 @@ export default function FloatingNav() {
       </Link>
       
       <div className="hidden md:flex items-center gap-6 text-sm font-medium text-ink-muted">
-        <Link 
-          href="/browse" 
-          className={`lift-hover transition-colors ${pathname.startsWith('/browse') ? 'text-white' : 'hover:text-white'}`}
-        >
-          Browse
-        </Link>
+        {profile?.role !== "business" && (
+          <Link 
+            href="/browse" 
+            className={`lift-hover transition-colors ${pathname.startsWith('/browse') ? 'text-white' : 'hover:text-white'}`}
+          >
+            Browse
+          </Link>
+        )}
         {session && (
           <Link 
             href={dashboardHref}
