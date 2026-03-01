@@ -19,6 +19,7 @@ export default function DashboardPage() {
   const [profile, setProfile] = useState<any>(null);
   const [applications, setApplications] = useState<any[]>([]);
   const [bookmarks, setBookmarks] = useState<any[]>([]);
+  const [signatureRequests, setSignatureRequests] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [totalHours, setTotalHours] = useState(0);
   const [goalHours, setGoalHours] = useState(40);
@@ -126,6 +127,28 @@ export default function DashboardPage() {
         .eq("profile_id", userId);
 
       setBookmarks(bookmarksData || []);
+
+      // Fetch signature requests
+      const { data: sigReqData } = await supabase
+        .from("signature_requests")
+        .select(
+          `
+          *,
+          application:applications (
+            id,
+            opportunity:opportunities (
+              id,
+              title,
+              business:businesses (
+                name
+              )
+            )
+          )
+        `,
+        )
+        .eq("volunteer_id", userId);
+
+      setSignatureRequests(sigReqData || []);
     } catch (error) {
       console.error("Error fetching dashboard data:", error);
     } finally {
