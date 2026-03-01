@@ -237,6 +237,25 @@ export default function PDFSigner({
     setSent(false);
   };
 
+  const sendToVolunteer = async () => {
+    if (!signatureRequestId) {
+      setSent(true);
+      return;
+    }
+    try {
+      await supabase
+        .from("signature_requests")
+        .update({
+          status: "signed",
+          signed_at: new Date().toISOString(),
+        } as any)
+        .eq("id", signatureRequestId);
+      setSent(true);
+    } catch (err) {
+      console.error("Error sending to volunteer:", err);
+    }
+  };
+
   const stepDefs: { id: Step; label: string; icon: any }[] = [
     { id: "fill", label: "Fill Form", icon: ClipboardEdit },
     { id: "sign", label: "Sign", icon: PenTool },
@@ -434,7 +453,7 @@ export default function PDFSigner({
               <motion.button
                 whileHover={{ scale: 1.02 }}
                 whileTap={{ scale: 0.98 }}
-                onClick={() => setSent(true)}
+                onClick={sendToVolunteer}
                 className="flex items-center space-x-2 px-6 py-3 bg-gradient-to-r from-green-600 to-green-500 text-white rounded-lg font-semibold hover:shadow-lg hover:shadow-green-600/30 transition"
               >
                 <Send className="w-5 h-5" />

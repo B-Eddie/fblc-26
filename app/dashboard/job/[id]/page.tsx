@@ -198,12 +198,24 @@ export default function JobDetailPage({ params }: { params: { id: string } }) {
         .filter((log) => log.status === "approved")
         .reduce((sum, log) => sum + parseFloat(log.hours), 0);
 
+      const alreadyRequested = signatureRequests.reduce(
+        (sum, sig) => sum + (parseFloat(sig.total_hours) || 0),
+        0,
+      );
+      const hoursToRequest = approvedHours - alreadyRequested;
+
+      if (hoursToRequest <= 0) {
+        alert("You have already requested signatures for all your approved hours.");
+        setRequestingSignature(false);
+        return;
+      }
+
       const { data, error } = await supabase
         .from("signature_requests")
         .insert({
           application_id: params.id,
           requested_by: currentUser.id,
-          total_hours: approvedHours,
+          total_hours: hoursToRequest,
         } as any)
         .select()
         .single();
@@ -224,6 +236,12 @@ export default function JobDetailPage({ params }: { params: { id: string } }) {
   const approvedHours = hourLogs
     .filter((log) => log.status === "approved")
     .reduce((sum, log) => sum + parseFloat(log.hours), 0);
+  const alreadyRequestedHours = signatureRequests.reduce(
+    (sum, sig) => sum + (parseFloat(sig.total_hours) || 0),
+    0,
+  );
+  const newHoursToRequest = approvedHours - alreadyRequestedHours;
+  const canRequestSignature = newHoursToRequest > 0;
   const pendingHours = hourLogs
     .filter((log) => log.status === "pending")
     .reduce((sum, log) => sum + parseFloat(log.hours), 0);
@@ -750,14 +768,16 @@ export default function JobDetailPage({ params }: { params: { id: string } }) {
                   whileHover={{ scale: 1.02 }}
                   whileTap={{ scale: 0.98 }}
                   onClick={requestSignature}
-                  disabled={requestingSignature || approvedHours === 0}
+                  disabled={requestingSignature || !canRequestSignature}
                   className="flex items-center space-x-2 px-6 py-3 bg-gradient-to-r from-gray-700 to-gray-600 text-white rounded-lg font-semibold hover:shadow-lg hover:shadow-gray-600/50 transition disabled:opacity-50"
                 >
                   <FileText className="w-5 h-5" />
                   <span>
                     {requestingSignature
                       ? "Requesting..."
-                      : `Request Signature (${approvedHours.toFixed(1)}h approved)`}
+                      : canRequestSignature
+                        ? `Request Signature (${newHoursToRequest.toFixed(1)}h new)`
+                        : "All approved hours requested"}
                   </span>
                 </motion.button>
                 <a
@@ -769,11 +789,13 @@ export default function JobDetailPage({ params }: { params: { id: string } }) {
                   <span>Download Blank Form</span>
                 </a>
               </div>
-              {approvedHours === 0 && (
+              {!canRequestSignature && (
                 <p className="text-yellow-400 text-sm mt-3 flex items-center space-x-1">
                   <AlertCircle className="w-4 h-4" />
                   <span>
-                    You need approved hours before requesting a signature.
+                    {approvedHours === 0
+                      ? "You need approved hours before requesting a signature."
+                      : "You have already requested signatures for all your approved hours. Log more hours to request again."}
                   </span>
                 </p>
               )}
