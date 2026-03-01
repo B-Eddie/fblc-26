@@ -399,15 +399,15 @@ export default function BusinessDashboardPage() {
                   <div className="flex justify-between items-start mb-4">
                     <div className="flex-1">
                       <h3 className="font-semibold text-lg text-white">
-                        {app.profile.full_name}
+                        {app.profile?.full_name || "Unknown Applicant"}
                       </h3>
                       <p className="text-sm text-gray-400">
-                        {app.profile.email}
+                        {app.profile?.email || "No email"}
                       </p>
                       <p className="text-sm text-gray-500 mt-2">
                         Applied to:{" "}
                         <span className="text-gray-300">
-                          {app.opportunity.title}
+                          {app.opportunity?.title || "Deleted opportunity"}
                         </span>
                       </p>
                       {app.message && (

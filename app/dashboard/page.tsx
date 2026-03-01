@@ -1,21 +1,17 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { motion } from "framer-motion";
 import { supabase } from "@/lib/supabase";
-import {
-  BarChart,
-  Bar,
-  XAxis,
-  YAxis,
-  CartesianGrid,
-  Tooltip,
-  Legend,
-  ResponsiveContainer,
-} from "recharts";
+import dynamic from "next/dynamic";
 import { Clock, Bookmark, CheckCircle, TrendingUp, LogOut } from "lucide-react";
+
+const HoursProgressChart = dynamic(
+  () => import("@/components/HoursProgressChart"),
+  { ssr: false },
+);
 
 export default function DashboardPage() {
   const router = useRouter();
@@ -25,10 +21,27 @@ export default function DashboardPage() {
   const [loading, setLoading] = useState(true);
   const [totalHours, setTotalHours] = useState(0);
   const [goalHours, setGoalHours] = useState(40);
+  const chartContainerRef = useRef<HTMLDivElement>(null);
+  const [chartSize, setChartSize] = useState({ width: 0, height: 0 });
 
   useEffect(() => {
     checkAuth();
   }, []);
+
+  useEffect(() => {
+    const el = chartContainerRef.current;
+    if (!el) return;
+    const updateSize = () => {
+      setChartSize({
+        width: el.offsetWidth,
+        height: el.offsetHeight,
+      });
+    };
+    updateSize();
+    const ro = new ResizeObserver(updateSize);
+    ro.observe(el);
+    return () => ro.disconnect();
+  }, [loading]);
 
   const checkAuth = async () => {
     const {
@@ -287,24 +300,14 @@ export default function DashboardPage() {
           className="bg-gray-900/40 border border-gray-800/60 rounded-2xl p-8 mb-8 backdrop-blur-sm"
         >
           <h2 className="text-2xl font-bold text-white mb-6">Hours Progress</h2>
-          <div className="h-64">
-            <ResponsiveContainer width="100%" height="100%">
-              <BarChart data={chartData}>
-                <CartesianGrid strokeDasharray="3 3" stroke="#374151" />
-                <XAxis dataKey="month" stroke="#9ca3af" />
-                <YAxis stroke="#9ca3af" />
-                <Tooltip
-                  contentStyle={{
-                    backgroundColor: "#111827",
-                    border: "1px solid #374151",
-                    borderRadius: "8px",
-                    color: "#fff",
-                  }}
-                />
-                <Legend />
-                <Bar dataKey="hours" fill="#6b7280" />
-              </BarChart>
-            </ResponsiveContainer>
+          <div ref={chartContainerRef} className="h-64 w-full min-h-[256px]">
+            {chartSize.width > 0 && chartSize.height > 0 && (
+              <HoursProgressChart
+                data={chartData}
+                width={chartSize.width}
+                height={chartSize.height}
+              />
+            )}
           </div>
           <motion.div className="mt-6 p-4 bg-gradient-to-r from-gray-600/20 to-gray-700/20 border border-gray-600/30 rounded-xl">
             <p className="text-center text-gray-300">
@@ -359,18 +362,25 @@ export default function DashboardPage() {
                 >
                   <div className="flex justify-between items-start">
                     <div className="flex-1">
-                      <Link
-                        href={
-                          app.status === "accepted" || app.status === "completed"
-                            ? `/dashboard/job/${app.id}`
-                            : `/opportunities/${app.opportunity?.id || ""}`
-                        }
-                        className="hover:text-gray-300 transition"
-                      >
+                      {app.opportunity ? (
+                        <Link
+                          href={
+                            app.status === "accepted" ||
+                            app.status === "completed"
+                              ? `/dashboard/job/${app.id}`
+                              : `/opportunities/${app.opportunity.id || ""}`
+                          }
+                          className="hover:text-gray-300 transition"
+                        >
+                          <h3 className="font-semibold text-lg text-white">
+                            {app.opportunity.title || "Unknown"}
+                          </h3>
+                        </Link>
+                      ) : (
                         <h3 className="font-semibold text-lg text-white">
-                          {app.opportunity?.title || "Unknown"}
+                          Opportunity no longer available
                         </h3>
-                      </Link>
+                      )}
                       <p className="text-gray-400">
                         {app.opportunity?.business?.name || "Unknown"}
                       </p>
@@ -422,7 +432,7 @@ export default function DashboardPage() {
             </motion.div>
           ) : (
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-              {bookmarks.map((bookmark, i) => (
+              {bookmarks.filter((b) => b.opportunity).map((bookmark, i) => (
                 <motion.div
                   key={bookmark.id}
                   initial={{ opacity: 0, y: 20 }}
@@ -431,18 +441,18 @@ export default function DashboardPage() {
                   whileHover={{ y: -4 }}
                 >
                   <Link
-                    href={`/opportunities/${bookmark.opportunity.id}`}
+                    href={`/opportunities/${bookmark.opportunity?.id}`}
                     className="border border-gray-800/60 rounded-xl p-6 hover:border-gray-600/40 transition bg-gray-800/20 backdrop-blur-sm h-full flex flex-col"
                   >
                     <h3 className="font-semibold text-white mb-2 line-clamp-2">
-                      {bookmark.opportunity.title}
+                      {bookmark.opportunity?.title}
                     </h3>
                     <p className="text-sm text-gray-400 mb-3">
-                      {bookmark.opportunity.business.name}
+                      {bookmark.opportunity?.business?.name}
                     </p>
                     <p className="text-xs text-gray-500 mt-auto">
-                      {bookmark.opportunity.hours_available} hours •{" "}
-                      {bookmark.opportunity.business.city}
+                      {bookmark.opportunity?.hours_available} hours •{" "}
+                      {bookmark.opportunity?.business?.city}
                     </p>
                   </Link>
                 </motion.div>

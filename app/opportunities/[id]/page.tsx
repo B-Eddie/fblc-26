@@ -68,6 +68,13 @@ export default function OpportunityDetailPage({
         .single();
 
       if (oppError) throw oppError;
+      
+      if (!oppData?.business) {
+        setOpportunity(null);
+        setLoading(false);
+        return;
+      }
+      
       setOpportunity(oppData);
 
       // Fetch coupons
@@ -345,7 +352,7 @@ export default function OpportunityDetailPage({
                           <div>
                             <div className="flex items-center gap-2 mb-1">
                               <span className="font-medium text-white">
-                                {rating.profile.full_name}
+                                {rating.profile?.full_name || "Anonymous"}
                               </span>
                               <span className="text-xs text-gray-500">•</span>
                               <span className="text-xs text-gray-500">
