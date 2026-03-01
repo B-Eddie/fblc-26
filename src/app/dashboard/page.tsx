@@ -6,9 +6,8 @@ import { useRouter } from "next/navigation";
 import { motion } from "framer-motion";
 import { supabase } from "@/lib/supabase";
 import dynamic from "next/dynamic";
-import { Clock, Bookmark, CheckCircle, TrendingUp, LogOut, MapPin, FileText, Download } from "lucide-react";
+import { Clock, Bookmark, CheckCircle, TrendingUp, LogOut, MapPin } from "lucide-react";
 import FloatingNav from "@/components/FloatingNav";
-import PDFSigner from "@/components/PDFSigner";
 
 const HoursProgressChart = dynamic(
   () => import("@/components/HoursProgressChart"),
@@ -22,9 +21,7 @@ export default function DashboardPage() {
   const [bookmarks, setBookmarks] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [totalHours, setTotalHours] = useState(0);
-  const goalHours = 40;
-  const [monthlyHours, setMonthlyHours] = useState<{ month: string; hours: number }[]>([]);
-  const [signatureRequests, setSignatureRequests] = useState<any[]>([]);
+  const [goalHours, setGoalHours] = useState(40);
   const chartContainerRef = useRef<HTMLDivElement>(null);
   const [chartSize, setChartSize] = useState({ width: 0, height: 0 });
 
@@ -97,54 +94,16 @@ export default function DashboardPage() {
 
       setApplications(appsData || []);
 
-      // Fetch approved hour logs across all applications
-      const appIds = (appsData || []).map((a: any) => a.id);
-      let approvedTotal = 0;
-      const monthMap: Record<string, number> = {};
-
-      if (appIds.length > 0) {
-        const { data: hourLogs } = await supabase
-          .from("hour_logs")
-          .select("*")
-          .in("application_id", appIds)
-          .eq("status", "approved") as { data: any[] | null };
-
-        for (const log of (hourLogs || []) as any[]) {
-          const h = parseFloat(log.hours) || 0;
-          approvedTotal += h;
-          const d = new Date(log.date);
-          const key = d.toLocaleString("default", { month: "short", year: "2-digit" });
-          monthMap[key] = (monthMap[key] || 0) + h;
-        }
-      }
-
-      setTotalHours(approvedTotal);
-
-      // Build monthly chart data (last 6 months)
-      const now = new Date();
-      const months: { month: string; hours: number }[] = [];
-      for (let i = 5; i >= 0; i--) {
-        const d = new Date(now.getFullYear(), now.getMonth() - i, 1);
-        const key = d.toLocaleString("default", { month: "short", year: "2-digit" });
-        months.push({ month: key, hours: monthMap[key] || 0 });
-      }
-      setMonthlyHours(months);
-
-      // Fetch signature requests with signed PDFs
-      if (appIds.length > 0) {
-        const { data: sigData } = await supabase
-          .from("signature_requests")
-          .select("*")
-          .in("application_id", appIds)
-          .order("created_at", { ascending: false });
-
-        // Attach opportunity info to each sig request
-        const sigWithApp = (sigData || []).map((sig: any) => {
-          const app = (appsData || []).find((a: any) => a.id === sig.application_id);
-          return { ...sig, application: app };
-        });
-        setSignatureRequests(sigWithApp);
-      }
+      // Calculate total hours
+      const appsList = (appsData as any) || [];
+      const completed = appsList.filter(
+        (app: any) => app.status === "completed",
+      );
+      const total = completed.reduce(
+        (sum: number, app: any) => sum + (app.hours_completed || 0),
+        0,
+      );
+      setTotalHours(total);
 
       // Fetch bookmarks
       const { data: bookmarksData } = await supabase
@@ -179,12 +138,10 @@ export default function DashboardPage() {
     router.push("/");
   };
 
-  const chartData = monthlyHours.length > 0
-    ? monthlyHours
-    : [
-        { month: "Completed", hours: totalHours },
-        { month: "Remaining", hours: Math.max(0, goalHours - totalHours) },
-      ];
+  const chartData = [
+    { month: "Completed", hours: totalHours },
+    { month: "Remaining", hours: Math.max(0, goalHours - totalHours) },
+  ];
 
   const statusStyles: Record<string, string> = {
     pending: "bg-[#1a1a1a] text-[#f59e0b] border-[#f59e0b]/30",
@@ -308,79 +265,6 @@ export default function DashboardPage() {
             </p>
           </motion.div>
         </motion.div>
-
-        {/* Signed Forms */}
-        {signatureRequests.filter((s) => s.status === "signed" && s.signed_pdf_url).length > 0 && (
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.25, duration: 0.6 }}
-            className="bg-gray-900/40 border border-gray-800/60 rounded-2xl p-8 mb-8 backdrop-blur-sm"
-          >
-            <div className="flex items-center space-x-3 mb-6">
-              <FileText className="w-6 h-6 text-gray-400" />
-              <h2 className="text-2xl font-bold text-white">Signed Forms</h2>
-            </div>
-            <p className="text-gray-400 mb-6">
-              Your supervisor has signed these forms. Add your signatures to finalize them, then download your completed PDF.
-            </p>
-            <div className="space-y-6">
-              {signatureRequests
-                .filter((s) => s.status === "signed" && s.signed_pdf_url)
-                .map((sig) => {
-                  const app = sig.application;
-                  const opp = app?.opportunity;
-                  const biz = opp?.business;
-                  return (
-                    <div
-                      key={sig.id}
-                      className="border border-gray-800/60 rounded-xl bg-gray-800/20 overflow-hidden"
-                    >
-                      <div className="p-4 flex items-center justify-between border-b border-gray-800/40">
-                        <div>
-                          <p className="text-white font-semibold">
-                            {opp?.title || "Volunteer Opportunity"}
-                          </p>
-                          <p className="text-sm text-gray-400">
-                            {biz?.name || "Business"} &middot;{" "}
-                            {parseFloat(sig.total_hours).toFixed(1)} hours
-                          </p>
-                          {sig.signed_at && (
-                            <p className="text-xs text-green-400 mt-1">
-                              Supervisor signed{" "}
-                              {new Date(sig.signed_at).toLocaleDateString()}
-                            </p>
-                          )}
-                        </div>
-                        <div className="flex items-center space-x-2">
-                          <a
-                            href={sig.signed_pdf_url}
-                            download={`signed-volunteer-hours.pdf`}
-                            className="inline-flex items-center space-x-2 px-3 py-2 border border-gray-700/50 text-gray-300 rounded-lg text-sm hover:bg-gray-800/50 transition"
-                          >
-                            <Download className="w-4 h-4" />
-                            <span>Download</span>
-                          </a>
-                        </div>
-                      </div>
-                      <div className="p-4">
-                        <PDFSigner
-                          role="volunteer"
-                          pdfUrl={sig.signed_pdf_url}
-                          volunteerName={profile?.full_name || ""}
-                          supervisorName={biz?.name || ""}
-                          totalHours={parseFloat(sig.total_hours) || 0}
-                          opportunityTitle={opp?.title || ""}
-                          applicationId={sig.application_id}
-                          signatureRequestId={sig.id}
-                        />
-                      </div>
-                    </div>
-                  );
-                })}
-            </div>
-          </motion.div>
-        )}
 
         {/* Recent Applications */}
         <motion.div

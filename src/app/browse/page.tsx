@@ -6,7 +6,7 @@ import { useRouter } from "next/navigation";
 import dynamic from "next/dynamic";
 import { motion } from "framer-motion";
 import { supabase } from "@/lib/supabase";
-import { MapPin, Search, Filter, ArrowRight, Bookmark } from "lucide-react";
+import { MapPin, Search, Filter, ArrowRight } from "lucide-react";
 import OpportunityCard from "@/components/OpportunityCard";
 import FloatingNav from "@/components/FloatingNav";
 
@@ -69,14 +69,10 @@ export default function BrowsePage() {
   );
   const [showMap, setShowMap] = useState(false);
   const [checkingRole, setCheckingRole] = useState(true);
-  const [bookmarkedIds, setBookmarkedIds] = useState<Set<string>>(new Set());
-  const [showBookmarksOnly, setShowBookmarksOnly] = useState(false);
 
   useEffect(() => {
     const redirectBusinessUser = async () => {
-      const {
-        data: { user },
-      } = await supabase.auth.getUser();
+      const { data: { user } } = await supabase.auth.getUser();
       if (!user) {
         setCheckingRole(false);
         return;
@@ -98,19 +94,11 @@ export default function BrowsePage() {
   useEffect(() => {
     if (checkingRole) return;
     fetchOpportunities();
-    fetchBookmarks();
   }, [checkingRole]);
 
   useEffect(() => {
     filterOpportunities();
-  }, [
-    opportunities,
-    searchQuery,
-    selectedCategory,
-    sortBy,
-    showBookmarksOnly,
-    bookmarkedIds,
-  ]);
+  }, [opportunities, searchQuery, selectedCategory, sortBy]);
 
   const fetchOpportunities = async () => {
     try {
@@ -176,74 +164,8 @@ export default function BrowsePage() {
     }
   };
 
-  const fetchBookmarks = async () => {
-    try {
-      const {
-        data: { user },
-      } = await supabase.auth.getUser();
-      if (!user) {
-        setBookmarkedIds(new Set());
-        return;
-      }
-
-      const { data: bookmarks } = await supabase
-        .from("bookmarks")
-        .select("opportunity_id")
-        .eq("profile_id", user.id);
-
-      const ids = new Set((bookmarks || []).map((b: any) => b.opportunity_id));
-      setBookmarkedIds(ids);
-    } catch (error) {
-      console.error("Error fetching bookmarks:", error);
-    }
-  };
-
-  const handleBookmarkToggle = async (
-    opportunityId: string,
-    e: React.MouseEvent,
-  ) => {
-    e.preventDefault();
-    e.stopPropagation();
-
-    const {
-      data: { user },
-    } = await supabase.auth.getUser();
-    if (!user) {
-      alert("Please log in to bookmark opportunities");
-      return;
-    }
-
-    if (bookmarkedIds.has(opportunityId)) {
-      // Remove bookmark
-      await supabase
-        .from("bookmarks")
-        .delete()
-        .eq("profile_id", user.id)
-        .eq("opportunity_id", opportunityId);
-
-      const newIds = new Set(bookmarkedIds);
-      newIds.delete(opportunityId);
-      setBookmarkedIds(newIds);
-    } else {
-      // Add bookmark
-      await supabase.from("bookmarks").insert([
-        {
-          profile_id: user.id,
-          opportunity_id: opportunityId,
-        },
-      ] as any);
-
-      setBookmarkedIds(new Set(bookmarkedIds).add(opportunityId));
-    }
-  };
-
   const filterOpportunities = () => {
     let filtered = [...opportunities];
-
-    // Filter by bookmarks
-    if (showBookmarksOnly) {
-      filtered = filtered.filter((opp) => bookmarkedIds.has(opp.id));
-    }
 
     // Filter by category
     if (selectedCategory !== "All") {
@@ -282,11 +204,9 @@ export default function BrowsePage() {
     supabase.auth.getSession().then(({ data: { session } }) => {
       setSession(session);
     });
-    const { data: listener } = supabase.auth.onAuthStateChange(
-      (_event, session) => {
-        setSession(session);
-      },
-    );
+    const { data: listener } = supabase.auth.onAuthStateChange((_event, session) => {
+      setSession(session);
+    });
     return () => {
       listener?.subscription.unsubscribe();
     };
@@ -423,34 +343,19 @@ export default function BrowsePage() {
                 <option value="distance">Closest</option>
               </select>
             </div>
-            <div className="flex items-center gap-2">
-              <motion.button
-                onClick={() => setShowBookmarksOnly(!showBookmarksOnly)}
-                whileHover={{ scale: 1.02 }}
-                whileTap={{ scale: 0.98 }}
-                className={`flex items-center space-x-2 px-5 py-2 rounded-lg font-mono text-xs uppercase tracking-wider transition-colors border ${
-                  showBookmarksOnly
-                    ? "bg-[#4EA8F3] text-black border-[#4EA8F3]"
-                    : "bg-[#0a0a0a] text-white border-[#2a2a2a] hover:border-[#4EA8F3]"
-                }`}
-              >
-                <Bookmark className="w-4 h-4" />
-                <span>{showBookmarksOnly ? "All" : "Bookmarks"}</span>
-              </motion.button>
-              <motion.button
-                onClick={() => setShowMap(!showMap)}
-                whileHover={{ scale: 1.02 }}
-                whileTap={{ scale: 0.98 }}
-                className={`flex items-center space-x-2 px-5 py-2 rounded-lg font-mono text-xs uppercase tracking-wider transition-colors border ${
-                  showMap
-                    ? "bg-[#4EA8F3] text-black border-[#4EA8F3]"
-                    : "bg-[#0a0a0a] text-white border-[#2a2a2a] hover:border-[#4EA8F3]"
-                }`}
-              >
-                <MapPin className="w-4 h-4" />
-                <span>{showMap ? "Hide Map" : "Show Map"}</span>
-              </motion.button>
-            </div>
+            <motion.button
+              onClick={() => setShowMap(!showMap)}
+              whileHover={{ scale: 1.02 }}
+              whileTap={{ scale: 0.98 }}
+              className={`flex items-center space-x-2 px-5 py-2 rounded-lg font-mono text-xs uppercase tracking-wider transition-colors border ${
+                showMap
+                  ? "bg-[#4EA8F3] text-black border-[#4EA8F3]"
+                  : "bg-[#0a0a0a] text-white border-[#2a2a2a] hover:border-[#4EA8F3]"
+              }`}
+            >
+              <MapPin className="w-4 h-4" />
+              <span>{showMap ? "Hide Map" : "Show Map"}</span>
+            </motion.button>
           </motion.div>
         </motion.div>
 
@@ -520,8 +425,6 @@ export default function BrowsePage() {
                 key={opportunity.id}
                 opportunity={opportunity}
                 index={index}
-                isBookmarked={bookmarkedIds.has(opportunity.id)}
-                onBookmarkToggle={handleBookmarkToggle}
               />
             ))}
           </motion.div>

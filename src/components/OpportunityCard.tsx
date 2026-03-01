@@ -1,65 +1,68 @@
-"use client";
+'use client'
 
-import { useState } from "react";
-import Link from "next/link";
-import { motion } from "framer-motion";
-import { MapPin, Clock, Star, Bookmark, Heart, ArrowUpRight } from "lucide-react";
-import { supabase } from "@/lib/supabase";
+import { useState } from 'react'
+import Link from 'next/link'
+import { motion } from 'framer-motion'
+import { MapPin, Clock, Star, Bookmark, Heart, ArrowUpRight } from 'lucide-react'
+import { supabase } from '@/lib/supabase'
 
 type OpportunityCardProps = {
   opportunity: {
-    id: string;
-    title: string;
-    description: string;
-    hours_available: number;
-    is_flexible: boolean;
-    perks: string | null;
-    image_url?: string | null;
+    id: string
+    title: string
+    description: string
+    hours_available: number
+    is_flexible: boolean
+    perks: string | null
+    image_url?: string | null
     business: {
-      id: string;
-      name: string;
-      category: string;
-      city: string;
-      image_url: string | null;
-    };
-    averageRating?: number;
-  };
-  index?: number;
-  isBookmarked?: boolean;
-  onBookmarkToggle?: (opportunityId: string, e: React.MouseEvent) => void;
-};
+      id: string
+      name: string
+      category: string
+      city: string
+      image_url: string | null
+    }
+    averageRating?: number
+  }
+  index?: number
+}
 
-export default function OpportunityCard({
-  opportunity,
-  index = 0,
-  isBookmarked: isBookmarkedProp = false,
-  onBookmarkToggle,
-}: OpportunityCardProps) {
-  const [localBookmarked, setLocalBookmarked] = useState(false);
-  const [imageError, setImageError] = useState(false);
-  const isBookmarked = onBookmarkToggle != null ? isBookmarkedProp : localBookmarked;
+export default function OpportunityCard({ opportunity, index = 0 }: OpportunityCardProps) {
+  const [isBookmarked, setIsBookmarked] = useState(false)
+  const [imageError, setImageError] = useState(false)
+  
   const imageSrc =
     (opportunity as any).image_url ??
     opportunity.image_url ??
     opportunity.business?.image_url ??
-    null;
+    null
 
   const handleBookmark = async (e: React.MouseEvent) => {
-    e.preventDefault();
-    if (onBookmarkToggle) {
-      onBookmarkToggle(opportunity.id, e);
-      return;
+    e.preventDefault()
+    
+    const { data: { user } } = await supabase.auth.getUser()
+    if (!user) {
+      alert('Please log in to bookmark opportunities')
+      return
     }
-    const { data: { user } } = await supabase.auth.getUser();
-    if (!user) return;
+
     if (isBookmarked) {
-      await supabase.from("bookmarks").delete().eq("profile_id", user.id).eq("opportunity_id", opportunity.id);
-      setLocalBookmarked(false);
+      await supabase
+        .from('bookmarks')
+        .delete()
+        .eq('profile_id', user.id)
+        .eq('opportunity_id', opportunity.id)
+      setIsBookmarked(false)
     } else {
-      await supabase.from("bookmarks").insert([{ profile_id: user.id, opportunity_id: opportunity.id }] as any);
-      setLocalBookmarked(true);
+      await supabase
+        .from('bookmarks')
+        .insert([{
+          profile_id: user.id,
+          opportunity_id: opportunity.id,
+        }] as any)
+      setIsBookmarked(true)
     }
-  };
+  }
 
   return (
     <Link href={`/opportunities/${opportunity.id}`} className="block h-full group">
@@ -80,8 +83,8 @@ export default function OpportunityCard({
             transition={{ duration: 0.5, ease: [0.25, 0.46, 0.45, 0.94] }}
           >
             {imageSrc && !imageError ? (
-              <img
-                src={imageSrc}
+              <img 
+                src={imageSrc} 
                 alt={opportunity.business.name}
                 className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110 group-hover:opacity-80"
                 referrerPolicy="no-referrer"
@@ -162,5 +165,5 @@ export default function OpportunityCard({
         </div>
       </motion.div>
     </Link>
-  );
+  )
 }
