@@ -940,6 +940,7 @@ export default function EmployeeManagementPage({
                                 opportunity?.title || "Volunteer Opportunity"
                               }
                               applicationId={params.id}
+                              signatureRequestId={sig.id}
                               onSigned={(pdfBytes) => {
                                 signSignatureRequest(sig.id, pdfBytes);
                               }}

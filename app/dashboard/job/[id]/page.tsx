@@ -22,6 +22,7 @@ import {
   Building2,
   AlertCircle,
 } from "lucide-react";
+import PDFSigner from "@/components/PDFSigner";
 
 export default function JobDetailPage({ params }: { params: { id: string } }) {
   const router = useRouter();
@@ -32,6 +33,7 @@ export default function JobDetailPage({ params }: { params: { id: string } }) {
   const [signatureRequests, setSignatureRequests] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [currentUser, setCurrentUser] = useState<any>(null);
+  const [volunteerProfile, setVolunteerProfile] = useState<any>(null);
 
   // Form states
   const [newHours, setNewHours] = useState("");
@@ -120,6 +122,15 @@ export default function JobDetailPage({ params }: { params: { id: string } }) {
         .order("created_at", { ascending: false });
 
       setSignatureRequests(sigData || []);
+
+      // Fetch volunteer profile for name
+      const { data: profileData } = await supabase
+        .from("profiles")
+        .select("full_name")
+        .eq("id", userId)
+        .single();
+
+      setVolunteerProfile(profileData);
     } catch (error) {
       console.error("Error fetching job data:", error);
     } finally {
@@ -778,41 +789,76 @@ export default function JobDetailPage({ params }: { params: { id: string } }) {
                   No signature requests yet.
                 </p>
               ) : (
-                <div className="space-y-3">
+                <div className="space-y-4">
                   {signatureRequests.map((sig, i) => (
                     <motion.div
                       key={sig.id}
                       initial={{ opacity: 0, x: -20 }}
                       animate={{ opacity: 1, x: 0 }}
                       transition={{ delay: i * 0.05 }}
-                      className="flex items-center justify-between p-4 border border-gray-800/60 rounded-xl bg-gray-800/20"
+                      className="border border-gray-800/60 rounded-xl bg-gray-800/20 overflow-hidden"
                     >
-                      <div>
-                        <p className="text-white font-medium">
-                          {parseFloat(sig.total_hours).toFixed(1)} hours
-                        </p>
-                        <p className="text-sm text-gray-400">
-                          Requested{" "}
-                          {new Date(sig.created_at).toLocaleDateString()}
-                        </p>
-                        {sig.signed_at && (
-                          <p className="text-sm text-green-400">
-                            Signed{" "}
-                            {new Date(sig.signed_at).toLocaleDateString()}
+                      <div className="flex items-center justify-between p-4">
+                        <div>
+                          <p className="text-white font-medium">
+                            {parseFloat(sig.total_hours).toFixed(1)} hours
                           </p>
-                        )}
-                        {sig.notes && (
-                          <p className="text-sm text-gray-400 mt-1 italic">
-                            {sig.notes}
+                          <p className="text-sm text-gray-400">
+                            Requested{" "}
+                            {new Date(sig.created_at).toLocaleDateString()}
                           </p>
-                        )}
+                          {sig.signed_at && (
+                            <p className="text-sm text-green-400">
+                              Signed{" "}
+                              {new Date(sig.signed_at).toLocaleDateString()}
+                            </p>
+                          )}
+                          {sig.notes && (
+                            <p className="text-sm text-gray-400 mt-1 italic">
+                              {sig.notes}
+                            </p>
+                          )}
+                        </div>
+                        <span
+                          className={`px-3 py-1 rounded-lg text-xs font-medium ${statusColors[sig.status]}`}
+                        >
+                          {sig.status.charAt(0).toUpperCase() +
+                            sig.status.slice(1)}
+                        </span>
                       </div>
-                      <span
-                        className={`px-3 py-1 rounded-lg text-xs font-medium ${statusColors[sig.status]}`}
-                      >
-                        {sig.status.charAt(0).toUpperCase() +
-                          sig.status.slice(1)}
-                      </span>
+
+                      {/* Show volunteer PDFSigner to add student signatures */}
+                      {sig.status === "signed" && sig.signed_pdf_url && (
+                        <div className="px-4 pb-4 space-y-4">
+                          <div className="bg-gray-900/60 border border-gray-700/40 rounded-xl p-4">
+                            <h3 className="text-lg font-semibold text-white mb-2">
+                              Complete Your Signatures
+                            </h3>
+                            <p className="text-sm text-gray-400 mb-4">
+                              Your supervisor has signed the form. Add your
+                              signatures below to finalize it.
+                            </p>
+                            <PDFSigner
+                              role="volunteer"
+                              pdfUrl={sig.signed_pdf_url}
+                              volunteerName={volunteerProfile?.full_name || ""}
+                              supervisorName={business?.name || ""}
+                              totalHours={approvedHours}
+                              opportunityTitle={opportunity?.title || ""}
+                              applicationId={params.id}
+                              signatureRequestId={sig.id}
+                            />
+                          </div>
+                          <a
+                            href={sig.signed_pdf_url}
+                            download={`signed-volunteer-hours.pdf`}
+                            className="inline-flex items-center space-x-2 px-4 py-2 border border-gray-700/50 text-gray-300 rounded-lg text-sm font-medium hover:bg-gray-800/50 transition"
+                          >
+                            <Download className="w-4 h-4" />
+                            <span>Download Supervisor-Signed PDF</span>
+                          </a>
+                        </div>
+                      )}
                     </motion.div>
                   ))}
                 </div>
