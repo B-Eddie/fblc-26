@@ -489,7 +489,9 @@ export default function BrowsePage() {
                 }`}
               >
                 <Bookmark className="w-5 h-5" />
-                <span>{showBookmarksOnly ? "All Opportunities" : "Bookmarks"}</span>
+                <span>
+                  {showBookmarksOnly ? "All Opportunities" : "Bookmarks"}
+                </span>
               </motion.button>
               <motion.button
                 onClick={() => setShowMap(!showMap)}
