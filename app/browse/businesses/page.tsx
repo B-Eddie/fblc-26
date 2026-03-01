@@ -211,7 +211,11 @@ export default function BrowseBusinessesPage() {
                 className="w-10 h-10 rounded-lg flex items-center justify-center"
                 whileHover={{ scale: 1.05 }}
               >
-                <img src="/image.png" alt="Logo" className="w-12 h-12 object-contain" />
+                <img
+                  src="/image.png"
+                  alt="Logo"
+                  className="w-12 h-12 object-contain"
+                />
               </motion.div>
               <span className="text-2xl font-bold font-display bg-gradient-to-r from-gray-400 to-gray-300 bg-clip-text text-transparent">
                 Vertex
