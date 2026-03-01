@@ -230,7 +230,7 @@ export default function LandingPage() {
             <h3 className="font-heading font-bold text-2xl mb-2 z-10">Effort that counts</h3>
             <p className="text-ink-muted text-sm z-10">Directing student service toward real, high-need local work.</p>
             
-            <div className="absolute bottom-8 left-8 right-8 h-48 flex items-end justify-center">
+            <div className="absolute bottom-20 left-8 right-8 h-48 flex items-end justify-center">
               <div className="relative w-full max-w-[240px] h-32">
                 <div className="shuffler-card absolute inset-0 bg-[#1a1a1a] border border-[#333] rounded-2xl p-4 flex items-center justify-center text-center shadow-2xl" style={{ zIndex: 1, transform: 'translateY(20px) scale(0.9)', opacity: 0.5 }}>
                   <span className="font-mono text-xs text-ink-muted">Box-checking eliminated</span>

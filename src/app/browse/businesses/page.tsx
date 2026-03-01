@@ -102,6 +102,20 @@ export default function BrowseBusinessesPage() {
         .select("business_id, is_active")
         .eq("is_active", true);
 
+      // Fetch first opportunity image per business as fallback for businesses without images
+      const { data: opportunityImages } = await supabase
+        .from("opportunities")
+        .select("business_id, image_url")
+        .not("image_url", "is", null);
+
+      // Build a map of business_id -> first opportunity image_url
+      const opportunityImageMap: Record<string, string> = {};
+      opportunityImages?.forEach((opp: any) => {
+        if (!opportunityImageMap[opp.business_id] && opp.image_url) {
+          opportunityImageMap[opp.business_id] = opp.image_url;
+        }
+      });
+
       // Calculate averages and counts
       const ratingsMap: Record<string, { sum: number; count: number }> = {};
       const couponsMap: Record<string, number> = {};
@@ -121,9 +135,10 @@ export default function BrowseBusinessesPage() {
         couponsMap[coupon.business_id] += 1;
       });
 
-      // Enrich business data with ratings and coupons
+      // Enrich business data with ratings, coupons, and fallback images from opportunities
       const enrichedBusinesses = businessData.map((business: any) => ({
         ...business,
+        image_url: business.image_url || opportunityImageMap[business.id] || null,
         averageRating:
           ratingsMap[business.id]?.count > 0
             ? ratingsMap[business.id].sum / ratingsMap[business.id].count
