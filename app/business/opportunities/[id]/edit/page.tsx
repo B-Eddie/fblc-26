@@ -5,7 +5,14 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { motion } from "framer-motion";
 import { supabase } from "@/lib/supabase";
-import { ArrowLeft, AlertCircle, Upload } from "lucide-react";
+import { ArrowLeft, AlertCircle, Upload, Plus, Trash2 } from "lucide-react";
+
+interface CustomQuestion {
+  id: string;
+  question: string;
+  type: "text" | "file";
+  required: boolean;
+}
 
 export default function EditOpportunityPage({
   params,
@@ -26,10 +33,33 @@ export default function EditOpportunityPage({
   const [imageUrl, setImageUrl] = useState<string | null>(null);
   const [imageFile, setImageFile] = useState<File | null>(null);
   const [imagePreview, setImagePreview] = useState<string | null>(null);
+  const [customQuestions, setCustomQuestions] = useState<CustomQuestion[]>([]);
   const [loading, setLoading] = useState(true);
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [business, setBusiness] = useState<any>(null);
+
+  const addCustomQuestion = () => {
+    setCustomQuestions((prev) => [
+      ...prev,
+      {
+        id: crypto.randomUUID(),
+        question: "",
+        type: "text",
+        required: false,
+      },
+    ]);
+  };
+
+  const updateCustomQuestion = (id: string, updates: Partial<CustomQuestion>) => {
+    setCustomQuestions((prev) =>
+      prev.map((q) => (q.id === id ? { ...q, ...updates } : q))
+    );
+  };
+
+  const removeCustomQuestion = (id: string) => {
+    setCustomQuestions((prev) => prev.filter((q) => q.id !== id));
+  };
 
   useEffect(() => {
     checkAuthAndFetchData();
@@ -99,6 +129,11 @@ export default function EditOpportunityPage({
         end_date: oppData.end_date || "",
       });
       setImageUrl(oppData.image_url || null);
+      setCustomQuestions(
+        Array.isArray((oppData as any).custom_questions)
+          ? (oppData as any).custom_questions
+          : []
+      );
     } catch (error) {
       console.error("Error fetching opportunity:", error);
       router.push("/business/dashboard");
@@ -226,6 +261,9 @@ export default function EditOpportunityPage({
         finalImageUrl = uploaded;
       }
 
+      // Filter out empty custom questions
+      const validQuestions = customQuestions.filter((q) => q.question.trim());
+
       // Update opportunity
       const { error: updateError } = await supabase
         .from("opportunities")
@@ -239,6 +277,7 @@ export default function EditOpportunityPage({
           start_date: formData.start_date,
           end_date: formData.end_date,
           image_url: finalImageUrl,
+          custom_questions: validQuestions as any,
           updated_at: new Date().toISOString(),
         })
         .eq("id", params.id);
@@ -533,6 +572,88 @@ export default function EditOpportunityPage({
                   onChange={handleInputChange}
                   className="date-picker-icon-white w-full px-4 py-3 bg-gray-800/50 border border-gray-700/50 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-gray-600 focus:border-transparent transition"
                 />
+              </div>
+            </motion.div>
+
+            {/* Custom Application Questions */}
+            <motion.div
+              initial={{ opacity: 0, x: -20 }}
+              animate={{ opacity: 1, x: 0 }}
+              transition={{ delay: 0.47 }}
+            >
+              <label className="block text-sm font-semibold text-gray-300 mb-3">
+                Custom Application Questions
+              </label>
+              <p className="text-xs text-gray-500 mb-4">
+                Add or edit questions that applicants will need to answer. Changes apply to new applications only.
+              </p>
+
+              <div className="space-y-4">
+                {customQuestions.map((q, index) => (
+                  <motion.div
+                    key={q.id}
+                    initial={{ opacity: 0, y: 10 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    className="bg-gray-800/30 border border-gray-700/40 rounded-lg p-4 space-y-3"
+                  >
+                    <div className="flex items-start gap-3">
+                      <div className="flex-1 space-y-3">
+                        <input
+                          type="text"
+                          value={q.question}
+                          onChange={(e) =>
+                            updateCustomQuestion(q.id, { question: e.target.value })
+                          }
+                          placeholder={`Question ${index + 1}...`}
+                          className="w-full px-4 py-2.5 bg-gray-800/50 border border-gray-700/50 rounded-lg text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-gray-600 focus:border-transparent transition text-sm"
+                        />
+                        <div className="flex items-center gap-4">
+                          <select
+                            value={q.type}
+                            onChange={(e) =>
+                              updateCustomQuestion(q.id, {
+                                type: e.target.value as "text" | "file",
+                              })
+                            }
+                            className="px-3 py-1.5 bg-gray-800/50 border border-gray-700/50 rounded-lg text-gray-300 text-sm focus:outline-none focus:ring-2 focus:ring-gray-600 transition"
+                          >
+                            <option value="text">Text Answer</option>
+                            <option value="file">File Upload</option>
+                          </select>
+                          <label className="flex items-center gap-2 cursor-pointer">
+                            <input
+                              type="checkbox"
+                              checked={q.required}
+                              onChange={(e) =>
+                                updateCustomQuestion(q.id, {
+                                  required: e.target.checked,
+                                })
+                              }
+                              className="w-3.5 h-3.5 bg-gray-800/50 border border-gray-700/50 rounded cursor-pointer"
+                            />
+                            <span className="text-xs text-gray-400">Required</span>
+                          </label>
+                        </div>
+                      </div>
+                      <button
+                        type="button"
+                        onClick={() => removeCustomQuestion(q.id)}
+                        className="p-2 text-gray-500 hover:text-red-400 transition mt-1"
+                      >
+                        <Trash2 className="w-4 h-4" />
+                      </button>
+                    </div>
+                  </motion.div>
+                ))}
+
+                <button
+                  type="button"
+                  onClick={addCustomQuestion}
+                  className="flex items-center gap-2 px-4 py-2.5 border border-dashed border-gray-700/50 rounded-lg text-gray-400 hover:text-gray-300 hover:border-gray-600/50 transition text-sm w-full justify-center"
+                >
+                  <Plus className="w-4 h-4" />
+                  Add Question
+                </button>
               </div>
             </motion.div>
 

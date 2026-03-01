@@ -530,6 +530,82 @@ export default function EmployeeManagementPage({
                   </p>
                 </div>
               )}
+
+              {/* Extended Application Details */}
+              {((application as any).phone_number || (application as any).availability || (application as any).resume_url || (application as any).reference_letter_url) && (
+                <div className="mt-6 space-y-4">
+                  {(application as any).phone_number && (
+                    <div className="p-4 border border-gray-800/60 rounded-xl bg-gray-800/20">
+                      <p className="text-sm text-gray-400 mb-1">Phone Number</p>
+                      <p className="text-gray-200">{(application as any).phone_number}</p>
+                    </div>
+                  )}
+                  {(application as any).availability && (
+                    <div className="p-4 border border-gray-800/60 rounded-xl bg-gray-800/20">
+                      <p className="text-sm text-gray-400 mb-1">Availability</p>
+                      <p className="text-gray-200 whitespace-pre-wrap">{(application as any).availability}</p>
+                    </div>
+                  )}
+                  <div className="flex flex-wrap gap-3">
+                    {(application as any).resume_url && (
+                      <a
+                        href={(application as any).resume_url}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="inline-flex items-center gap-2 px-4 py-2 bg-gray-800/50 border border-gray-700/50 rounded-lg text-gray-300 hover:text-white hover:border-gray-600 transition text-sm"
+                      >
+                        <FileText className="w-4 h-4" />
+                        View Resume
+                      </a>
+                    )}
+                    {(application as any).reference_letter_url && (
+                      <a
+                        href={(application as any).reference_letter_url}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="inline-flex items-center gap-2 px-4 py-2 bg-gray-800/50 border border-gray-700/50 rounded-lg text-gray-300 hover:text-white hover:border-gray-600 transition text-sm"
+                      >
+                        <FileText className="w-4 h-4" />
+                        View Reference Letter
+                      </a>
+                    )}
+                  </div>
+                </div>
+              )}
+
+              {/* Custom Question Answers */}
+              {(() => {
+                const customAnswers = (application as any).custom_answers;
+                const customQuestions: any[] = Array.isArray((opportunity as any)?.custom_questions) ? (opportunity as any).custom_questions : [];
+                if (!customAnswers || !customQuestions.length) return null;
+                const answeredQuestions = customQuestions.filter((q: any) => customAnswers[q.id]);
+                if (!answeredQuestions.length) return null;
+                return (
+                  <div className="mt-6">
+                    <h4 className="text-md font-semibold text-white mb-3">Custom Question Responses</h4>
+                    <div className="space-y-3">
+                      {answeredQuestions.map((q: any) => (
+                        <div key={q.id} className="p-4 border border-gray-800/60 rounded-xl bg-gray-800/20">
+                          <p className="text-sm text-gray-400 mb-1">{q.question}</p>
+                          {q.type === "file" ? (
+                            <a
+                              href={customAnswers[q.id]}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              className="inline-flex items-center gap-2 text-blue-400 hover:text-blue-300 text-sm transition"
+                            >
+                              <FileText className="w-4 h-4" />
+                              View Uploaded File
+                            </a>
+                          ) : (
+                            <p className="text-gray-200 whitespace-pre-wrap">{customAnswers[q.id]}</p>
+                          )}
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                );
+              })()}
             </div>
 
             {/* Opportunity Details */}

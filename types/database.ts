@@ -128,6 +128,7 @@ export interface Database {
           is_flexible: boolean;
           perks: string | null;
           image_url: string | null;
+          custom_questions: Json;
           created_at: string;
           updated_at: string;
         };
@@ -143,6 +144,7 @@ export interface Database {
           is_flexible?: boolean;
           perks?: string | null;
           image_url?: string | null;
+          custom_questions?: Json;
           created_at?: string;
           updated_at?: string;
         };
@@ -158,6 +160,7 @@ export interface Database {
           is_flexible?: boolean;
           perks?: string | null;
           image_url?: string | null;
+          custom_questions?: Json;
           created_at?: string;
           updated_at?: string;
         };
@@ -169,6 +172,11 @@ export interface Database {
           opportunity_id: string;
           status: "pending" | "accepted" | "rejected" | "completed";
           message: string | null;
+          phone_number: string | null;
+          availability: string | null;
+          resume_url: string | null;
+          reference_letter_url: string | null;
+          custom_answers: Json;
           hours_completed: number;
           created_at: string;
           updated_at: string;
@@ -179,6 +187,11 @@ export interface Database {
           opportunity_id: string;
           status?: "pending" | "accepted" | "rejected" | "completed";
           message?: string | null;
+          phone_number?: string | null;
+          availability?: string | null;
+          resume_url?: string | null;
+          reference_letter_url?: string | null;
+          custom_answers?: Json;
           hours_completed?: number;
           created_at?: string;
           updated_at?: string;
@@ -189,6 +202,11 @@ export interface Database {
           opportunity_id?: string;
           status?: "pending" | "accepted" | "rejected" | "completed";
           message?: string | null;
+          phone_number?: string | null;
+          availability?: string | null;
+          resume_url?: string | null;
+          reference_letter_url?: string | null;
+          custom_answers?: Json;
           hours_completed?: number;
           created_at?: string;
           updated_at?: string;

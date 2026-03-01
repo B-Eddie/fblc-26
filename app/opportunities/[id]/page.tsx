@@ -21,8 +21,6 @@ export default function OpportunityDetailPage({
   const [averageRating, setAverageRating] = useState(0);
   const [loading, setLoading] = useState(true);
   const [hasApplied, setHasApplied] = useState(false);
-  const [applicationMessage, setApplicationMessage] = useState("");
-  const [submitting, setSubmitting] = useState(false);
   const [isFavorited, setIsFavorited] = useState(false);
   const [userRating, setUserRating] = useState<any>(null);
   const [checkingRole, setCheckingRole] = useState(true);
@@ -138,40 +136,6 @@ export default function OpportunityDetailPage({
       console.error("Error fetching opportunity:", error);
     } finally {
       setLoading(false);
-    }
-  };
-
-  const handleApply = async () => {
-    const {
-      data: { user },
-    } = await supabase.auth.getUser();
-
-    if (!user) {
-      router.push("/auth/login");
-      return;
-    }
-
-    setSubmitting(true);
-
-    try {
-      const { error } = await supabase.from("applications").insert([
-        {
-          profile_id: user.id,
-          opportunity_id: params.id,
-          message: applicationMessage,
-          status: "pending",
-        },
-      ] as any);
-
-      if (error) throw error;
-
-      alert("Application submitted successfully!");
-      setHasApplied(true);
-      setApplicationMessage("");
-    } catch (error: any) {
-      alert("Error submitting application: " + error.message);
-    } finally {
-      setSubmitting(false);
     }
   };
 
@@ -442,23 +406,16 @@ export default function OpportunityDetailPage({
                 </div>
               ) : (
                 <div className="space-y-4">
-                  <textarea
-                    value={applicationMessage}
-                    onChange={(e) => setApplicationMessage(e.target.value)}
-                    placeholder="Why are you interested in this opportunity? (optional)"
-                    className="w-full px-4 py-3 bg-gray-800/50 border border-gray-700/50 rounded-lg text-white placeholder-gray-500 focus:ring-2 focus:ring-gray-600 focus:border-transparent resize-none"
-                    rows={4}
-                  />
-                  <button
-                    onClick={handleApply}
-                    disabled={submitting}
-                    className="w-full flex items-center justify-center space-x-2 py-3 bg-gradient-to-r from-gray-700 to-gray-600 text-white rounded-lg font-semibold hover:shadow-lg hover:shadow-gray-600/50 disabled:opacity-50 disabled:cursor-not-allowed transition"
+                  <p className="text-gray-400 text-sm">
+                    Interested in this opportunity? Submit a full application with your details, resume, and more.
+                  </p>
+                  <Link
+                    href={`/opportunities/${params.id}/apply`}
+                    className="w-full flex items-center justify-center space-x-2 py-3 bg-gradient-to-r from-gray-700 to-gray-600 text-white rounded-lg font-semibold hover:shadow-lg hover:shadow-gray-600/50 transition"
                   >
                     <Send className="w-4 h-4" />
-                    <span>
-                      {submitting ? "Submitting..." : "Submit Application"}
-                    </span>
-                  </button>
+                    <span>Apply Now</span>
+                  </Link>
                 </div>
               )}
 
