@@ -237,7 +237,7 @@ export default function BrowsePage() {
         >
           <p className="font-mono text-[#4EA8F3] text-sm uppercase tracking-widest mb-6">Discovery Protocol</p>
           <h1 className="text-5xl md:text-7xl font-bold font-heading tracking-tighter text-white mb-6 leading-tight">
-            Find <span className="font-drama italic font-normal text-transparent bg-clip-text bg-gradient-to-r from-white to-white/60">meaningful</span> <br/>
+            Find <span className="font-drama italic font-normal text-transparent bg-clip-text bg-gradient-to-r from-white to-white/60 pr-4">meaningful</span> <br/>
             <span className="text-[#4EA8F3]">local work.</span>
           </h1>
           <p className="text-ink-muted text-lg md:text-xl font-sans max-w-2xl leading-relaxed">
