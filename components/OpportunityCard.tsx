@@ -1,77 +1,61 @@
-'use client'
+"use client";
 
-import { useState } from 'react'
-import Link from 'next/link'
-import { motion } from 'framer-motion'
-import { MapPin, Clock, Star, Bookmark, Heart } from 'lucide-react'
-import { supabase } from '@/lib/supabase'
+import { useState } from "react";
+import Link from "next/link";
+import { motion } from "framer-motion";
+import { MapPin, Clock, Star, Bookmark, Heart } from "lucide-react";
+import { supabase } from "@/lib/supabase";
 
 type OpportunityCardProps = {
   opportunity: {
-    id: string
-    title: string
-    description: string
-    hours_available: number
-    is_flexible: boolean
-    perks: string | null
-    image_url?: string | null
+    id: string;
+    title: string;
+    description: string;
+    hours_available: number;
+    is_flexible: boolean;
+    perks: string | null;
+    image_url?: string | null;
     business: {
-      id: string
-      name: string
-      category: string
-      city: string
-      image_url: string | null
-    }
-    averageRating?: number
-  }
-  index?: number
-}
+      id: string;
+      name: string;
+      category: string;
+      city: string;
+      image_url: string | null;
+    };
+    averageRating?: number;
+  };
+  index?: number;
+  isBookmarked?: boolean;
+  onBookmarkToggle?: (opportunityId: string, e: React.MouseEvent) => void;
+};
 
-export default function OpportunityCard({ opportunity, index = 0 }: OpportunityCardProps) {
-  const [isBookmarked, setIsBookmarked] = useState(false)
-  const [imageError, setImageError] = useState(false)
+export default function OpportunityCard({
+  opportunity,
+  index = 0,
+  isBookmarked = false,
+  onBookmarkToggle,
+}: OpportunityCardProps) {
+  const [imageError, setImageError] = useState(false);
   // Prefer opportunity image; fallback to business image (read defensively in case API shape varies)
   const imageSrc =
     (opportunity as any).image_url ??
     opportunity.image_url ??
     opportunity.business?.image_url ??
-    null
+    null;
 
-  const handleBookmark = async (e: React.MouseEvent) => {
-    e.preventDefault()
-    
-    const { data: { user } } = await supabase.auth.getUser()
-    if (!user) {
-      alert('Please log in to bookmark opportunities')
-      return
+  const handleBookmark = (e: React.MouseEvent) => {
+    e.preventDefault();
+    if (onBookmarkToggle) {
+      onBookmarkToggle(opportunity.id, e);
     }
-
-    if (isBookmarked) {
-      // Remove bookmark
-      await supabase
-        .from('bookmarks')
-        .delete()
-        .eq('profile_id', user.id)
-        .eq('opportunity_id', opportunity.id)
-      setIsBookmarked(false)
-    } else {
-      // Add bookmark
-      await supabase
-        .from('bookmarks')
-        .insert([{
-          profile_id: user.id,
-          opportunity_id: opportunity.id,
-        }] as any)
-      setIsBookmarked(true)
-    }
-  }
+  };
 
   return (
     <Link href={`/opportunities/${opportunity.id}`}>
       <motion.div
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
-        transition={{ delay: index * 0.1, duration: 0.6, ease: 'easeOut' }}
+        transition={{ delay: index * 0.1, duration: 0.6, ease: "easeOut" }}
         whileHover={{ y: -8 }}
         className="group h-full"
       >
@@ -86,8 +70,8 @@ export default function OpportunityCard({ opportunity, index = 0 }: OpportunityC
             transition={{ duration: 0.4 }}
           >
             {imageSrc && !imageError ? (
-              <img 
-                src={imageSrc} 
+              <img
+                src={imageSrc}
                 alt={opportunity.business.name}
                 className="w-full h-full object-cover"
                 referrerPolicy="no-referrer"
@@ -97,7 +81,11 @@ export default function OpportunityCard({ opportunity, index = 0 }: OpportunityC
               <div className="w-full h-full flex items-center justify-center bg-gradient-to-br from-gray-600/20 via-gray-700/20 to-gray-600/20">
                 <motion.div
                   animate={{ rotate: 360 }}
-                  transition={{ duration: 20, repeat: Infinity, ease: 'linear' }}
+                  transition={{
+                    duration: 20,
+                    repeat: Infinity,
+                    ease: "linear",
+                  }}
                   className="text-gray-400 text-6xl font-bold opacity-30"
                 >
                   {opportunity.business.name.charAt(0)}
@@ -209,7 +197,9 @@ export default function OpportunityCard({ opportunity, index = 0 }: OpportunityC
                   <Star className="w-4 h-4 fill-purple-400 text-purple-400" />
                 </motion.div>
                 <span className="text-sm font-medium text-gray-300">
-                  {opportunity.averageRating ? opportunity.averageRating.toFixed(1) : 'New'}
+                  {opportunity.averageRating
+                    ? opportunity.averageRating.toFixed(1)
+                    : "New"}
                 </span>
               </motion.div>
             </motion.div>
@@ -229,5 +219,5 @@ export default function OpportunityCard({ opportunity, index = 0 }: OpportunityC
         </div>
       </motion.div>
     </Link>
-  )
+  );
 }
