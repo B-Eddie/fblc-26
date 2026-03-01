@@ -87,9 +87,9 @@ export default function ApplyPage({ params }: { params: { id: string } }) {
         .select("*")
         .eq("profile_id", currentUser.id)
         .eq("opportunity_id", params.id)
-        .single();
+        .limit(1);
 
-      if (appData) setHasApplied(true);
+      if (appData && appData.length > 0) setHasApplied(true);
     } catch (err) {
       console.error("Error fetching data:", err);
     } finally {
