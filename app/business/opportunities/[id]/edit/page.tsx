@@ -296,7 +296,7 @@ export default function EditOpportunityPage({
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-gradient-to-b from-black via-gray-950 to-black flex items-center justify-center">
+      <div className="min-h-screen bg-[#050505] flex items-center justify-center">
         <motion.div
           animate={{ rotate: 360 }}
           transition={{ duration: 2, repeat: Infinity }}
@@ -307,20 +307,7 @@ export default function EditOpportunityPage({
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-black via-gray-950 to-black text-white">
-      {/* Animated Background */}
-      <div className="fixed inset-0 overflow-hidden pointer-events-none">
-        <motion.div
-          className="absolute -top-40 -right-40 w-80 h-80 bg-gray-700/20 rounded-full blur-3xl"
-          animate={{ y: [0, 40, 0] }}
-          transition={{ duration: 8, repeat: Infinity }}
-        />
-        <motion.div
-          className="absolute -bottom-40 -left-40 w-80 h-80 bg-gray-600/20 rounded-full blur-3xl"
-          animate={{ y: [0, -40, 0] }}
-          transition={{ duration: 8, repeat: Infinity, delay: 1 }}
-        />
-      </div>
+    <div className="min-h-screen bg-[#050505] text-white font-sans selection:bg-white selection:text-black">
 
       {/* Header */}
       <header className="border-b border-gray-800/50 sticky top-0 z-40 bg-black/80 backdrop-blur-lg">
@@ -347,7 +334,7 @@ export default function EditOpportunityPage({
               >
                 <img src="/image.png" alt="Logo" className="w-12 h-12 object-contain" />
               </motion.div>
-              <span className="text-2xl font-bold font-display bg-gradient-to-r from-gray-400 to-gray-300 bg-clip-text text-transparent">
+              <span className="text-2xl font-bold font-heading tracking-tight text-white">
                 Vertex
               </span>
             </Link>
@@ -363,7 +350,7 @@ export default function EditOpportunityPage({
           transition={{ duration: 0.6 }}
           className="mb-12"
         >
-          <h1 className="text-5xl md:text-6xl font-bold font-display bg-gradient-to-r from-white via-gray-300 to-gray-400 bg-clip-text text-transparent mb-3">
+          <h1 className="text-4xl md:text-5xl font-bold font-heading text-white tracking-tight mb-3">
             Edit Opportunity
           </h1>
           <p className="text-gray-400 text-lg">
@@ -678,8 +665,9 @@ export default function EditOpportunityPage({
                 whileTap={{ scale: 0.98 }}
                 type="submit"
                 disabled={submitting}
-                className="flex-1 px-6 py-3 bg-gradient-to-r from-gray-700 to-gray-600 text-white rounded-lg font-semibold hover:shadow-lg hover:shadow-gray-600/50 transition disabled:opacity-50 disabled:cursor-not-allowed"
+                className="btn-magnetic flex-1 flex bg-white text-black py-4 rounded-full text-base font-bold group hover:shadow-[0_0_30px_rgba(78,168,243,0.4)] transition-shadow duration-500 justify-center disabled:opacity-50"
               >
+                <span className="relative z-10 flex items-center justify-center gap-2">
                 {submitting ? "Saving..." : "Save Changes"}
               </motion.button>
             </motion.div>

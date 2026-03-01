@@ -6,6 +6,7 @@ import { useRouter } from "next/navigation";
 import { motion } from "framer-motion";
 import { supabase } from "@/lib/supabase";
 import { Plus, MapPin, Users, Clock, LogOut } from "lucide-react";
+import FloatingNav from "@/components/FloatingNav";
 
 export default function BusinessDashboardPage() {
   const router = useRouter();
@@ -124,11 +125,11 @@ export default function BusinessDashboardPage() {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-gradient-to-b from-black via-gray-950 to-black flex items-center justify-center">
+      <div className="min-h-screen bg-[#050505] flex items-center justify-center">
         <motion.div
           animate={{ rotate: 360 }}
           transition={{ duration: 2, repeat: Infinity }}
-          className="w-12 h-12 border-4 border-gray-700/30 border-t-gray-700 rounded-full"
+          className="w-12 h-12 border-4 border-[#333] border-t-[#4EA8F3] rounded-full"
         />
       </div>
     );
@@ -136,102 +137,58 @@ export default function BusinessDashboardPage() {
 
   if (!business) {
     return (
-      <div className="min-h-screen bg-gradient-to-b from-black via-gray-950 to-black flex items-center justify-center">
+      <div className="min-h-screen bg-[#050505] flex items-center justify-center">
         <motion.div
           initial={{ opacity: 0, scale: 0.95 }}
           animate={{ opacity: 1, scale: 1 }}
-          className="text-center max-w-md p-8 bg-gray-900/40 border border-gray-800/60 rounded-2xl backdrop-blur-sm"
+          className="text-center max-w-md card-surface p-8"
         >
-          <h1 className="text-3xl font-bold text-white mb-4">
+          <h1 className="text-3xl font-heading font-bold text-white mb-4">
             Set Up Your Business
           </h1>
-          <p className="text-gray-400 mb-6">
+          <p className="text-ink-muted mb-8 font-mono text-sm">
             You need to create a business profile before posting opportunities.
           </p>
-          <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
-            <Link
-              href="/business/setup"
-              className="inline-block px-8 py-3 bg-gradient-to-r from-gray-700 to-gray-600 text-white rounded-lg font-semibold hover:shadow-lg hover:shadow-gray-600/50 transition"
-            >
-              Create Business Profile
-            </Link>
-          </motion.div>
+          <Link
+            href="/business/setup"
+            className="btn-magnetic inline-block bg-white text-black px-8 py-3 rounded-full text-sm font-bold group hover:shadow-[0_0_30px_rgba(78,168,243,0.4)] transition-shadow duration-500"
+          >
+            <span className="relative z-10">Create Business Profile</span>
+            <span className="btn-bg bg-[#4EA8F3] rounded-full"></span>
+          </Link>
         </motion.div>
       </div>
     );
   }
 
-  const statusColors: Record<string, string> = {
-    pending: "bg-yellow-600/20 text-yellow-400 border border-yellow-600/30",
-    accepted: "bg-green-600/20 text-green-400 border border-green-600/30",
-    rejected: "bg-red-600/20 text-red-400 border border-red-600/30",
-    completed: "bg-blue-600/20 text-blue-400 border border-blue-600/30",
+  const statusStyles: Record<string, string> = {
+    pending: "bg-[#1a1a1a] text-[#f59e0b] border-[#f59e0b]/30",
+    accepted: "bg-[#1a1a1a] text-[#10b981] border-[#10b981]/30",
+    rejected: "bg-[#1a1a1a] text-[#ef4444] border-[#ef4444]/30",
+    completed: "bg-[#1a1a1a] text-[#4EA8F3] border-[#4EA8F3]/30",
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-black via-gray-950 to-black text-white">
-      {/* Animated Background */}
-      <div className="fixed inset-0 overflow-hidden pointer-events-none">
-        <motion.div
-          className="absolute -top-40 -right-40 w-80 h-80 bg-gray-700/20 rounded-full blur-3xl"
-          animate={{ y: [0, 40, 0] }}
-          transition={{ duration: 8, repeat: Infinity }}
-        />
-        <motion.div
-          className="absolute -bottom-40 -left-40 w-80 h-80 bg-gray-600/20 rounded-full blur-3xl"
-          animate={{ y: [0, -40, 0] }}
-          transition={{ duration: 8, repeat: Infinity, delay: 1 }}
-        />
-      </div>
+    <div className="min-h-screen bg-[#050505] text-white font-sans selection:bg-white selection:text-black">
+      <FloatingNav />
 
-      {/* Header */}
-      <header className="border-b border-gray-800/50 sticky top-0 z-40 bg-black/80 backdrop-blur-lg">
-        <nav className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
-          <motion.div
-            className="flex justify-between items-center"
-            initial={{ opacity: 0, y: -20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6 }}
-          >
-            <Link
-              href="/"
-              className="flex items-center space-x-3 hover:opacity-80 transition"
-            >
-              <motion.div
-                className="w-10 h-10  rounded-lg flex items-center justify-center"
-                whileHover={{ scale: 1.05 }}
-              >
-                <img src="/image.png" alt="Logo" className="w-12 h-12 object-contain" />
-              </motion.div>
-              <span className="text-2xl font-bold font-display bg-gradient-to-r from-gray-400 to-gray-300 bg-clip-text text-transparent">
-                Vertex
-              </span>
-            </Link>
-            <motion.button
-              whileHover={{ scale: 1.02 }}
-              whileTap={{ scale: 0.98 }}
-              onClick={handleLogout}
-              className="flex items-center space-x-2 px-6 py-2 bg-gradient-to-r from-gray-700 to-gray-600 text-white rounded-lg font-semibold hover:shadow-lg hover:shadow-gray-600/50 transition"
-            >
-              <LogOut className="w-4 h-4" />
-              <span>Logout</span>
-            </motion.button>
-          </motion.div>
-        </nav>
-      </header>
+      <main className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-32 pb-12">
+        {/* Ambient Glow */}
+        <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[60vw] h-[60vw] bg-[#4EA8F3] mix-blend-screen filter blur-[150px] opacity-[0.15] pointer-events-none" />
 
-      <main className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
         {/* Business Header */}
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.6 }}
-          className="mb-12"
+          transition={{ duration: 0.6, ease: [0.25, 0.46, 0.45, 0.94] }}
+          className="mb-16 relative z-10"
         >
-          <h1 className="text-5xl md:text-6xl font-bold font-display bg-gradient-to-r from-white via-gray-300 to-gray-400 bg-clip-text text-transparent mb-3">
-            {business.name}
+          <p className="font-mono text-[#4EA8F3] text-sm uppercase tracking-widest mb-6">Operations Hub</p>
+          <h1 className="text-5xl md:text-7xl font-bold font-heading tracking-tighter text-white mb-6 leading-tight">
+            Manage <br/>
+            <span className="font-drama italic font-normal text-transparent bg-clip-text bg-gradient-to-r from-[#4EA8F3] to-[#4EA8F3]/60">{business.name}</span>.
           </h1>
-          <p className="text-gray-400 text-lg max-w-3xl">
+          <p className="text-ink-muted text-lg md:text-xl font-sans max-w-3xl leading-relaxed">
             {business.description}
           </p>
         </motion.div>
@@ -248,20 +205,16 @@ export default function BusinessDashboardPage() {
               icon: MapPin,
               label: "Active Opportunities",
               value: opportunities.length,
-              color: "from-blue-600/20 to-blue-700/20 border-blue-600/30",
             },
             {
               icon: Users,
               label: "Total Applications",
               value: applications.length,
-              color: "from-green-600/20 to-green-700/20 border-green-600/30",
             },
             {
               icon: Clock,
               label: "Pending Reviews",
-              value: applications.filter((app) => app.status === "pending")
-                .length,
-              color: "from-orange-600/20 to-orange-700/20 border-orange-600/30",
+              value: applications.filter((app) => app.status === "pending").length,
             },
           ].map((stat, i) => (
             <motion.div
@@ -269,18 +222,18 @@ export default function BusinessDashboardPage() {
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.1 + i * 0.05, duration: 0.6 }}
-              className={`bg-gradient-to-br ${stat.color} border rounded-2xl p-6 backdrop-blur-sm hover:border-opacity-100 transition`}
+              className="card-surface p-6 transition-all duration-300 hover:border-[#4EA8F3]/50 hover:shadow-[0_0_30px_rgba(78,168,243,0.15)] group"
             >
               <div className="flex items-center justify-between">
                 <div>
-                  <p className="text-sm text-gray-400 font-medium">
+                  <p className="text-xs font-mono uppercase tracking-wider text-ink-muted mb-2 group-hover:text-white transition-colors">
                     {stat.label}
                   </p>
-                  <p className="text-4xl font-bold text-white mt-2">
+                  <p className="text-3xl font-bold font-heading text-white group-hover:text-[#4EA8F3] transition-colors">
                     {stat.value}
                   </p>
                 </div>
-                <stat.icon className="w-12 h-12 text-gray-400 opacity-50" />
+                <stat.icon className="w-8 h-8 text-[#333] group-hover:text-[#4EA8F3]/50 transition-colors" />
               </div>
             </motion.div>
           ))}
@@ -291,21 +244,22 @@ export default function BusinessDashboardPage() {
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.2, duration: 0.6 }}
-          className="bg-gray-900/40 border border-gray-800/60 rounded-2xl p-8 mb-8 backdrop-blur-sm"
+          className="card-surface p-8 mb-8"
         >
-          <div className="flex justify-between items-center mb-6">
-            <h2 className="text-2xl font-bold text-white">
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-8">
+            <h2 className="text-2xl font-bold font-heading text-white">
               Your Opportunities
             </h2>
-            <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
-              <Link
-                href="/business/opportunities/new"
-                className="flex items-center space-x-2 px-6 py-3 bg-gradient-to-r from-gray-700 to-gray-600 text-white rounded-lg font-semibold hover:shadow-lg hover:shadow-gray-600/50 transition"
-              >
-                <Plus className="w-5 h-5" />
-                <span>Post New Opportunity</span>
-              </Link>
-            </motion.div>
+            <Link
+              href="/business/opportunities/new"
+              className="btn-magnetic inline-flex items-center gap-2 bg-white text-black px-5 py-2.5 rounded-full text-sm font-bold group hover:shadow-[0_0_20px_rgba(78,168,243,0.3)] transition-shadow"
+            >
+              <span className="relative z-10 flex items-center gap-2">
+                <Plus className="w-4 h-4" />
+                Post New
+              </span>
+              <span className="btn-bg bg-[#4EA8F3] rounded-full"></span>
+            </Link>
           </div>
 
           {opportunities.length === 0 ? (
@@ -314,20 +268,9 @@ export default function BusinessDashboardPage() {
               animate={{ opacity: 1, scale: 1 }}
               className="text-center py-12"
             >
-              <p className="text-gray-400 mb-6 text-lg">
+              <p className="text-ink-muted mb-6 text-sm font-mono">
                 You haven't posted any opportunities yet
               </p>
-              <motion.div
-                whileHover={{ scale: 1.05 }}
-                whileTap={{ scale: 0.95 }}
-              >
-                <Link
-                  href="/business/opportunities/new"
-                  className="inline-block px-8 py-3 bg-gradient-to-r from-gray-700 to-gray-600 text-white rounded-lg font-semibold hover:shadow-lg hover:shadow-gray-600/50 transition"
-                >
-                  Post Your First Opportunity
-                </Link>
-              </motion.div>
             </motion.div>
           ) : (
             <div className="space-y-4">
@@ -337,35 +280,30 @@ export default function BusinessDashboardPage() {
                   initial={{ opacity: 0, x: -20 }}
                   animate={{ opacity: 1, x: 0 }}
                   transition={{ delay: 0.2 + i * 0.05 }}
-                  className="border border-gray-800/60 rounded-xl p-6 hover:border-gray-600/40 transition bg-gray-800/20 backdrop-blur-sm flex justify-between items-start"
+                  className="bg-[#111] border border-[#2a2a2a] rounded-2xl p-6 transition-all duration-300 hover:border-[#4EA8F3]/50 hover:shadow-[0_0_30px_rgba(78,168,243,0.15)] flex flex-col md:flex-row justify-between items-start md:items-center gap-4 group"
                 >
                   <div className="flex-1">
-                    <h3 className="font-semibold text-lg text-white">
+                    <h3 className="font-heading font-bold text-lg text-white mb-1">
                       {opp.title}
                     </h3>
-                    <p className="text-gray-400 text-sm mt-2 line-clamp-2">
+                    <p className="text-ink-muted text-sm mb-3 line-clamp-2">
                       {opp.description}
                     </p>
-                    <div className="flex items-center space-x-4 mt-3 text-sm text-gray-500">
+                    <div className="flex items-center space-x-4 text-xs font-mono text-ink-faint">
                       <span>{opp.hours_available} hours</span>
                       {opp.is_flexible && (
-                        <span className="text-green-400 font-medium">
-                          ✓ Flexible
+                        <span className="text-[#4EA8F3] border border-[#4EA8F3]/50 px-2 py-0.5 rounded-full">
+                          Flexible
                         </span>
                       )}
                     </div>
                   </div>
-                  <motion.div
-                    whileHover={{ scale: 1.05 }}
-                    whileTap={{ scale: 0.95 }}
+                  <Link
+                    href={`/business/opportunities/${opp.id}/edit`}
+                    className="px-5 py-2 border border-[#333] text-white text-xs font-mono uppercase tracking-wider rounded-full hover:border-[#4EA8F3] hover:text-[#4EA8F3] transition-colors whitespace-nowrap"
                   >
-                    <Link
-                      href={`/business/opportunities/${opp.id}/edit`}
-                      className="px-6 py-2 bg-gray-700/50 text-gray-300 rounded-lg hover:bg-gray-600/50 transition whitespace-nowrap ml-4"
-                    >
-                      Edit Details
-                    </Link>
-                  </motion.div>
+                    Edit Details
+                  </Link>
                 </motion.div>
               ))}
             </div>
@@ -377,14 +315,14 @@ export default function BusinessDashboardPage() {
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.3, duration: 0.6 }}
-          className="bg-gray-900/40 border border-gray-800/60 rounded-2xl p-8 backdrop-blur-sm"
+          className="card-surface p-8"
         >
-          <h2 className="text-2xl font-bold text-white mb-6">
+          <h2 className="text-2xl font-bold font-heading text-white mb-8">
             Recent Applications
           </h2>
           {applications.length === 0 ? (
             <motion.div className="text-center py-12">
-              <p className="text-gray-400 text-lg">No applications yet</p>
+              <p className="text-ink-muted text-sm font-mono">No applications yet</p>
             </motion.div>
           ) : (
             <div className="space-y-4">
@@ -394,65 +332,61 @@ export default function BusinessDashboardPage() {
                   initial={{ opacity: 0, x: -20 }}
                   animate={{ opacity: 1, x: 0 }}
                   transition={{ delay: 0.3 + i * 0.05 }}
-                  className="border border-gray-800/60 rounded-xl p-6 bg-gray-800/20 backdrop-blur-sm"
+                  className="bg-[#111] border border-[#2a2a2a] rounded-2xl p-6 transition-all duration-300 hover:border-[#4EA8F3]/50 hover:shadow-[0_0_30px_rgba(78,168,243,0.15)] group"
                 >
-                  <div className="flex justify-between items-start mb-4">
+                  <div className="flex flex-col sm:flex-row justify-between items-start gap-4 mb-4">
                     <div className="flex-1">
-                      <h3 className="font-semibold text-lg text-white">
+                      <h3 className="font-heading font-bold text-lg text-white mb-1">
                         {app.profile?.full_name || "Unknown Applicant"}
                       </h3>
-                      <p className="text-sm text-gray-400">
+                      <p className="text-sm font-mono text-ink-muted mb-3">
                         {app.profile?.email || "No email"}
                       </p>
-                      <p className="text-sm text-gray-500 mt-2">
+                      <p className="text-xs font-mono text-ink-faint">
                         Applied to:{" "}
-                        <span className="text-gray-300">
+                        <span className="text-white">
                           {app.opportunity?.title || "Deleted opportunity"}
                         </span>
                       </p>
                       {app.message && (
-                        <p className="text-sm text-gray-300 mt-3 italic border-l-2 border-gray-600 pl-3">
+                        <p className="text-sm text-ink-muted mt-3 italic border-l-2 border-[#333] pl-3">
                           "{app.message}"
                         </p>
                       )}
                     </div>
                     <motion.span
                       whileHover={{ scale: 1.05 }}
-                      className={`px-4 py-2 rounded-lg text-sm font-medium whitespace-nowrap ${statusColors[app.status] || statusColors.pending}`}
+                      className={`px-3 py-1 border rounded-full text-[10px] font-mono uppercase tracking-wider whitespace-nowrap ${statusStyles[app.status] || statusStyles.pending}`}
                     >
-                      {app.status.charAt(0).toUpperCase() + app.status.slice(1)}
+                      {app.status}
                     </motion.span>
                   </div>
+
                   {app.status === "pending" && (
-                    <div className="flex space-x-3 mt-4 pt-4 border-t border-gray-700/50">
-                      <motion.button
-                        whileHover={{ scale: 1.05 }}
-                        whileTap={{ scale: 0.95 }}
+                    <div className="flex space-x-3 mt-6 pt-4 border-t border-[#222]">
+                      <button
                         onClick={() => handleStatusUpdate(app.id, "accepted")}
-                        className="px-6 py-2 bg-green-600/20 text-green-400 border border-green-600/30 text-sm rounded-lg hover:bg-green-600/30 font-semibold transition"
+                        className="px-5 py-2 bg-[#1a1a1a] text-[#10b981] border border-[#10b981]/30 text-xs font-mono uppercase tracking-wider rounded-full hover:bg-[#10b981]/10 transition-colors"
                       >
                         Accept
-                      </motion.button>
-                      <motion.button
-                        whileHover={{ scale: 1.05 }}
-                        whileTap={{ scale: 0.95 }}
+                      </button>
+                      <button
                         onClick={() => handleStatusUpdate(app.id, "rejected")}
-                        className="px-6 py-2 bg-red-600/20 text-red-400 border border-red-600/30 text-sm rounded-lg hover:bg-red-600/30 font-semibold transition"
+                        className="px-5 py-2 bg-[#1a1a1a] text-[#ef4444] border border-[#ef4444]/30 text-xs font-mono uppercase tracking-wider rounded-full hover:bg-[#ef4444]/10 transition-colors"
                       >
                         Reject
-                      </motion.button>
+                      </button>
                     </div>
                   )}
+
                   {(app.status === "accepted" || app.status === "completed") && (
-                    <div className="flex space-x-3 mt-4 pt-4 border-t border-gray-700/50">
-                      <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
-                        <Link
-                          href={`/business/dashboard/employee/${app.id}`}
-                          className="inline-flex items-center space-x-2 px-6 py-2 bg-gradient-to-r from-gray-700 to-gray-600 text-white text-sm rounded-lg font-semibold hover:shadow-lg hover:shadow-gray-600/50 transition"
-                        >
-                          <span>Manage Employee →</span>
-                        </Link>
-                      </motion.div>
+                    <div className="mt-6 pt-4 border-t border-[#222]">
+                      <Link
+                        href={`/business/dashboard/employee/${app.id}`}
+                        className="inline-flex items-center space-x-2 text-xs font-mono uppercase tracking-wider text-ink-muted hover:text-[#4EA8F3] transition-colors"
+                      >
+                        <span>Manage Employee →</span>
+                      </Link>
                     </div>
                   )}
                 </motion.div>

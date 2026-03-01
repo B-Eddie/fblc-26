@@ -142,11 +142,11 @@ export default function BusinessDetailPage({
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-gradient-to-b from-black via-gray-950 to-black flex items-center justify-center">
+      <div className="min-h-screen bg-[#050505] flex items-center justify-center">
         <motion.div
           animate={{ rotate: 360 }}
           transition={{ duration: 2, repeat: Infinity }}
-          className="w-12 h-12 border-4 border-gray-700/30 border-t-gray-700 rounded-full"
+          className="w-12 h-12 border-4 border-[#333] border-t-[#4EA8F3] rounded-full"
         />
       </div>
     );
@@ -154,14 +154,14 @@ export default function BusinessDetailPage({
 
   if (!business) {
     return (
-      <div className="min-h-screen bg-gradient-to-b from-black via-gray-950 to-black flex items-center justify-center">
-        <div className="text-center">
-          <h1 className="text-2xl font-bold text-white mb-4">
+      <div className="min-h-screen bg-[#050505] flex items-center justify-center">
+        <div className="text-center card-surface p-12">
+          <h1 className="text-2xl font-bold font-heading text-white mb-4">
             Business not found
           </h1>
           <Link
             href="/browse"
-            className="text-gray-400 hover:text-gray-300 transition"
+            className="text-ink-muted hover:text-white transition-colors"
           >
             Back to Browse
           </Link>
@@ -171,18 +171,10 @@ export default function BusinessDetailPage({
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-black via-gray-950 to-black text-white">
-      {/* Animated Background */}
-      <div className="fixed inset-0 overflow-hidden pointer-events-none">
-        <motion.div
-          className="absolute -top-40 -right-40 w-80 h-80 bg-gray-700/20 rounded-full blur-3xl"
-          animate={{ y: [0, 40, 0] }}
-          transition={{ duration: 8, repeat: Infinity }}
-        />
-      </div>
+    <div className="min-h-screen bg-[#050505] text-white font-sans selection:bg-white selection:text-black">
 
       {/* Header */}
-      <header className="border-b border-gray-800/50 sticky top-0 z-40 bg-black/80 backdrop-blur-lg">
+      <header className="border-b border-[#222] sticky top-0 z-40 bg-[#0a0a0a]/80 backdrop-blur-xl">
         <nav className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
           <motion.div
             className="flex justify-between items-center"
@@ -194,39 +186,42 @@ export default function BusinessDetailPage({
               className="flex items-center space-x-3 hover:opacity-80 transition"
             >
               <motion.div
-                className="w-10 h-10 rounded-lg flex items-center justify-center"
+                className="w-8 h-8 flex items-center justify-center"
                 whileHover={{ scale: 1.05 }}
               >
-                <img src="/image.png" alt="Logo" className="w-12 h-12 object-contain" />
+                <img src="/logo.png" alt="Logo" className="w-8 h-8 object-contain filter grayscale brightness-200" />
               </motion.div>
-              <span className="text-2xl font-bold font-display bg-gradient-to-r from-gray-400 to-gray-300 bg-clip-text text-transparent">
-                Vertex
+              <span className="text-xl font-bold font-heading tracking-tight text-white">
+                Pilot
               </span>
             </Link>
             <Link
-              href="/browse"
-              className="flex items-center space-x-2 text-gray-400 hover:text-gray-300 transition"
+              href="/browse/businesses"
+              className="flex items-center space-x-2 text-sm font-medium text-ink-muted hover:text-white transition-colors"
             >
               <ArrowLeft className="w-4 h-4" />
-              <span>Back to Browse</span>
+              <span>Back to Directory</span>
             </Link>
           </motion.div>
         </nav>
       </header>
 
       <main className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+        {/* Ambient Glow */}
+        <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[60vw] h-[60vw] bg-[#4EA8F3] mix-blend-screen filter blur-[150px] opacity-[0.1] pointer-events-none" />
+
         {/* Business Hero */}
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
-          className="bg-gradient-to-r from-gray-900/60 to-gray-950/60 border border-gray-800/60 rounded-2xl p-8 mb-8 backdrop-blur-sm"
+          className="relative z-10 card-surface p-8 mb-12 backdrop-blur-sm bg-[#0a0a0a]/90"
         >
-          <div className="flex justify-between items-start mb-6">
+          <div className="flex flex-col sm:flex-row justify-between items-start gap-6 mb-8">
             <div>
-              <span className="inline-block px-4 py-2 bg-gray-700/30 text-gray-300 text-sm font-semibold rounded-full mb-4 border border-gray-600/30">
+              <span className="inline-block px-3 py-1.5 bg-[#4EA8F3]/10 border border-[#4EA8F3]/30 text-[#4EA8F3] text-[10px] font-mono uppercase tracking-widest rounded-full mb-6">
                 {business.category}
               </span>
-              <h1 className="text-5xl font-bold mb-3 font-display bg-gradient-to-r from-white via-gray-300 to-gray-400 bg-clip-text text-transparent">
+              <h1 className="text-4xl md:text-7xl font-bold mb-4 font-heading tracking-tight text-white leading-tight">
                 {business.name}
               </h1>
             </div>
@@ -234,44 +229,44 @@ export default function BusinessDetailPage({
               <motion.div
                 initial={{ scale: 0 }}
                 animate={{ scale: 1 }}
-                className="flex items-center space-x-2 bg-yellow-600/20 px-6 py-3 rounded-xl border border-yellow-600/30"
+                className="flex items-center space-x-3 bg-[#1a1a1a] px-5 py-3 rounded-2xl border border-[#333]"
               >
-                <Star className="w-6 h-6 fill-yellow-500 text-yellow-500" />
+                <Star className="w-5 h-5 fill-[#4EA8F3] text-[#4EA8F3]" />
                 <div>
-                  <div className="text-3xl font-bold text-yellow-400">
+                  <div className="text-2xl font-bold font-heading text-white">
                     {averageRating.toFixed(1)}
                   </div>
-                  <div className="text-sm text-yellow-400/80">
-                    ({ratings.length} reviews)
+                  <div className="text-[10px] font-mono uppercase tracking-wider text-ink-muted">
+                    {ratings.length} reviews
                   </div>
                 </div>
               </motion.div>
             )}
           </div>
 
-          <p className="text-gray-300 text-lg mb-6 leading-relaxed">
+          <p className="text-ink-muted text-lg mb-8 leading-relaxed max-w-4xl">
             {business.description}
           </p>
 
           {/* Contact Information */}
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 pt-6 border-t border-[#2a2a2a]">
             <div className="flex items-start space-x-3">
-              <MapPin className="w-5 h-5 text-gray-500 mt-1 flex-shrink-0" />
+              <MapPin className="w-4 h-4 text-ink-faint mt-0.5 flex-shrink-0" />
               <div>
-                <p className="text-sm text-gray-400">Location</p>
-                <p className="text-gray-300">
+                <p className="font-mono text-[10px] uppercase tracking-wider text-ink-muted mb-1">Location</p>
+                <p className="text-white text-sm">
                   {business.address}, {business.city}
                 </p>
               </div>
             </div>
             {business.phone && (
               <div className="flex items-start space-x-3">
-                <Phone className="w-5 h-5 text-gray-500 mt-1 flex-shrink-0" />
+                <Phone className="w-4 h-4 text-ink-faint mt-0.5 flex-shrink-0" />
                 <div>
-                  <p className="text-sm text-gray-400">Phone</p>
+                  <p className="font-mono text-[10px] uppercase tracking-wider text-ink-muted mb-1">Phone</p>
                   <a
                     href={`tel:${business.phone}`}
-                    className="text-gray-300 hover:text-gray-200 transition"
+                    className="text-white hover:text-[#4EA8F3] text-sm transition-colors"
                   >
                     {business.phone}
                   </a>
@@ -280,12 +275,12 @@ export default function BusinessDetailPage({
             )}
             {business.email && (
               <div className="flex items-start space-x-3">
-                <Mail className="w-5 h-5 text-gray-500 mt-1 flex-shrink-0" />
+                <Mail className="w-4 h-4 text-ink-faint mt-0.5 flex-shrink-0" />
                 <div>
-                  <p className="text-sm text-gray-400">Email</p>
+                  <p className="font-mono text-[10px] uppercase tracking-wider text-ink-muted mb-1">Email</p>
                   <a
                     href={`mailto:${business.email}`}
-                    className="text-gray-300 hover:text-gray-200 transition break-all"
+                    className="text-white hover:text-[#4EA8F3] text-sm transition-colors break-all"
                   >
                     {business.email}
                   </a>
@@ -294,21 +289,21 @@ export default function BusinessDetailPage({
             )}
             {business.website && (
               <div className="flex items-start space-x-3">
-                <Globe className="w-5 h-5 text-gray-500 mt-1 flex-shrink-0" />
+                <Globe className="w-4 h-4 text-ink-faint mt-0.5 flex-shrink-0" />
                 <div>
-                  <p className="text-sm text-gray-400">Website</p>
+                  <p className="font-mono text-[10px] uppercase tracking-wider text-ink-muted mb-1">Website</p>
                   <a
                     href={business.website}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="text-gray-300 hover:text-gray-200 transition truncate"
+                    className="text-white hover:text-[#4EA8F3] text-sm transition-colors truncate"
                   >
-                    Visit
+                    Visit Site
                   </a>
                 </div>
               </div>
             )}
-            <div className="flex items-center justify-center lg:justify-start">
+            <div className="flex items-center lg:col-span-4 mt-2">
               <BusinessFavoriteButton
                 businessId={business.id}
                 isInitiallyFavorited={isFavorited}
@@ -327,7 +322,7 @@ export default function BusinessDetailPage({
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: 0.1 }}
-                className="bg-gray-900/40 border border-gray-800/60 rounded-2xl p-8 backdrop-blur-sm"
+                className="card-surface p-8"
               >
                 <CouponsDisplay coupons={coupons} />
               </motion.div>
@@ -338,11 +333,11 @@ export default function BusinessDetailPage({
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.2 }}
-              className="bg-gray-900/40 border border-gray-800/60 rounded-2xl p-8 backdrop-blur-sm"
+              className="card-surface p-8"
             >
-              <h2 className="text-2xl font-bold text-white mb-6">Reviews</h2>
+              <h2 className="text-2xl font-bold font-heading text-white mb-6">Reviews</h2>
               {ratings.length === 0 ? (
-                <p className="text-gray-400">
+                <p className="text-ink-muted font-mono">
                   No reviews yet. Be the first to review!
                 </p>
               ) : (
@@ -353,32 +348,32 @@ export default function BusinessDetailPage({
                       initial={{ opacity: 0, y: 10 }}
                       animate={{ opacity: 1, y: 0 }}
                       transition={{ delay: index * 0.05 }}
-                      className="border-b border-gray-800 pb-6 last:border-b-0"
+                      className="border-b border-[#2a2a2a] pb-6 last:border-b-0"
                     >
                       <div className="flex items-start justify-between mb-3">
                         <div>
-                          <div className="flex gap-1">
+                          <div className="flex gap-1 mb-2">
                             {[...Array(5)].map((_, i) => (
                               <Star
                                 key={i}
-                                className={`w-4 h-4 ${
+                                className={`w-3.5 h-3.5 ${
                                   i < rating.rating
-                                    ? "fill-yellow-500 text-yellow-500"
-                                    : "text-gray-600"
+                                    ? "fill-[#4EA8F3] text-[#4EA8F3]"
+                                    : "text-[#333]"
                                 }`}
                               />
                             ))}
                           </div>
-                          <p className="text-sm text-gray-400 mt-2">
+                          <p className="text-sm font-bold text-white">
                             {rating.profile.full_name || "Anonymous"}
                           </p>
                         </div>
-                        <p className="text-xs text-gray-500">
+                        <p className="text-xs font-mono text-ink-faint">
                           {new Date(rating.created_at).toLocaleDateString()}
                         </p>
                       </div>
                       {rating.review && (
-                        <p className="text-gray-300 leading-relaxed">
+                        <p className="text-ink-muted text-sm leading-relaxed mt-3">
                           {rating.review}
                         </p>
                       )}

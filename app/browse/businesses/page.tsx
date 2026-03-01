@@ -179,23 +179,10 @@ export default function BrowseBusinessesPage() {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-black via-gray-950 to-black text-white">
-      {/* Animated Background Elements */}
-      <div className="fixed inset-0 overflow-hidden pointer-events-none">
-        <motion.div
-          className="absolute -top-40 -right-40 w-80 h-80 bg-gray-700/20 rounded-full blur-3xl"
-          animate={{ y: [0, 40, 0] }}
-          transition={{ duration: 8, repeat: Infinity }}
-        />
-        <motion.div
-          className="absolute -bottom-40 -left-40 w-80 h-80 bg-gray-600/20 rounded-full blur-3xl"
-          animate={{ y: [0, -40, 0] }}
-          transition={{ duration: 8, repeat: Infinity, delay: 1 }}
-        />
-      </div>
+    <div className="min-h-screen bg-[#050505] text-white font-sans selection:bg-white selection:text-black">
 
       {/* Header */}
-      <header className="border-b border-gray-800/50 sticky top-0 z-40 bg-black/80 backdrop-blur-lg">
+      <header className="border-b border-[#222] sticky top-0 z-40 bg-[#0a0a0a]/80 backdrop-blur-xl">
         <nav className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
           <motion.div
             className="flex justify-between items-center"
@@ -208,22 +195,18 @@ export default function BrowseBusinessesPage() {
               className="flex items-center space-x-3 hover:opacity-80 transition"
             >
               <motion.div
-                className="w-10 h-10 rounded-lg flex items-center justify-center"
+                className="w-8 h-8 rounded-lg flex items-center justify-center"
                 whileHover={{ scale: 1.05 }}
               >
-                <img
-                  src="/image.png"
-                  alt="Logo"
-                  className="w-12 h-12 object-contain"
-                />
+                <img src="/logo.png" alt="Logo" className="w-8 h-8 object-contain" />
               </motion.div>
-              <span className="text-2xl font-bold font-display bg-gradient-to-r from-gray-400 to-gray-300 bg-clip-text text-transparent">
-                Vertex
+              <span className="text-xl font-bold font-heading tracking-tight text-white">
+                Pilot
               </span>
             </Link>
             <Link
               href="/browse"
-              className="flex items-center space-x-2 text-gray-400 hover:text-gray-300 transition"
+              className="flex items-center space-x-2 text-sm font-medium text-ink-muted hover:text-white transition-colors"
             >
               <ArrowLeft className="w-4 h-4" />
               <span>Back to Opportunities</span>
@@ -240,32 +223,32 @@ export default function BrowseBusinessesPage() {
           transition={{ duration: 0.6 }}
           className="mb-10"
         >
-          <h1 className="text-5xl md:text-6xl font-bold mb-3 font-display bg-gradient-to-r from-white via-gray-300 to-gray-400 bg-clip-text text-transparent">
+          <h1 className="text-4xl md:text-5xl font-bold mb-3 font-heading tracking-tight text-white">
             Discover Businesses
           </h1>
-          <p className="text-gray-400 text-lg">
+          <p className="text-ink-muted text-lg font-mono">
             Browse local businesses, view ratings, and find special deals
           </p>
         </motion.div>
 
         {/* Search and Filters */}
         <motion.div
-          className="mb-8 space-y-4"
+          className="mb-8 space-y-6"
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.1, duration: 0.6 }}
         >
           {/* Search Bar */}
           <div className="relative group">
-            <div className="absolute inset-0 bg-gradient-to-r from-gray-600/20 to-gray-700/20 rounded-xl opacity-0 group-focus-within:opacity-100 blur transition duration-300" />
+            <div className="absolute inset-0 bg-[#4EA8F3] rounded-2xl opacity-0 group-focus-within:opacity-10 blur transition duration-300 pointer-events-none" />
             <div className="relative flex items-center">
-              <Search className="absolute left-4 text-gray-500 w-5 h-5" />
+              <Search className="absolute left-5 text-[#555] w-5 h-5" />
               <input
                 type="text"
                 placeholder="Search by name, city, or description..."
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
-                className="w-full pl-12 pr-4 py-4 bg-gray-900/50 border border-gray-800/60 rounded-xl text-white placeholder-gray-600 focus:ring-2 focus:ring-gray-600 focus:border-transparent transition backdrop-blur-sm"
+                className="w-full pl-14 pr-5 py-4 bg-[#0a0a0a] border border-[#2a2a2a] rounded-2xl text-white placeholder-[#555] focus:outline-none focus:border-[#4EA8F3] transition-colors font-mono text-sm"
               />
             </div>
           </div>
@@ -276,15 +259,15 @@ export default function BrowseBusinessesPage() {
               <motion.button
                 key={category}
                 onClick={() => setSelectedCategory(category)}
-                whileHover={{ scale: 1.05 }}
-                whileTap={{ scale: 0.95 }}
+                whileHover={{ scale: 1.02 }}
+                whileTap={{ scale: 0.98 }}
                 initial={{ opacity: 0, x: -10 }}
                 animate={{ opacity: 1, x: 0 }}
                 transition={{ delay: i * 0.05 }}
-                className={`px-6 py-2 rounded-full font-medium transition whitespace-nowrap ${
+                className={`px-5 py-2 rounded-full font-mono text-xs uppercase tracking-wider transition-colors border ${
                   selectedCategory === category
-                    ? "bg-gradient-to-r from-gray-700 to-gray-600 text-white shadow-lg shadow-gray-600/50"
-                    : "bg-gray-800/50 text-gray-300 hover:bg-gray-800 border border-gray-700/50 backdrop-blur-sm"
+                    ? "bg-white text-black border-white"
+                    : "bg-[#0a0a0a] text-ink-muted border-[#2a2a2a] hover:border-[#4EA8F3] hover:text-white"
                 }`}
               >
                 {category}
@@ -294,50 +277,49 @@ export default function BrowseBusinessesPage() {
 
           {/* Sort Option */}
           <motion.div
-            className="flex justify-between items-center flex-wrap gap-4"
+            className="flex justify-between items-center flex-wrap gap-4 pt-4 border-t border-[#222]"
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             transition={{ delay: 0.2 }}
           >
-            <div className="flex items-center space-x-4">
-              <Filter className="w-5 h-5 text-gray-400" />
-              <label className="text-sm font-medium text-gray-300">
-                Sort by:
-              </label>
-              <motion.select
+            <div className="flex items-center space-x-4 w-full sm:w-auto">
+              <Filter className="w-5 h-5 text-ink-faint" />
+              <span className="text-sm font-mono text-ink-muted uppercase tracking-wider">
+                Sort:
+              </span>
+              <select
                 value={sortBy}
                 onChange={(e) => setSortBy(e.target.value as any)}
-                className="px-4 py-2 bg-gray-800/50 border border-gray-700/50 rounded-lg text-white focus:ring-2 focus:ring-gray-600 transition backdrop-blur-sm cursor-pointer"
-                whileFocus={{ scale: 1.02 }}
+                className="flex-1 sm:flex-none px-4 py-2 bg-[#0a0a0a] border border-[#2a2a2a] rounded-lg text-white focus:outline-none focus:border-[#4EA8F3] transition-colors font-mono text-sm cursor-pointer"
               >
                 <option value="name">Name</option>
                 <option value="rating">Rating</option>
                 <option value="coupons">Deals</option>
-              </motion.select>
+              </select>
             </div>
           </motion.div>
         </motion.div>
 
         {/* Results Counter */}
         <motion.div
-          className="mb-6 flex items-center space-x-2"
+          className="mb-6 flex items-center"
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           transition={{ delay: 0.3 }}
         >
-          <p className="text-gray-400">
-            Found{" "}
-            <span className="font-semibold text-white">
-              {filteredBusinesses.length}
-            </span>{" "}
-            {filteredBusinesses.length === 1 ? "business" : "businesses"}
-          </p>
+          <div className="flex items-center gap-2 bg-[#1a1a1a] px-3 py-1.5 rounded-full border border-[#333]">
+            <div className="w-2 h-2 rounded-full bg-[#4EA8F3] pulse-dot" />
+            <span className="font-mono text-[10px] uppercase tracking-wider text-ink-muted">
+              <span className="text-white font-bold">{filteredBusinesses.length}</span>{" "}
+              {filteredBusinesses.length === 1 ? "business found" : "businesses found"}
+            </span>
+          </div>
         </motion.div>
 
         {/* Businesses Grid */}
         {loading ? (
           <motion.div
-            className="text-center py-16"
+            className="text-center py-20"
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
           >
@@ -345,18 +327,17 @@ export default function BrowseBusinessesPage() {
               <motion.div
                 animate={{ rotate: 360 }}
                 transition={{ duration: 2, repeat: Infinity, ease: "linear" }}
-                className="w-12 h-12 border-4 border-gray-600/30 border-t-gray-600 rounded-full"
+                className="w-12 h-12 border-4 border-[#333] border-t-[#4EA8F3] rounded-full"
               />
             </div>
-            <p className="mt-4 text-gray-400 text-lg">Loading businesses...</p>
           </motion.div>
         ) : filteredBusinesses.length === 0 ? (
           <motion.div
-            className="text-center py-16 bg-gray-900/40 border border-gray-800/60 rounded-2xl backdrop-blur-sm"
+            className="text-center py-20 card-surface"
             initial={{ opacity: 0, scale: 0.95 }}
             animate={{ opacity: 1, scale: 1 }}
           >
-            <p className="text-gray-400 text-lg">
+            <p className="text-ink-muted font-mono">
               No businesses found. Try adjusting your filters.
             </p>
           </motion.div>

@@ -23,7 +23,13 @@ export default function RootLayout({
           rel="stylesheet"
         />
       </head>
-      <body suppressHydrationWarning={true}>
+      <body suppressHydrationWarning={true} className="bg-[#050505] text-white font-sans selection:bg-white selection:text-black">
+        <svg className="pointer-events-none fixed inset-0 z-[9999] h-full w-full opacity-[0.03]">
+          <filter id="noise">
+            <feTurbulence type="fractalNoise" baseFrequency="0.8" numOctaves="3" stitchTiles="stitch" />
+          </filter>
+          <rect width="100%" height="100%" filter="url(#noise)" />
+        </svg>
         <RecaptchaProvider>{children}</RecaptchaProvider>
       </body>
     </html>

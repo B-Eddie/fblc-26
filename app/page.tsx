@@ -157,14 +157,7 @@ export default function LandingPage() {
   }, []);
 
   return (
-    <div ref={mainRef} className="bg-[#050505] min-h-screen text-white font-sans selection:bg-white selection:text-black">
-      {/* Noise Overlay */}
-      <svg className="pointer-events-none fixed inset-0 z-[9999] h-full w-full opacity-[0.03]">
-        <filter id="noise">
-          <feTurbulence type="fractalNoise" baseFrequency="0.8" numOctaves="3" stitchTiles="stitch" />
-        </filter>
-        <rect width="100%" height="100%" filter="url(#noise)" />
-      </svg>
+    <div ref={mainRef} className="bg-transparent min-h-screen text-white font-sans selection:bg-white selection:text-black">
 
       {/* A. NAVBAR */}
       <nav ref={navRef} className="fixed top-6 left-1/2 -translate-x-1/2 z-50 transition-all duration-500 rounded-full px-6 py-3 flex items-center gap-8 border border-transparent [&.nav-scrolled]:bg-[#0a0a0a]/80 [&.nav-scrolled]:backdrop-blur-xl [&.nav-scrolled]:border-[#222]">

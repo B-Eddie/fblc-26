@@ -3,7 +3,7 @@
 import { useState, useEffect } from "react";
 import Link from "next/link";
 import { motion } from "framer-motion";
-import { MapPin, Star, Ticket } from "lucide-react";
+import { MapPin, Star, Ticket, ArrowUpRight } from "lucide-react";
 import { supabase } from "@/lib/supabase";
 import BusinessFavoriteButton from "./BusinessFavoriteButton";
 
@@ -26,6 +26,7 @@ export default function BusinessCard({
   const [averageRating, setAverageRating] = useState(0);
   const [couponCount, setCouponCount] = useState(0);
   const [isFavorited, setIsFavorited] = useState(false);
+  const [imageError, setImageError] = useState(false);
 
   useEffect(() => {
     fetchBusinessData();
@@ -75,58 +76,50 @@ export default function BusinessCard({
   };
 
   return (
-    <Link href={`/business/${business.id}`}>
+    <Link href={`/business/${business.id}`} className="block h-full group">
       <motion.div
-        initial={{ opacity: 0, y: 20 }}
+        initial={{ opacity: 0, y: 30 }}
         animate={{ opacity: 1, y: 0 }}
-        transition={{ delay: index * 0.1, duration: 0.6, ease: "easeOut" }}
-        whileHover={{ y: -8 }}
-        className="group h-full"
+        transition={{ delay: index * 0.08, duration: 0.7, ease: [0.25, 0.46, 0.45, 0.94] }}
+        className="relative h-full rounded-[2rem] bg-[#0a0a0a] border border-[#222] overflow-hidden hover:border-[#4EA8F3]/50 transition-colors duration-500"
       >
-        <div className="relative bg-gray-900/40 border border-gray-800/60 rounded-2xl hover:border-gray-600/40 transition-all duration-300 overflow-hidden h-full flex flex-col backdrop-blur-sm">
-          {/* Hover glow effect */}
-          <div className="absolute inset-0 bg-gradient-to-r from-gray-700/20 to-gray-600/20 rounded-2xl opacity-0 group-hover:opacity-100 blur transition duration-300 pointer-events-none" />
+        {/* Glow effect on hover */}
+        <div className="absolute inset-0 bg-gradient-to-b from-[#4EA8F3]/0 to-[#4EA8F3]/5 opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none" />
 
-          {/* Image Container */}
+        <div className="flex flex-col h-full relative z-10 p-2">
+          {/* Image Container with inner shadow and rounded corners */}
           <motion.div
-            className="h-48 bg-gray-800/50 relative overflow-hidden"
-            whileHover={{ scale: 1.05 }}
-            transition={{ duration: 0.4 }}
+            className="h-56 relative overflow-hidden rounded-[1.5rem] bg-[#111] border border-[#222]"
+            whileHover={{ scale: 0.98 }}
+            transition={{ duration: 0.5, ease: [0.25, 0.46, 0.45, 0.94] }}
           >
-            {business.image_url ? (
+            {business.image_url && !imageError ? (
               <img
                 src={business.image_url}
                 alt={business.name}
-                className="w-full h-full object-cover"
+                className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110 group-hover:opacity-80"
+                onError={() => setImageError(true)}
               />
             ) : (
-              <div className="w-full h-full flex items-center justify-center bg-gradient-to-br from-gray-600/20 via-gray-700/20 to-gray-600/20">
-                <motion.div
-                  animate={{ rotate: 360 }}
-                  transition={{
-                    duration: 20,
-                    repeat: Infinity,
-                    ease: "linear",
-                  }}
-                  className="text-gray-400 text-6xl font-bold opacity-30"
-                >
+              <div className="w-full h-full flex items-center justify-center bg-gradient-to-br from-[#1a1a1a] to-[#0a0a0a]">
+                <div className="text-[#333] text-7xl font-drama font-bold opacity-30">
                   {business.name.charAt(0)}
-                </motion.div>
+                </div>
               </div>
             )}
 
+            {/* Top gradient overlay */}
+            <div className="absolute inset-x-0 top-0 h-24 bg-gradient-to-b from-black/60 to-transparent pointer-events-none" />
+
             {/* Category Badge */}
-            <motion.span
-              initial={{ opacity: 0, x: -20 }}
-              animate={{ opacity: 1, x: 0 }}
-              transition={{ delay: index * 0.1 + 0.2 }}
-              className="absolute top-4 left-4 px-3 py-1 bg-gray-900/80 text-gray-300 text-xs font-semibold rounded-full border border-gray-700/50 backdrop-blur-sm"
-            >
-              {business.category}
-            </motion.span>
+            <div className="absolute top-4 left-4">
+              <span className="px-3 py-1.5 bg-black/60 backdrop-blur-md text-white font-mono text-[10px] uppercase tracking-widest rounded-full border border-white/10">
+                {business.category}
+              </span>
+            </div>
 
             {/* Favorite Button */}
-            <div className="absolute top-4 right-4 z-10 pointer-events-auto">
+            <div className="absolute top-4 right-4 z-10">
               <BusinessFavoriteButton
                 businessId={business.id}
                 isInitiallyFavorited={isFavorited}
@@ -135,42 +128,41 @@ export default function BusinessCard({
 
             {/* Coupon Badge */}
             {couponCount > 0 && (
-              <motion.span
-                initial={{ opacity: 0, y: -10 }}
-                animate={{ opacity: 1, y: 0 }}
-                className="absolute bottom-4 right-4 px-2 py-1 bg-purple-600/80 text-purple-100 text-xs font-semibold rounded flex items-center space-x-1 backdrop-blur-sm"
-              >
-                <Ticket className="w-3 h-3" />
-                <span>{couponCount}</span>
-              </motion.span>
+              <div className="absolute bottom-4 right-4 px-3 py-1.5 bg-[#4EA8F3]/20 backdrop-blur-md text-[#4EA8F3] font-mono text-[10px] uppercase tracking-widest font-bold rounded-full border border-[#4EA8F3]/30 flex items-center space-x-1.5 shadow-lg">
+                <Ticket className="w-3.5 h-3.5" />
+                <span>{couponCount} Deals</span>
+              </div>
             )}
           </motion.div>
 
-          {/* Content */}
-          <div className="flex-1 p-6 flex flex-col relative z-10">
-            <div className="mb-3">
-              <h3 className="text-lg font-bold text-white line-clamp-2 group-hover:text-gray-100 transition">
+          {/* Content Area */}
+          <div className="px-6 py-6 flex-1 flex flex-col">
+            <div className="flex justify-between items-start mb-4">
+              <h3 className="text-2xl font-heading font-bold tracking-tight text-white line-clamp-2 group-hover:text-[#4EA8F3] transition-colors">
                 {business.name}
               </h3>
-              <p className="text-sm text-gray-400 line-clamp-2">
-                {business.description}
-              </p>
-            </div>
-
-            <div className="flex items-center justify-between mt-auto pt-4 border-t border-gray-800/40">
-              <div className="flex items-center space-x-1">
-                <MapPin className="w-4 h-4 text-gray-500" />
-                <span className="text-sm text-gray-400">{business.city}</span>
-              </div>
-
               {averageRating > 0 && (
-                <div className="flex items-center space-x-1">
-                  <Star className="w-4 h-4 fill-yellow-500 text-yellow-500" />
-                  <span className="text-sm font-semibold text-yellow-400">
-                    {averageRating.toFixed(1)}
-                  </span>
+                <div className="flex items-center gap-1.5 bg-[#111] px-2 py-1 rounded-md border border-[#222]">
+                  <Star className="w-3 h-3 fill-[#4EA8F3] text-[#4EA8F3]" />
+                  <span className="font-mono text-[10px] text-white font-medium">{averageRating.toFixed(1)}</span>
                 </div>
               )}
+            </div>
+
+            <p className="text-ink-muted text-sm line-clamp-2 leading-relaxed flex-1 font-sans">
+              {business.description}
+            </p>
+
+            {/* Info Footer */}
+            <div className="mt-8 pt-6 border-t border-[#222] flex items-center justify-between">
+              <div className="flex items-center gap-2 text-white">
+                <MapPin className="w-4 h-4 text-ink-faint" />
+                <span className="font-mono text-xs">{business.city}</span>
+              </div>
+              
+              <div className="w-8 h-8 rounded-full bg-[#111] border border-[#333] flex items-center justify-center group-hover:bg-[#4EA8F3] group-hover:border-[#4EA8F3] transition-colors duration-300">
+                <ArrowUpRight className="w-4 h-4 text-ink-muted group-hover:text-black transition-colors" />
+              </div>
             </div>
           </div>
         </div>
