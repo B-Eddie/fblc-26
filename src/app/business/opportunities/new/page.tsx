@@ -1,3 +1,4 @@
+// Create new opportunity page for business owners
 "use client";
 
 import { useEffect, useState } from "react";
@@ -643,7 +644,8 @@ export default function NewOpportunityPage() {
                 className="btn-magnetic flex-1 flex bg-white text-black py-4 rounded-full text-base font-bold group hover:shadow-[0_0_30px_rgba(78,168,243,0.4)] transition-shadow duration-500 justify-center disabled:opacity-50"
               >
                 <span className="relative z-10 flex items-center justify-center gap-2">
-                {submitting ? "Creating..." : "Post Opportunity"}
+                  {submitting ? "Creating..." : "Post Opportunity"}
+                </span>
               </motion.button>
             </motion.div>
           </div>

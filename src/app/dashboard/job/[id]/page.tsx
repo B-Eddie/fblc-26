@@ -1,3 +1,4 @@
+// Student application detail page with PDF signature
 "use client";
 
 import { useEffect, useState, useRef } from "react";
@@ -801,7 +802,6 @@ export default function JobDetailPage({ params }: { params: { id: string } }) {
                       initial={{ opacity: 0, y: 10 }}
                       animate={{ opacity: 1, y: 0 }}
                       transition={{ delay: i * 0.05 }}
-<<<<<<< Updated upstream
                       className="border border-gray-800/60 rounded-xl bg-gray-800/20 overflow-hidden"
                     >
                       <div className="flex items-center justify-between p-4">
@@ -812,30 +812,6 @@ export default function JobDetailPage({ params }: { params: { id: string } }) {
                           <p className="text-sm text-gray-400">
                             Requested{" "}
                             {new Date(sig.created_at).toLocaleDateString()}
-=======
-                      className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 p-5 border border-[#2a2a2a] rounded-2xl bg-[#0a0a0a] hover:border-[#444] transition-colors"
-                    >
-                      <div>
-                        <p className="text-white font-bold font-heading text-lg mb-2">
-                          {parseFloat(sig.total_hours).toFixed(1)} hours
-                        </p>
-                        <div className="flex items-center gap-3 text-xs font-mono text-ink-muted uppercase tracking-wider">
-                          <span>
-                            Requested: {new Date(sig.created_at).toLocaleDateString()}
-                          </span>
-                          {sig.signed_at && (
-                            <>
-                              <span className="text-ink-faint">•</span>
-                              <span className="text-[#10b981]">
-                                Signed: {new Date(sig.signed_at).toLocaleDateString()}
-                              </span>
-                            </>
-                          )}
-                        </div>
-                        {sig.notes && (
-                          <p className="text-sm text-ink-muted mt-3 leading-relaxed border-l-2 border-[#333] pl-3">
-                            {sig.notes}
->>>>>>> Stashed changes
                           </p>
                           {sig.signed_at && (
                             <p className="text-sm text-green-400">
@@ -850,44 +826,43 @@ export default function JobDetailPage({ params }: { params: { id: string } }) {
                           )}
                         </div>
                         <span
-                          className={`px-3 py-1 rounded-lg text-xs font-medium ${statusColors[sig.status]}`}
+                          className={`px-3 py-1 rounded-lg text-xs font-medium ${statusStyles[sig.status]}`}
                         >
                           {sig.status.charAt(0).toUpperCase() +
                             sig.status.slice(1)}
                         </span>
                       </div>
-<<<<<<< Updated upstream
 
                       {/* Show volunteer PDFSigner to add student signatures */}
-                      className="py-6 first:pt-0 last:pb-0"
-                    >
-                      <div className="flex items-center justify-between mb-1">
-                        <div className="flex items-baseline gap-3">
-                          <span className="text-2xl font-bold font-heading text-white">
-                            {parseFloat(sig.total_hours).toFixed(1)}
+                      <div className="py-6">
+                        <div className="flex items-center justify-between mb-4">
+                          <div className="flex items-baseline gap-3">
+                            <span className="text-2xl font-bold font-heading text-white">
+                              {parseFloat(sig.total_hours).toFixed(1)}
+                            </span>
+                            <span className="text-xs font-mono text-ink-muted uppercase tracking-wider">hours</span>
+                          </div>
+                          <span
+                            className={`px-3 py-1 border rounded-full text-[10px] font-mono uppercase tracking-wider font-bold ${statusStyles[sig.status]}`}
+                          >
+                            {sig.status}
                           </span>
-                          <span className="text-xs font-mono text-ink-muted uppercase tracking-wider">hours</span>
                         </div>
-                        <span
-                          className={`px-3 py-1 border rounded-full text-[10px] font-mono uppercase tracking-wider font-bold ${statusStyles[sig.status]}`}
-                        >
-                          {sig.status}
-                        </span>
-                      </div>
-                      <div className="flex items-center gap-3 text-xs font-mono text-ink-faint mb-1">
-                        <span>Requested {new Date(sig.created_at).toLocaleDateString()}</span>
-                        {sig.signed_at && (
-                          <>
-                            <span>·</span>
-                            <span className="text-[#10b981]">Signed {new Date(sig.signed_at).toLocaleDateString()}</span>
-                          </>
+                        <div className="flex items-center gap-3 text-xs font-mono text-ink-faint mb-1">
+                          <span>Requested {new Date(sig.created_at).toLocaleDateString()}</span>
+                          {sig.signed_at && (
+                            <>
+                              <span>·</span>
+                              <span className="text-[#10b981]">Signed {new Date(sig.signed_at).toLocaleDateString()}</span>
+                            </>
+                          )}
+                        </div>
+                        {sig.notes && (
+                          <p className="text-sm text-ink-muted mt-2 leading-relaxed border-l-2 border-[#333] pl-3">
+                            {sig.notes}
+                          </p>
                         )}
                       </div>
-                      {sig.notes && (
-                        <p className="text-sm text-ink-muted mt-2 leading-relaxed border-l-2 border-[#333] pl-3">
-                          {sig.notes}
-                        </p>
-                      )}
 
                       {/* Volunteer signs here */}
                       {sig.status === "signed" && sig.signed_pdf_url && (
@@ -921,13 +896,6 @@ export default function JobDetailPage({ params }: { params: { id: string } }) {
                           </a>
                         </div>
                       )}
-=======
-                      <span
-                        className={`px-3 py-1 border rounded-full text-[10px] font-mono uppercase tracking-wider font-bold whitespace-nowrap self-start sm:self-auto ${statusStyles[sig.status]}`}
-                      >
-                        {sig.status}
-                      </span>
->>>>>>> Stashed changes
                     </motion.div>
                   ))}
                 </div>

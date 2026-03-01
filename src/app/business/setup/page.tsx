@@ -327,24 +327,25 @@ export default function BusinessSetupPage() {
             whileTap={{ scale: 0.98 }}
             type="submit"
             disabled={loading}
-                className="btn-magnetic w-full flex bg-white text-black py-4 rounded-full text-sm font-bold group hover:shadow-[0_0_30px_rgba(78,168,243,0.4)] transition-shadow duration-500 justify-center disabled:opacity-50 mt-8"
-              >
-                <span className="relative z-10 flex items-center justify-center">
-            {loading ? (
-              <span className="flex items-center justify-center">
-                <motion.div
-                  animate={{ rotate: 360 }}
-                  transition={{ duration: 1, repeat: Infinity }}
-                  className="w-4 h-4 border-2 border-gray-300 border-t-white rounded-full mr-2"
-                />
-                Creating Profile...
-              </span>
-            ) : (
-              <span className="flex items-center justify-center">
-                Create Business Profile
-                <ArrowRight className="ml-2 w-4 h-4" />
-              </span>
-            )}
+            className="btn-magnetic w-full flex bg-white text-black py-4 rounded-full text-sm font-bold group hover:shadow-[0_0_30px_rgba(78,168,243,0.4)] transition-shadow duration-500 justify-center disabled:opacity-50 mt-8"
+          >
+            <span className="relative z-10 flex items-center justify-center">
+              {loading ? (
+                <span className="flex items-center justify-center">
+                  <motion.div
+                    animate={{ rotate: 360 }}
+                    transition={{ duration: 1, repeat: Infinity }}
+                    className="w-4 h-4 border-2 border-gray-300 border-t-white rounded-full mr-2"
+                  />
+                  Creating Profile...
+                </span>
+              ) : (
+                <span className="flex items-center justify-center">
+                  Create Business Profile
+                  <ArrowRight className="ml-2 w-4 h-4" />
+                </span>
+              )}
+            </span>
           </motion.button>
         </motion.form>
       </div>
