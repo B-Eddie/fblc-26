@@ -66,6 +66,7 @@ export default function DashboardPage() {
           `
           *,
           opportunity:opportunities (
+            id,
             title,
             business:businesses (
               name,
@@ -359,7 +360,11 @@ export default function DashboardPage() {
                   <div className="flex justify-between items-start">
                     <div className="flex-1">
                       <Link
-                        href={`/opportunities/${app.opportunity.id || ""}`}
+                        href={
+                          app.status === "accepted" || app.status === "completed"
+                            ? `/dashboard/job/${app.id}`
+                            : `/opportunities/${app.opportunity?.id || ""}`
+                        }
                         className="hover:text-gray-300 transition"
                       >
                         <h3 className="font-semibold text-lg text-white">
@@ -376,6 +381,14 @@ export default function DashboardPage() {
                         <p className="text-sm text-blue-400 mt-2 font-medium">
                           ✓ Completed: {app.hours_completed} hours
                         </p>
+                      )}
+                      {(app.status === "accepted" || app.status === "completed") && (
+                        <Link
+                          href={`/dashboard/job/${app.id}`}
+                          className="inline-flex items-center text-sm text-gray-400 hover:text-white mt-2 transition"
+                        >
+                          View Job Details →
+                        </Link>
                       )}
                     </div>
                     <motion.span
