@@ -175,9 +175,7 @@ export default function LandingPage() {
         <div className="hidden md:flex items-center gap-6 text-sm font-medium text-ink-muted">
           <Link href="#features" className="lift-hover hover:text-white">Features</Link>
           <Link href="#protocol" className="lift-hover hover:text-white">Protocol</Link>
-          {dashboardHref ? (
-            <Link href={dashboardHref} className="lift-hover hover:text-white">Dashboard</Link>
-          ) : (
+          {!dashboardHref && (
             <Link href="/auth/login" className="lift-hover hover:text-white">Log In</Link>
           )}
         </div>

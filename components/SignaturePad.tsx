@@ -12,12 +12,27 @@ interface SignaturePadProps {
 
 export default function SignaturePad({
   onSignatureCapture,
-  width = 500,
+  width: _width,
   height = 200,
 }: SignaturePadProps) {
   const canvasRef = useRef<HTMLCanvasElement>(null);
+  const containerRef = useRef<HTMLDivElement>(null);
   const [isDrawing, setIsDrawing] = useState(false);
   const [hasSignature, setHasSignature] = useState(false);
+  const [canvasWidth, setCanvasWidth] = useState(_width ?? 500);
+
+  // Resize canvas to fill container
+  useEffect(() => {
+    const measure = () => {
+      if (containerRef.current) {
+        setCanvasWidth(containerRef.current.clientWidth);
+      }
+    };
+    measure();
+    const ro = new ResizeObserver(measure);
+    if (containerRef.current) ro.observe(containerRef.current);
+    return () => ro.disconnect();
+  }, []);
 
   useEffect(() => {
     const canvas = canvasRef.current;
@@ -27,9 +42,9 @@ export default function SignaturePad({
 
     // Set up canvas for high-DPI displays
     const dpr = window.devicePixelRatio || 1;
-    canvas.width = width * dpr;
+    canvas.width = canvasWidth * dpr;
     canvas.height = height * dpr;
-    canvas.style.width = `${width}px`;
+    canvas.style.width = `${canvasWidth}px`;
     canvas.style.height = `${height}px`;
     ctx.scale(dpr, dpr);
 
@@ -38,7 +53,7 @@ export default function SignaturePad({
     ctx.lineWidth = 2.5;
     ctx.lineCap = "round";
     ctx.lineJoin = "round";
-  }, [width, height]);
+  }, [canvasWidth, height]);
 
   const getPosition = useCallback(
     (e: React.MouseEvent | React.TouchEvent) => {
@@ -115,7 +130,7 @@ export default function SignaturePad({
 
   return (
     <div className="space-y-3">
-      <div className="relative border-2 border-dashed border-gray-600/60 rounded-xl overflow-hidden bg-white">
+      <div ref={containerRef} className="relative border-2 border-dashed border-gray-600/60 rounded-xl overflow-hidden bg-white">
         <canvas
           ref={canvasRef}
           onMouseDown={startDrawing}
@@ -125,8 +140,8 @@ export default function SignaturePad({
           onTouchStart={startDrawing}
           onTouchMove={draw}
           onTouchEnd={stopDrawing}
-          className="cursor-crosshair touch-none"
-          style={{ width: `${width}px`, height: `${height}px` }}
+          className="cursor-crosshair touch-none w-full"
+          style={{ height: `${height}px` }}
         />
         {!hasSignature && (
           <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
