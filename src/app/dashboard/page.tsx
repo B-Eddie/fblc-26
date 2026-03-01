@@ -6,7 +6,14 @@ import { useRouter } from "next/navigation";
 import { motion } from "framer-motion";
 import { supabase } from "@/lib/supabase";
 import dynamic from "next/dynamic";
-import { Clock, Bookmark, CheckCircle, TrendingUp, LogOut, MapPin } from "lucide-react";
+import {
+  Clock,
+  Bookmark,
+  CheckCircle,
+  TrendingUp,
+  LogOut,
+  MapPin,
+} from "lucide-react";
 import FloatingNav from "@/components/FloatingNav";
 
 const HoursProgressChart = dynamic(
@@ -200,10 +207,15 @@ export default function DashboardPage() {
           transition={{ duration: 0.6, ease: [0.25, 0.46, 0.45, 0.94] }}
           className="mb-16 relative z-10"
         >
-          <p className="font-mono text-[#4EA8F3] text-sm uppercase tracking-widest mb-6">Telemetry Feed</p>
+          <p className="font-mono text-[#4EA8F3] text-sm uppercase tracking-widest mb-6">
+            Telemetry Feed
+          </p>
           <h1 className="text-5xl md:text-7xl font-bold font-heading tracking-tighter text-white mb-6 leading-tight">
-            Welcome back, <br/>
-            <span className="font-drama italic font-normal text-transparent bg-clip-text bg-gradient-to-r from-[#4EA8F3] to-[#4EA8F3]/60 pr-2">{profile?.full_name || "Student"}</span>.
+            Welcome back, <br />
+            <span className="font-drama italic font-normal text-transparent bg-clip-text bg-gradient-to-r from-[#4EA8F3] to-[#4EA8F3]/60 pr-2">
+              {profile?.full_name || "Student"}
+            </span>
+            .
           </h1>
           <p className="text-ink-muted text-lg md:text-xl font-sans max-w-2xl leading-relaxed">
             Monitor your contribution metrics and ongoing application status.
@@ -268,7 +280,9 @@ export default function DashboardPage() {
           transition={{ delay: 0.2, duration: 0.6 }}
           className="card-surface p-8 mb-8"
         >
-          <h2 className="text-2xl font-bold font-heading text-white mb-6">Hours Progress</h2>
+          <h2 className="text-2xl font-bold font-heading text-white mb-6">
+            Hours Progress
+          </h2>
           <div ref={chartContainerRef} className="h-64 w-full min-h-[256px]">
             {chartSize.width > 0 && chartSize.height > 0 && (
               <HoursProgressChart
@@ -279,7 +293,7 @@ export default function DashboardPage() {
             )}
           </div>
           <motion.div className="mt-6 p-4 bg-[#0a0a0a] border border-[#222] rounded-xl flex items-center justify-center gap-3">
-             <div className="w-2 h-2 rounded-full bg-[#4EA8F3] pulse-dot" />
+            <div className="w-2 h-2 rounded-full bg-[#4EA8F3] pulse-dot" />
             <p className="text-ink-muted font-mono text-sm">
               <span className="font-bold text-white">
                 {Math.max(0, goalHours - totalHours)} hours
@@ -290,16 +304,21 @@ export default function DashboardPage() {
         </motion.div>
 
         {/* Signed Forms */}
-        {signatureRequests.filter((s) => s.status === "signed" && s.signed_pdf_url).length > 0 && (
+        {signatureRequests.filter(
+          (s) => s.status === "signed" && s.signed_pdf_url,
+        ).length > 0 && (
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.25, duration: 0.6 }}
             className="card-surface p-8 mb-8"
           >
-            <h2 className="text-2xl font-bold font-heading text-white mb-2">Signed Forms</h2>
+            <h2 className="text-2xl font-bold font-heading text-white mb-2">
+              Signed Forms
+            </h2>
             <p className="text-ink-muted text-sm mb-8 max-w-xl">
-              Your supervisor has signed these forms. Add your signatures to finalize, then download.
+              Your supervisor has signed these forms. Add your signatures to
+              finalize, then download.
             </p>
             <div className="divide-y divide-[#1a1a1a]">
               {signatureRequests
@@ -316,9 +335,14 @@ export default function DashboardPage() {
                             {opp?.title || "Volunteer Opportunity"}
                           </h3>
                           <p className="text-xs font-mono text-ink-muted mt-1">
-                            {biz?.name || "Business"} · {parseFloat(sig.total_hours).toFixed(1)} hrs
+                            {biz?.name || "Business"} ·{" "}
+                            {parseFloat(sig.total_hours).toFixed(1)} hrs
                             {sig.signed_at && (
-                              <span className="text-[#10b981]"> · Signed {new Date(sig.signed_at).toLocaleDateString()}</span>
+                              <span className="text-[#10b981]">
+                                {" "}
+                                · Signed{" "}
+                                {new Date(sig.signed_at).toLocaleDateString()}
+                              </span>
                             )}
                           </p>
                         </div>
@@ -391,7 +415,8 @@ export default function DashboardPage() {
                     {app.opportunity ? (
                       <Link
                         href={
-                          app.status === "accepted" || app.status === "completed"
+                          app.status === "accepted" ||
+                          app.status === "completed"
                             ? `/dashboard/job/${app.id}`
                             : `/opportunities/${app.opportunity.id || ""}`
                         }
@@ -417,7 +442,8 @@ export default function DashboardPage() {
                         ✓ Completed: {app.hours_completed} hours
                       </p>
                     )}
-                    {(app.status === "accepted" || app.status === "completed") && (
+                    {(app.status === "accepted" ||
+                      app.status === "completed") && (
                       <Link
                         href={`/dashboard/job/${app.id}`}
                         className="inline-flex items-center text-xs font-mono text-ink-muted hover:text-[#4EA8F3] mt-3 transition-colors"
@@ -456,37 +482,41 @@ export default function DashboardPage() {
             </motion.div>
           ) : (
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-              {bookmarks.filter((b) => b.opportunity).map((bookmark, i) => (
-                <motion.div
-                  key={bookmark.id}
-                  initial={{ opacity: 0, y: 20 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ delay: 0.4 + i * 0.05 }}
-                  whileHover={{ y: -4 }}
-                >
-                  <Link
-                    href={`/opportunities/${bookmark.opportunity?.id}`}
-                    className="bg-[#111] border border-[#2a2a2a] rounded-2xl p-6 transition-all duration-300 hover:border-[#4EA8F3]/50 hover:shadow-[0_0_30px_rgba(78,168,243,0.15)] flex flex-col h-full group"
+              {bookmarks
+                .filter((b) => b.opportunity)
+                .map((bookmark, i) => (
+                  <motion.div
+                    key={bookmark.id}
+                    initial={{ opacity: 0, y: 20 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ delay: 0.4 + i * 0.05 }}
+                    whileHover={{ y: -4 }}
                   >
-                    <h3 className="font-heading font-bold text-white mb-2 line-clamp-2">
-                      {bookmark.opportunity?.title}
-                    </h3>
-                    <p className="font-mono text-[10px] uppercase tracking-wider text-ink-muted mb-4">
-                      {bookmark.opportunity?.business?.name}
-                    </p>
-                    <div className="flex items-center space-x-3 mt-auto font-mono text-xs text-ink-faint">
-                      <span className="flex items-center space-x-1">
-                        <Clock className="w-3 h-3" />
-                        <span>{bookmark.opportunity?.hours_available} hrs</span>
-                      </span>
-                      <span className="flex items-center space-x-1">
-                        <MapPin className="w-3 h-3" />
-                        <span>{bookmark.opportunity?.business?.city}</span>
-                      </span>
-                    </div>
-                  </Link>
-                </motion.div>
-              ))}
+                    <Link
+                      href={`/opportunities/${bookmark.opportunity?.id}`}
+                      className="bg-[#111] border border-[#2a2a2a] rounded-2xl p-6 transition-all duration-300 hover:border-[#4EA8F3]/50 hover:shadow-[0_0_30px_rgba(78,168,243,0.15)] flex flex-col h-full group"
+                    >
+                      <h3 className="font-heading font-bold text-white mb-2 line-clamp-2">
+                        {bookmark.opportunity?.title}
+                      </h3>
+                      <p className="font-mono text-[10px] uppercase tracking-wider text-ink-muted mb-4">
+                        {bookmark.opportunity?.business?.name}
+                      </p>
+                      <div className="flex items-center space-x-3 mt-auto font-mono text-xs text-ink-faint">
+                        <span className="flex items-center space-x-1">
+                          <Clock className="w-3 h-3" />
+                          <span>
+                            {bookmark.opportunity?.hours_available} hrs
+                          </span>
+                        </span>
+                        <span className="flex items-center space-x-1">
+                          <MapPin className="w-3 h-3" />
+                          <span>{bookmark.opportunity?.business?.city}</span>
+                        </span>
+                      </div>
+                    </Link>
+                  </motion.div>
+                ))}
             </div>
           )}
         </motion.div>

@@ -58,6 +58,120 @@ export default function EmployeeManagementPage({
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
   }, [messages]);
 
+  // Real-time subscriptions for automatic updates
+  useEffect(() => {
+    if (!application?.id) return;
+
+    // Subscribe to application changes
+    const applicationChannel = supabase
+      .channel(`application-${params.id}`)
+      .on(
+        "postgres_changes",
+        {
+          event: "UPDATE",
+          schema: "public",
+          table: "applications",
+          filter: `id=eq.${params.id}`,
+        },
+        (payload) => {
+          setApplication((prev: any) => ({ ...prev, ...payload.new }));
+        }
+      )
+      .subscribe();
+
+    // Subscribe to hour logs changes
+    const hourLogsChannel = supabase
+      .channel(`hour-logs-${params.id}`)
+      .on(
+        "postgres_changes",
+        {
+          event: "*",
+          schema: "public",
+          table: "hour_logs",
+          filter: `application_id=eq.${params.id}`,
+        },
+        (payload) => {
+          if (payload.eventType === "INSERT") {
+            setHourLogs((prev) => [payload.new as any, ...prev]);
+          } else if (payload.eventType === "UPDATE") {
+            setHourLogs((prev) =>
+              prev.map((log) =>
+                log.id === payload.new.id ? (payload.new as any) : log
+              )
+            );
+          } else if (payload.eventType === "DELETE") {
+            setHourLogs((prev) =>
+              prev.filter((log) => log.id !== payload.old.id)
+            );
+          }
+        }
+      )
+      .subscribe();
+
+    // Subscribe to messages changes
+    const messagesChannel = supabase
+      .channel(`messages-${params.id}`)
+      .on(
+        "postgres_changes",
+        {
+          event: "INSERT",
+          schema: "public",
+          table: "messages",
+          filter: `application_id=eq.${params.id}`,
+        },
+        async (payload) => {
+          // Fetch the full message with sender details
+          const { data } = await supabase
+            .from("messages")
+            .select("*, sender:profiles(full_name)")
+            .eq("id", payload.new.id)
+            .single();
+          
+          if (data) {
+            setMessages((prev) => [...prev, data as any]);
+          }
+        }
+      )
+      .subscribe();
+
+    // Subscribe to signature requests changes
+    const signatureChannel = supabase
+      .channel(`signatures-${params.id}`)
+      .on(
+        "postgres_changes",
+        {
+          event: "*",
+          schema: "public",
+          table: "signature_requests",
+          filter: `application_id=eq.${params.id}`,
+        },
+        (payload) => {
+          if (payload.eventType === "INSERT") {
+            setSignatureRequests((prev) => [payload.new as any, ...prev]);
+          } else if (payload.eventType === "UPDATE") {
+            setSignatureRequests((prev) =>
+              prev.map((sig) =>
+                sig.id === payload.new.id ? (payload.new as any) : sig
+              )
+            );
+          } else if (payload.eventType === "DELETE") {
+            setSignatureRequests((prev) =>
+              prev.filter((sig) => sig.id !== payload.old.id)
+            );
+          }
+        }
+      )
+      .subscribe();
+
+    // Cleanup subscriptions on unmount
+    return () => {
+      supabase.removeChannel(applicationChannel);
+      supabase.removeChannel(hourLogsChannel);
+      supabase.removeChannel(messagesChannel);
+      supabase.removeChannel(signatureChannel);
+    };
+  }, [application?.id, params.id]);
+
   const checkAuth = async () => {
     const {
       data: { user },
