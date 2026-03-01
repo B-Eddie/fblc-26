@@ -41,7 +41,7 @@ export default function BusinessFavoriteButton({
           .eq("business_id", businessId);
 
         if (deleteError) throw deleteError;
-        console.log("✅ Removed from favorites");
+        console.log("Removed from favorites");
         setIsFavorited(false);
       } else {
         // Add to favorites
@@ -55,11 +55,10 @@ export default function BusinessFavoriteButton({
           ] as any);
 
         if (insertError) throw insertError;
-        console.log("✅ Added to favorites");
         setIsFavorited(true);
       }
     } catch (error: any) {
-      console.error("❌ Error toggling favorite:", error.message || error);
+      console.error("Error toggling favorite:", error.message || error);
       alert("Failed to update favorite status");
     } finally {
       setIsLoading(false);
