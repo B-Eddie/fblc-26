@@ -256,12 +256,12 @@ export default function EmployeeManagementPage({
     .reduce((sum, log) => sum + parseFloat(log.hours), 0);
 
   const statusColors: Record<string, string> = {
-    pending: "bg-yellow-600/20 text-yellow-400 border border-yellow-600/30",
-    approved: "bg-green-600/20 text-green-400 border border-green-600/30",
-    rejected: "bg-red-600/20 text-red-400 border border-red-600/30",
-    signed: "bg-green-600/20 text-green-400 border border-green-600/30",
-    accepted: "bg-green-600/20 text-green-400 border border-green-600/30",
-    completed: "bg-blue-600/20 text-blue-400 border border-blue-600/30",
+    pending: "bg-[#1a1a1a] text-[#f59e0b] border border-[#f59e0b]/30",
+    approved: "bg-[#1a1a1a] text-[#10b981] border border-[#10b981]/30",
+    rejected: "bg-[#1a1a1a] text-[#ef4444] border border-[#ef4444]/30",
+    signed: "bg-[#1a1a1a] text-[#10b981] border border-[#10b981]/30",
+    accepted: "bg-[#1a1a1a] text-[#10b981] border border-[#10b981]/30",
+    completed: "bg-[#1a1a1a] text-[#4EA8F3] border border-[#4EA8F3]/30",
   };
 
   if (loading) {
@@ -285,7 +285,7 @@ export default function EmployeeManagementPage({
     <div className="min-h-screen bg-[#050505] text-white font-sans selection:bg-white selection:text-black">
 
       {/* Header */}
-      <header className="border-b border-gray-800/50 sticky top-0 z-40 bg-black/80 backdrop-blur-lg">
+      <header className="border-b border-[#222] sticky top-0 z-40 bg-[#0a0a0a]/80 backdrop-blur-xl">
         <nav className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
           <motion.div
             className="flex justify-between items-center"
@@ -298,22 +298,22 @@ export default function EmployeeManagementPage({
               className="flex items-center space-x-3 hover:opacity-80 transition"
             >
               <motion.div
-                className="w-10 h-10 rounded-lg flex items-center justify-center"
+                className="w-8 h-8 rounded-lg flex items-center justify-center"
                 whileHover={{ scale: 1.05 }}
               >
                 <img
-                  src="/image.png"
+                  src="/logo.png"
                   alt="Logo"
-                  className="w-12 h-12 object-contain"
+                  className="w-8 h-8 object-contain"
                 />
               </motion.div>
-              <span className="text-2xl font-bold font-display bg-gradient-to-r from-gray-400 to-gray-300 bg-clip-text text-transparent">
-                Vertex
+              <span className="text-xl font-bold font-heading tracking-tight text-white">
+                Pilot
               </span>
             </Link>
             <Link
               href="/business/dashboard"
-              className="flex items-center space-x-2 px-4 py-2 text-gray-300 hover:text-white transition"
+              className="flex items-center space-x-2 text-sm font-medium text-ink-muted hover:text-white transition-colors"
             >
               <ArrowLeft className="w-4 h-4" />
               <span>Back to Dashboard</span>
@@ -330,32 +330,31 @@ export default function EmployeeManagementPage({
           transition={{ duration: 0.6 }}
           className="mb-8"
         >
-          <div className="flex items-start justify-between flex-wrap gap-4">
+          <div className="flex items-start justify-between flex-wrap gap-6">
             <div>
-              <h1 className="text-4xl md:text-5xl font-bold font-display bg-gradient-to-r from-white via-gray-300 to-gray-400 bg-clip-text text-transparent mb-2">
+              <h1 className="text-4xl md:text-5xl font-bold font-heading tracking-tight text-white mb-3">
                 {volunteer?.full_name}
               </h1>
-              <div className="flex items-center space-x-3 text-gray-400">
-                <Briefcase className="w-5 h-5" />
-                <span className="text-lg">{opportunity?.title}</span>
-                <span className="text-gray-600">•</span>
+              <div className="flex items-center space-x-3 text-ink-muted font-mono text-sm uppercase tracking-wider">
+                <Briefcase className="w-4 h-4" />
+                <span className="font-bold text-white">{opportunity?.title}</span>
+                <span className="text-ink-faint">•</span>
                 <Mail className="w-4 h-4" />
                 <span>{volunteer?.email}</span>
               </div>
             </div>
             <div className="flex items-center space-x-3">
               <motion.span
-                className={`px-4 py-2 rounded-lg text-sm font-medium ${statusColors[application.status] || statusColors.pending}`}
+                className={`px-4 py-2 rounded-full text-[10px] font-mono uppercase tracking-wider font-bold ${statusColors[application.status] || statusColors.pending}`}
               >
-                {application.status.charAt(0).toUpperCase() +
-                  application.status.slice(1)}
+                {application.status}
               </motion.span>
               {application.status === "accepted" && (
                 <motion.button
                   whileHover={{ scale: 1.02 }}
                   whileTap={{ scale: 0.98 }}
                   onClick={() => updateApplicationStatus("completed")}
-                  className="flex items-center space-x-2 px-4 py-2 bg-blue-600/20 text-blue-400 border border-blue-600/30 rounded-lg text-sm font-medium hover:bg-blue-600/30 transition"
+                  className="flex items-center space-x-2 px-5 py-2 bg-[#1a1a1a] text-[#4EA8F3] border border-[#4EA8F3]/30 rounded-full text-xs font-mono uppercase tracking-wider font-bold hover:border-[#4EA8F3] transition"
                 >
                   <CheckCircle className="w-4 h-4" />
                   <span>Mark Complete</span>
@@ -367,7 +366,7 @@ export default function EmployeeManagementPage({
                     whileHover={{ scale: 1.02 }}
                     whileTap={{ scale: 0.98 }}
                     onClick={() => updateApplicationStatus("accepted")}
-                    className="flex items-center space-x-2 px-4 py-2 bg-green-600/20 text-green-400 border border-green-600/30 rounded-lg text-sm font-medium hover:bg-green-600/30 transition"
+                    className="flex items-center space-x-2 px-5 py-2 bg-[#1a1a1a] text-[#10b981] border border-[#10b981]/30 rounded-full text-xs font-mono uppercase tracking-wider font-bold hover:border-[#10b981] transition"
                   >
                     <UserCheck className="w-4 h-4" />
                     <span>Hire</span>
@@ -376,7 +375,7 @@ export default function EmployeeManagementPage({
                     whileHover={{ scale: 1.02 }}
                     whileTap={{ scale: 0.98 }}
                     onClick={() => updateApplicationStatus("rejected")}
-                    className="flex items-center space-x-2 px-4 py-2 bg-red-600/20 text-red-400 border border-red-600/30 rounded-lg text-sm font-medium hover:bg-red-600/30 transition"
+                    className="flex items-center space-x-2 px-5 py-2 bg-[#1a1a1a] text-[#ef4444] border border-[#ef4444]/30 rounded-full text-xs font-mono uppercase tracking-wider font-bold hover:border-[#ef4444] transition"
                   >
                     <UserX className="w-4 h-4" />
                     <span>Reject</span>
