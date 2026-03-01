@@ -11,23 +11,66 @@ import {
   CheckCircle,
   RotateCcw,
   AlertCircle,
+  Send,
+  ClipboardEdit,
 } from "lucide-react";
 import SignaturePad from "./SignaturePad";
+import { supabase } from "@/lib/supabase";
 
-interface PDFSignerProps {
-  /** Volunteer name to embed in the PDF */
-  volunteerName: string;
-  /** Business / supervisor name */
-  supervisorName: string;
-  /** Total approved hours */
-  totalHours: number;
-  /** Opportunity title */
-  opportunityTitle: string;
-  /** Called after signing completes with the signed PDF bytes */
-  onSigned?: (pdfBytes: Uint8Array) => void;
-  /** Application id for record keeping */
-  applicationId?: string;
+/* ------------------------------------------------------------------ */
+/*  PDF form-field definitions — extracted from the actual PDF         */
+/* ------------------------------------------------------------------ */
+interface FieldDef {
+  pdfFieldName: string;
+  label: string;
+  isSignature?: boolean;
+  prefillKey?: "volunteerName" | "supervisorName" | "totalHours" | "opportunityTitle";
+  /** Which dashboard this field is filled on */
+  role: "business" | "volunteer" | "both";
 }
+
+const PDF_FIELDS: FieldDef[] = [
+  { pdfFieldName: "Student Name", label: "Student Name", prefillKey: "volunteerName", role: "business" },
+  { pdfFieldName: "Name of Community Sponsor", label: "Name of Community Sponsor", prefillKey: "supervisorName", role: "business" },
+  { pdfFieldName: "Estimated Hours", label: "Estimated Hours", prefillKey: "totalHours", role: "business" },
+  { pdfFieldName: "Location  Address", label: "Location / Address", role: "business" },
+  { pdfFieldName: "Proposed Activity", label: "Proposed Activity", prefillKey: "opportunityTitle", role: "business" },
+  { pdfFieldName: "Sponsor Contact phone  or email", label: "Sponsor Contact (phone / email)", role: "business" },
+  { pdfFieldName: "Completion Date", label: "Completion Date", role: "business" },
+  { pdfFieldName: "Total Hours", label: "Total Hours", prefillKey: "totalHours", role: "business" },
+  { pdfFieldName: "Date Entered", label: "Date Entered", role: "business" },
+  { pdfFieldName: "Sponsor Signature2", label: "Sponsor Signature", isSignature: true, role: "business" },
+  { pdfFieldName: "Student Signature", label: "Student Signature", isSignature: true, role: "volunteer" },
+  { pdfFieldName: "Parent  Guardian Signature permission If student under 18", label: "Parent / Guardian Signature (if under 18)", role: "volunteer" },
+  { pdfFieldName: "Principal or designate signature if necessary1", label: "Principal or Designate Signature (if necessary)", role: "volunteer" },
+];
+
+/* Exact widget rectangles from the PDF (pdf-lib inspection) */
+const SIG_RECTS: Record<string, { x: number; y: number; w: number; h: number }> = {
+  "Sponsor Signature2":  { x: 382.92, y: 120, w: 183.36, h: 24.24 },
+  "Student Signature":   { x: 111.12, y: 93,  w: 183.12, h: 25.2  },
+  "Parent  Guardian Signature permission If student under 18": { x: 476.64, y: 201, w: 88.56, h: 28.8 },
+  "Principal or designate signature if necessary1": { x: 233.52, y: 179.04, w: 331.92, h: 20.28 },
+};
+
+/* ------------------------------------------------------------------ */
+/*  Component                                                          */
+/* ------------------------------------------------------------------ */
+interface PDFSignerProps {
+  volunteerName: string;
+  supervisorName: string;
+  totalHours: number;
+  opportunityTitle: string;
+  onSigned?: (pdfBytes: Uint8Array) => void;
+  applicationId?: string;
+  signatureRequestId?: string;
+  /** Which role is filling the form — controls which fields are shown */
+  role?: "business" | "volunteer";
+  /** Load an existing (partially-filled) PDF instead of the blank template */
+  pdfUrl?: string;
+}
+
+type Step = "fill" | "sign" | "done";
 
 export default function PDFSigner({
   volunteerName,
@@ -35,108 +78,147 @@ export default function PDFSigner({
   totalHours,
   opportunityTitle,
   onSigned,
+  applicationId,
+  signatureRequestId,
+  role = "business",
+  pdfUrl,
 }: PDFSignerProps) {
-  const [step, setStep] = useState<"preview" | "sign" | "done">("preview");
-  const [, setSignatureDataUrl] = useState<string | null>(null);
+  const visibleFields = PDF_FIELDS.filter((f) => f.role === role || f.role === "both");
+  const [step, setStep] = useState<Step>("fill");
   const [signedPdfUrl, setSignedPdfUrl] = useState<string | null>(null);
   const [processing, setProcessing] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [sent, setSent] = useState(false);
 
-  const handleSignatureCapture = useCallback(
-    async (dataUrl: string) => {
-      setSignatureDataUrl(dataUrl);
-      setProcessing(true);
-      setError(null);
+  // Form field values keyed by pdfFieldName
+  const [formValues, setFormValues] = useState<Record<string, string>>(() => {
+    const init: Record<string, string> = {};
+    for (const f of visibleFields) {
+      if (f.isSignature) continue;
+      if (f.prefillKey === "volunteerName") init[f.pdfFieldName] = volunteerName;
+      else if (f.prefillKey === "supervisorName") init[f.pdfFieldName] = supervisorName;
+      else if (f.prefillKey === "totalHours") init[f.pdfFieldName] = totalHours.toFixed(1);
+      else if (f.prefillKey === "opportunityTitle") init[f.pdfFieldName] = opportunityTitle;
+      else init[f.pdfFieldName] = "";
+    }
+    return init;
+  });
 
-      try {
-        // Fetch the blank PDF from public folder
-        const pdfResponse = await fetch(
-          "/record-of-community-involvement-hours.pdf",
-        );
-        if (!pdfResponse.ok) throw new Error("Could not load PDF template");
-        const pdfBytes = await pdfResponse.arrayBuffer();
+  // Signature data-URLs keyed by pdfFieldName
+  const [signatures, setSignatures] = useState<Record<string, string>>({});
+  const [activeSigField, setActiveSigField] = useState<string | null>(null);
 
-        // Load PDF with pdf-lib
-        const pdfDoc = await PDFDocument.load(pdfBytes);
-        const pages = pdfDoc.getPages();
-        const firstPage = pages[0];
-        const { width, height } = firstPage.getSize();
+  const setField = (name: string, value: string) =>
+    setFormValues((prev) => ({ ...prev, [name]: value }));
 
-        // Embed the signature image
-        const sigImageBytes = await fetch(dataUrl).then((r) =>
-          r.arrayBuffer(),
-        );
-        const sigImage = await pdfDoc.embedPng(sigImageBytes);
-        const sigDims = sigImage.scale(0.35);
+  /* ---- build the PDF with form data + signatures ---- */
+  const buildPdf = useCallback(async () => {
+    setProcessing(true);
+    setError(null);
+    try {
+      const pdfSource = pdfUrl || "/record-of-community-involvement-hours.pdf";
+      const pdfResponse = await fetch(pdfSource);
+      if (!pdfResponse.ok) throw new Error("Could not load PDF");
+      const pdfBytes = await pdfResponse.arrayBuffer();
+      const pdfDoc = await PDFDocument.load(pdfBytes);
+      const form = pdfDoc.getForm();
 
-        // Place the signature on the page
-        // Position: lower portion of the page where the supervisor signature field typically is
-        // Adjust these coordinates based on the actual PDF layout
-        const sigX = width * 0.08;
-        const sigY = height * 0.08;
+      // Fill every text field with standardised 11pt font
+      const { StandardFonts } = await import("pdf-lib");
+      const font = await pdfDoc.embedFont(StandardFonts.Helvetica);
 
-        firstPage.drawImage(sigImage, {
-          x: sigX,
-          y: sigY,
-          width: Math.min(sigDims.width, 200),
-          height: Math.min(sigDims.height, 80),
-        });
-
-        // Add text annotations for the record
-        const { rgb } = await import("pdf-lib");
-
-        // Supervisor name text near signature
-        firstPage.drawText(supervisorName, {
-          x: sigX + 210,
-          y: sigY + 20,
-          size: 10,
-          color: rgb(0, 0, 0),
-        });
-
-        // Date of signing
-        const today = new Date().toLocaleDateString();
-        firstPage.drawText(today, {
-          x: sigX + 210,
-          y: sigY + 5,
-          size: 9,
-          color: rgb(0.3, 0.3, 0.3),
-        });
-
-        // Volunteer info at the top area
-        firstPage.drawText(`Volunteer: ${volunteerName}`, {
-          x: width * 0.08,
-          y: height - 80,
-          size: 10,
-          color: rgb(0, 0, 0),
-        });
-
-        firstPage.drawText(
-          `Activity: ${opportunityTitle}  |  Hours: ${totalHours.toFixed(1)}`,
-          {
-            x: width * 0.08,
-            y: height - 95,
-            size: 9,
-            color: rgb(0.2, 0.2, 0.2),
-          },
-        );
-
-        // Save the modified PDF
-        const signedBytes = await pdfDoc.save();
-        const blob = new Blob([new Uint8Array(signedBytes)], { type: "application/pdf" });
-        const url = URL.createObjectURL(blob);
-
-        setSignedPdfUrl(url);
-        setStep("done");
-        onSigned?.(signedBytes);
-      } catch (err: any) {
-        console.error("PDF signing error:", err);
-        setError(err.message || "Failed to process PDF");
-      } finally {
-        setProcessing(false);
+      for (const f of visibleFields) {
+        if (f.isSignature) continue;
+        const value = formValues[f.pdfFieldName] ?? "";
+        try {
+          const field = form.getTextField(f.pdfFieldName);
+          field.setText(value);
+          field.setFontSize(11);
+          field.defaultUpdateAppearances(font);
+        } catch {
+          // field might not exist — skip
+        }
       }
-    },
-    [supervisorName, volunteerName, totalHours, opportunityTitle, onSigned],
-  );
+
+      // Embed signature images
+      const page = pdfDoc.getPages()[0];
+
+      const embedSig = async (
+        dataUrl: string,
+        rect: { x: number; y: number; w: number; h: number },
+        fieldName: string,
+      ) => {
+        try { form.getTextField(fieldName).setText(""); } catch {}
+
+        const sigBytes = await fetch(dataUrl).then((r) => r.arrayBuffer());
+        const sigImage = await pdfDoc.embedPng(sigBytes);
+
+        const pad = 2;
+        const availW = rect.w - pad * 2;
+        const availH = rect.h - pad * 2;
+        const scale = Math.min(availW / sigImage.width, availH / sigImage.height);
+        const drawW = sigImage.width * scale;
+        const drawH = sigImage.height * scale;
+        const drawX = rect.x + pad + (availW - drawW) / 2;
+        const drawY = rect.y + pad + (availH - drawH) / 2;
+
+        page.drawImage(sigImage, { x: drawX, y: drawY, width: drawW, height: drawH });
+      };
+
+      // Embed all captured signatures into their exact PDF field rectangles
+      for (const [fieldName, dataUrl] of Object.entries(signatures)) {
+        const rect = SIG_RECTS[fieldName];
+        if (rect && dataUrl) {
+          await embedSig(dataUrl, rect, fieldName);
+        }
+      }
+
+      // Only flatten on the final step (volunteer signs last)
+      if (role === "volunteer") {
+        form.flatten();
+      }
+
+      const signedBytes = await pdfDoc.save();
+      const blob = new Blob([new Uint8Array(signedBytes)], { type: "application/pdf" });
+      const localUrl = URL.createObjectURL(blob);
+
+      // Upload to Supabase Storage
+      let publicUrl: string | null = null;
+      try {
+        const fileName = `signed-${applicationId || "pdf"}-${Date.now()}.pdf`;
+        const { error: uploadErr } = await supabase.storage
+          .from("signed-pdfs")
+          .upload(fileName, new Uint8Array(signedBytes), {
+            contentType: "application/pdf",
+            upsert: true,
+          });
+        if (!uploadErr) {
+          const { data: urlData } = supabase.storage
+            .from("signed-pdfs")
+            .getPublicUrl(fileName);
+          publicUrl = urlData?.publicUrl ?? null;
+        }
+      } catch {
+        // best-effort
+      }
+
+      if (publicUrl && signatureRequestId) {
+        await supabase
+          .from("signature_requests")
+          .update({ signed_pdf_url: publicUrl } as any)
+          .eq("id", signatureRequestId);
+      }
+
+      setSignedPdfUrl(publicUrl || localUrl);
+      setStep("done");
+      onSigned?.(signedBytes);
+    } catch (err: any) {
+      console.error("PDF build error:", err);
+      setError(err.message || "Failed to build PDF");
+    } finally {
+      setProcessing(false);
+    }
+  }, [formValues, signatures, applicationId, signatureRequestId, onSigned, pdfUrl, role]);
 
   const downloadSignedPdf = () => {
     if (!signedPdfUrl) return;
@@ -149,32 +231,52 @@ export default function PDFSigner({
   };
 
   const reset = () => {
-    setStep("preview");
-    setSignatureDataUrl(null);
+    setStep("fill");
     setSignedPdfUrl(null);
     setError(null);
+    setSent(false);
   };
+
+  const sendToVolunteer = async () => {
+    if (!signatureRequestId) {
+      setSent(true);
+      return;
+    }
+    try {
+      await supabase
+        .from("signature_requests")
+        .update({
+          status: "signed",
+          signed_at: new Date().toISOString(),
+        } as any)
+        .eq("id", signatureRequestId);
+      setSent(true);
+    } catch (err) {
+      console.error("Error sending to volunteer:", err);
+    }
+  };
+
+  const stepDefs: { id: Step; label: string; icon: any }[] = [
+    { id: "fill", label: "Fill Form", icon: ClipboardEdit },
+    { id: "sign", label: "Sign", icon: PenTool },
+    { id: "done", label: "Review & Send", icon: Send },
+  ];
+  const stepIndex = stepDefs.findIndex((s) => s.id === step);
 
   return (
     <div className="space-y-6">
-      {/* Progress Steps */}
+      {/* Progress bar */}
       <div className="flex items-center justify-center space-x-4 mb-6">
-        {[
-          { id: "preview", label: "Preview Form", icon: Eye },
-          { id: "sign", label: "Draw Signature", icon: PenTool },
-          { id: "done", label: "Download", icon: Download },
-        ].map((s, i) => (
+        {stepDefs.map((s, i) => (
           <div key={s.id} className="flex items-center">
             {i > 0 && (
-              <div
-                className={`w-12 h-0.5 mx-2 ${step === s.id || (s.id === "done" && step === "done") || (s.id === "sign" && step !== "preview") ? "bg-green-500" : "bg-gray-700"}`}
-              />
+              <div className={`w-12 h-0.5 mx-2 ${i <= stepIndex ? "bg-green-500" : "bg-gray-700"}`} />
             )}
             <div
               className={`flex items-center space-x-2 px-3 py-2 rounded-lg text-sm font-medium ${
                 step === s.id
                   ? "bg-gray-700/60 text-white"
-                  : step === "done" || (step === "sign" && s.id === "preview")
+                  : i < stepIndex
                     ? "text-green-400"
                     : "text-gray-500"
               }`}
@@ -193,46 +295,30 @@ export default function PDFSigner({
         </div>
       )}
 
-      {/* Step 1: Preview */}
-      {step === "preview" && (
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          className="space-y-4"
-        >
+      {/* ====== STEP 1 — Fill Form ====== */}
+      {step === "fill" && (
+        <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="space-y-4">
           <div className="bg-gray-800/30 border border-gray-700/40 rounded-xl p-6">
-            <h3 className="text-lg font-semibold text-white mb-3 flex items-center space-x-2">
+            <h3 className="text-lg font-semibold text-white mb-1 flex items-center space-x-2">
               <FileText className="w-5 h-5 text-gray-400" />
               <span>Record of Community Involvement Hours</span>
             </h3>
-            <div className="grid grid-cols-2 gap-4 text-sm mb-4">
-              <div>
-                <span className="text-gray-400">Volunteer:</span>
-                <span className="text-white ml-2">{volunteerName}</span>
-              </div>
-              <div>
-                <span className="text-gray-400">Supervisor:</span>
-                <span className="text-white ml-2">{supervisorName}</span>
-              </div>
-              <div>
-                <span className="text-gray-400">Activity:</span>
-                <span className="text-white ml-2">{opportunityTitle}</span>
-              </div>
-              <div>
-                <span className="text-gray-400">Total Hours:</span>
-                <span className="text-white ml-2 font-semibold">
-                  {totalHours.toFixed(1)}
-                </span>
-              </div>
-            </div>
+            <p className="text-gray-400 text-sm mb-5">
+              Fill in the fields below. They will be written directly into the PDF form.
+            </p>
 
-            {/* PDF Preview */}
-            <div className="border border-gray-700/40 rounded-lg overflow-hidden bg-gray-900/60">
-              <iframe
-                src="/record-of-community-involvement-hours.pdf"
-                className="w-full h-[400px]"
-                title="PDF Preview"
-              />
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              {visibleFields.filter((f) => !f.isSignature).map((f) => (
+                <div key={f.pdfFieldName} className={f.pdfFieldName === "Student Name" ? "md:col-span-2" : ""}>
+                  <label className="block text-sm font-medium text-gray-300 mb-1">{f.label}</label>
+                  <input
+                    type="text"
+                    value={formValues[f.pdfFieldName] ?? ""}
+                    onChange={(e) => setField(f.pdfFieldName, e.target.value)}
+                    className="w-full bg-gray-800/50 border border-gray-700/50 rounded-lg px-4 py-2.5 text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-gray-600 text-sm"
+                  />
+                </div>
+              ))}
             </div>
           </div>
 
@@ -244,7 +330,7 @@ export default function PDFSigner({
               className="flex items-center space-x-2 px-6 py-3 bg-gradient-to-r from-gray-700 to-gray-600 text-white rounded-lg font-semibold hover:shadow-lg hover:shadow-gray-600/50 transition"
             >
               <PenTool className="w-5 h-5" />
-              <span>Proceed to Sign</span>
+              <span>Next: Signatures</span>
             </motion.button>
             <a
               href="/record-of-community-involvement-hours.pdf"
@@ -258,22 +344,76 @@ export default function PDFSigner({
         </motion.div>
       )}
 
-      {/* Step 2: Signature */}
+      {/* ====== STEP 2 — Signatures ====== */}
       {step === "sign" && (
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          className="space-y-4"
-        >
-          <div className="bg-gray-800/30 border border-gray-700/40 rounded-xl p-6">
-            <h3 className="text-lg font-semibold text-white mb-2">
-              Draw Your Signature
-            </h3>
-            <p className="text-gray-400 text-sm mb-4">
-              Use your mouse or finger to sign below. This signature will be
-              embedded into the community involvement hours PDF form.
-            </p>
-            <SignaturePad onSignatureCapture={handleSignatureCapture} />
+        <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="space-y-5">
+          {visibleFields.filter((f) => f.isSignature).map((f) => (
+            <div key={f.pdfFieldName} className="bg-gray-800/30 border border-gray-700/40 rounded-xl p-6">
+              <h3 className="text-lg font-semibold text-white mb-1">{f.label}</h3>
+              <p className="text-gray-400 text-sm mb-3">
+                Draw your signature below. It will be placed inside the &ldquo;{f.label}&rdquo; box on the PDF.
+              </p>
+
+              {signatures[f.pdfFieldName] ? (
+                <div className="space-y-3">
+                  <div className="border-2 border-green-600/40 rounded-xl p-3 bg-white flex items-center justify-center">
+                    {/* eslint-disable-next-line @next/next/no-img-element */}
+                    <img src={signatures[f.pdfFieldName]} alt="Signature" className="max-h-24 object-contain" />
+                  </div>
+                  <div className="flex space-x-3">
+                    <span className="flex items-center space-x-1 text-green-400 text-sm font-medium">
+                      <CheckCircle className="w-4 h-4" />
+                      <span>Captured</span>
+                    </span>
+                    <button
+                      onClick={() => setSignatures((prev) => { const next = { ...prev }; delete next[f.pdfFieldName]; return next; })}
+                      className="text-gray-400 text-sm hover:text-white transition"
+                    >
+                      Re-draw
+                    </button>
+                  </div>
+                </div>
+              ) : activeSigField === f.pdfFieldName ? (
+                <SignaturePad
+                  onSignatureCapture={(dataUrl) => {
+                    setSignatures((prev) => ({ ...prev, [f.pdfFieldName]: dataUrl }));
+                    setActiveSigField(null);
+                  }}
+                />
+              ) : (
+                <motion.button
+                  whileHover={{ scale: 1.02 }}
+                  whileTap={{ scale: 0.98 }}
+                  onClick={() => setActiveSigField(f.pdfFieldName)}
+                  className="flex items-center space-x-2 px-5 py-2.5 border border-gray-700/50 text-gray-300 rounded-lg font-medium hover:bg-gray-800/50 transition text-sm"
+                >
+                  <PenTool className="w-4 h-4" />
+                  <span>Draw Signature</span>
+                </motion.button>
+              )}
+            </div>
+          ))}
+
+          <div className="flex flex-wrap gap-3">
+            <motion.button
+              whileHover={{ scale: 1.02 }}
+              whileTap={{ scale: 0.98 }}
+              onClick={buildPdf}
+              disabled={processing}
+              className="flex items-center space-x-2 px-6 py-3 bg-gradient-to-r from-gray-700 to-gray-600 text-white rounded-lg font-semibold hover:shadow-lg hover:shadow-gray-600/50 transition disabled:opacity-50"
+            >
+              <Eye className="w-5 h-5" />
+              <span>{processing ? "Building PDF..." : "Generate & Preview PDF"}</span>
+            </motion.button>
+            <motion.button
+              whileHover={{ scale: 1.02 }}
+              whileTap={{ scale: 0.98 }}
+              onClick={() => setStep("fill")}
+              className="flex items-center space-x-2 px-4 py-2.5 border border-gray-700/50 text-gray-300 rounded-lg font-medium hover:bg-gray-800/50 transition text-sm"
+            >
+              <RotateCcw className="w-4 h-4" />
+              <span>Back to Form</span>
+            </motion.button>
           </div>
 
           {processing && (
@@ -283,60 +423,51 @@ export default function PDFSigner({
                 transition={{ duration: 1, repeat: Infinity }}
                 className="w-5 h-5 border-2 border-gray-600/30 border-t-gray-400 rounded-full"
               />
-              <span className="text-gray-300 text-sm">
-                Embedding signature into PDF...
-              </span>
+              <span className="text-gray-300 text-sm">Filling form fields &amp; embedding signatures...</span>
             </div>
           )}
-
-          <motion.button
-            whileHover={{ scale: 1.02 }}
-            whileTap={{ scale: 0.98 }}
-            onClick={() => setStep("preview")}
-            className="flex items-center space-x-2 px-4 py-2 border border-gray-700/50 text-gray-300 rounded-lg font-medium hover:bg-gray-800/50 transition text-sm"
-          >
-            <RotateCcw className="w-4 h-4" />
-            <span>Back to Preview</span>
-          </motion.button>
         </motion.div>
       )}
 
-      {/* Step 3: Done */}
+      {/* ====== STEP 3 — Review & Send ====== */}
       {step === "done" && signedPdfUrl && (
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          className="space-y-4"
-        >
+        <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="space-y-4">
           <div className="bg-green-600/10 border border-green-600/30 rounded-xl p-6 text-center">
             <CheckCircle className="w-12 h-12 text-green-400 mx-auto mb-3" />
             <h3 className="text-xl font-bold text-white mb-2">
-              PDF Signed Successfully!
+              {sent ? "Sent to Volunteer!" : "PDF Ready!"}
             </h3>
             <p className="text-gray-400 text-sm mb-4">
-              The volunteer hours form has been signed. You can preview and
-              download it below.
+              {sent
+                ? "The signed form is now available on the volunteer\u2019s dashboard."
+                : "Review the completed form below, then send it to the volunteer."}
             </p>
           </div>
 
-          {/* Signed PDF Preview */}
           <div className="bg-gray-800/30 border border-gray-700/40 rounded-xl p-4">
-            <iframe
-              src={signedPdfUrl}
-              className="w-full h-[400px] rounded-lg"
-              title="Signed PDF Preview"
-            />
+            <iframe src={signedPdfUrl} className="w-full h-[500px] rounded-lg" title="Signed PDF Preview" />
           </div>
 
-          <div className="flex space-x-3">
+          <div className="flex flex-wrap gap-3">
+            {!sent && (
+              <motion.button
+                whileHover={{ scale: 1.02 }}
+                whileTap={{ scale: 0.98 }}
+                onClick={sendToVolunteer}
+                className="flex items-center space-x-2 px-6 py-3 bg-gradient-to-r from-green-600 to-green-500 text-white rounded-lg font-semibold hover:shadow-lg hover:shadow-green-600/30 transition"
+              >
+                <Send className="w-5 h-5" />
+                <span>Send to Volunteer</span>
+              </motion.button>
+            )}
             <motion.button
               whileHover={{ scale: 1.02 }}
               whileTap={{ scale: 0.98 }}
               onClick={downloadSignedPdf}
-              className="flex items-center space-x-2 px-6 py-3 bg-gradient-to-r from-green-600 to-green-500 text-white rounded-lg font-semibold hover:shadow-lg hover:shadow-green-600/30 transition"
+              className="flex items-center space-x-2 px-6 py-3 border border-gray-700/50 text-gray-300 rounded-lg font-medium hover:bg-gray-800/50 transition"
             >
               <Download className="w-5 h-5" />
-              <span>Download Signed PDF</span>
+              <span>Download Copy</span>
             </motion.button>
             <motion.button
               whileHover={{ scale: 1.02 }}
@@ -345,7 +476,7 @@ export default function PDFSigner({
               className="flex items-center space-x-2 px-6 py-3 border border-gray-700/50 text-gray-300 rounded-lg font-medium hover:bg-gray-800/50 transition"
             >
               <RotateCcw className="w-5 h-5" />
-              <span>Sign Again</span>
+              <span>Start Over</span>
             </motion.button>
           </div>
         </motion.div>

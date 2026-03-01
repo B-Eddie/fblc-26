@@ -229,11 +229,11 @@ export default function ApplyPage({ params }: { params: { id: string } }) {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-gradient-to-b from-black via-gray-950 to-black flex items-center justify-center">
+      <div className="min-h-screen bg-[#050505] flex items-center justify-center">
         <motion.div
           animate={{ rotate: 360 }}
           transition={{ duration: 2, repeat: Infinity }}
-          className="w-12 h-12 border-4 border-gray-700/30 border-t-gray-700 rounded-full"
+          className="w-12 h-12 border-4 border-[#333] border-t-[#4EA8F3] rounded-full"
         />
       </div>
     );
@@ -241,15 +241,10 @@ export default function ApplyPage({ params }: { params: { id: string } }) {
 
   if (!opportunity) {
     return (
-      <div className="min-h-screen bg-gradient-to-b from-black via-gray-950 to-black flex items-center justify-center">
-        <div className="text-center">
-          <h1 className="text-2xl font-bold text-white mb-4">
-            Opportunity not found
-          </h1>
-          <Link
-            href="/browse"
-            className="text-gray-400 hover:text-gray-300 transition"
-          >
+      <div className="min-h-screen bg-[#050505] flex items-center justify-center">
+        <div className="text-center card-surface p-12">
+          <h1 className="text-2xl font-bold text-white mb-4 font-heading">Opportunity not found</h1>
+          <Link href="/browse" className="text-ink-muted hover:text-[#4EA8F3] transition">
             Back to Browse
           </Link>
         </div>
@@ -261,20 +256,16 @@ export default function ApplyPage({ params }: { params: { id: string } }) {
 
   if (hasApplied) {
     return (
-      <div className="min-h-screen bg-gradient-to-b from-black via-gray-950 to-black">
+      <div className="min-h-screen bg-[#050505]">
         {/* Header */}
-        <header className="border-b border-gray-800/50 sticky top-0 z-40 bg-black/80 backdrop-blur-lg">
+        <header className="border-b border-[#222] sticky top-0 z-40 bg-[#0a0a0a]/80 backdrop-blur-xl">
           <nav className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
             <div className="flex justify-between items-center">
-              <Link href="/" className="flex items-center space-x-2">
-                <div className="w-10 h-10 rounded-lg flex items-center justify-center">
-                  <img
-                    src="/image.png"
-                    alt="Logo"
-                    className="w-8 h-8 object-contain"
-                  />
+              <Link href="/" className="flex items-center space-x-3">
+                <div className="w-8 h-8 rounded-lg flex items-center justify-center">
+                  <img src="/logo.png" alt="Logo" className="w-8 h-8 object-contain" />
                 </div>
-                <span className="text-2xl font-bold text-white">Vertex</span>
+                <span className="text-xl font-bold font-heading text-white">Pilot</span>
               </Link>
             </div>
           </nav>
@@ -284,40 +275,32 @@ export default function ApplyPage({ params }: { params: { id: string } }) {
           <motion.div
             initial={{ opacity: 0, scale: 0.95 }}
             animate={{ opacity: 1, scale: 1 }}
-            className="bg-gray-900/40 border border-gray-800/60 rounded-2xl p-12 text-center backdrop-blur-sm"
+            className="card-surface p-12 text-center"
           >
             <motion.div
               initial={{ scale: 0 }}
               animate={{ scale: 1 }}
               transition={{ delay: 0.2, type: "spring", stiffness: 200 }}
             >
-              <CheckCircle className="w-20 h-20 text-green-400 mx-auto mb-6" />
+              <CheckCircle className="w-20 h-20 text-[#4EA8F3] mx-auto mb-6" />
             </motion.div>
-            <h1 className="text-3xl font-bold text-white mb-3">
-              Application Submitted!
-            </h1>
-            <p className="text-gray-400 mb-8 max-w-md mx-auto">
-              Your application for{" "}
-              <span className="text-white font-medium">
-                {opportunity.title}
-              </span>{" "}
-              at{" "}
-              <span className="text-white font-medium">
-                {opportunity.business.name}
-              </span>{" "}
-              has been submitted. You'll be notified when the business reviews
-              it.
+            <h1 className="text-4xl font-bold font-heading text-white mb-4">Application Submitted!</h1>
+            <p className="text-ink-muted mb-10 max-w-md mx-auto leading-relaxed">
+              Your application for <span className="text-white font-bold">{opportunity.title}</span> at{" "}
+              <span className="text-white font-bold">{opportunity.business.name}</span> has been
+              submitted. You'll be notified when the business reviews it.
             </p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
               <Link
                 href="/dashboard"
-                className="px-6 py-3 bg-gradient-to-r from-gray-700 to-gray-600 text-white rounded-lg font-semibold hover:shadow-lg hover:shadow-gray-600/50 transition"
+                className="btn-magnetic bg-white text-black px-8 py-4 rounded-full text-sm font-bold group hover:shadow-[0_0_30px_rgba(78,168,243,0.4)] transition-shadow duration-500 justify-center text-center flex items-center"
               >
-                View Dashboard
+                <span className="relative z-10">View Dashboard</span>
+                <span className="btn-bg bg-[#4EA8F3] rounded-full"></span>
               </Link>
               <Link
                 href={`/opportunities/${params.id}`}
-                className="px-6 py-3 bg-gray-800/50 text-gray-300 rounded-lg font-semibold hover:bg-gray-700/50 transition"
+                className="px-8 py-4 border border-[#333] text-white rounded-full font-bold hover:border-[#4EA8F3] transition flex items-center justify-center"
               >
                 Back to Opportunity
               </Link>
@@ -329,23 +312,9 @@ export default function ApplyPage({ params }: { params: { id: string } }) {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-black via-gray-950 to-black text-white">
-      {/* Animated Background */}
-      <div className="fixed inset-0 overflow-hidden pointer-events-none">
-        <motion.div
-          className="absolute -top-40 -right-40 w-80 h-80 bg-gray-700/20 rounded-full blur-3xl"
-          animate={{ y: [0, 40, 0] }}
-          transition={{ duration: 8, repeat: Infinity }}
-        />
-        <motion.div
-          className="absolute -bottom-40 -left-40 w-80 h-80 bg-gray-600/20 rounded-full blur-3xl"
-          animate={{ y: [0, -40, 0] }}
-          transition={{ duration: 8, repeat: Infinity, delay: 1 }}
-        />
-      </div>
-
+    <div className="min-h-screen bg-[#050505] text-white font-sans selection:bg-white selection:text-black">
       {/* Header */}
-      <header className="border-b border-gray-800/50 sticky top-0 z-40 bg-black/80 backdrop-blur-lg">
+      <header className="border-b border-[#222] sticky top-0 z-40 bg-[#0a0a0a]/80 backdrop-blur-xl">
         <nav className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
           <motion.div
             className="flex items-center justify-between"
@@ -356,23 +325,16 @@ export default function ApplyPage({ params }: { params: { id: string } }) {
             <div className="flex items-center space-x-4">
               <Link
                 href={`/opportunities/${params.id}`}
-                className="hover:opacity-80 transition"
+                className="hover:opacity-80 transition text-white"
               >
                 <ArrowLeft className="w-6 h-6" />
               </Link>
-              <Link
-                href="/"
-                className="flex items-center space-x-3 hover:opacity-80 transition"
-              >
-                <div className="w-10 h-10 rounded-lg flex items-center justify-center">
-                  <img
-                    src="/image.png"
-                    alt="Logo"
-                    className="w-12 h-12 object-contain"
-                  />
+              <Link href="/" className="flex items-center space-x-3 hover:opacity-80 transition">
+                <div className="w-8 h-8 rounded-lg flex items-center justify-center">
+                  <img src="/logo.png" alt="Logo" className="w-8 h-8 object-contain" />
                 </div>
-                <span className="text-2xl font-bold font-display bg-gradient-to-r from-gray-400 to-gray-300 bg-clip-text text-transparent">
-                  Vertex
+                <span className="text-xl font-bold font-heading tracking-tight text-white">
+                  Pilot
                 </span>
               </Link>
             </div>
@@ -385,25 +347,23 @@ export default function ApplyPage({ params }: { params: { id: string } }) {
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
-          className="bg-gray-900/40 border border-gray-800/60 rounded-xl p-6 mb-8 backdrop-blur-sm"
+          className="card-surface p-6 mb-8"
         >
           <div className="flex items-start justify-between">
             <div>
-              <p className="text-sm text-gray-500 mb-1">Applying to</p>
-              <h2 className="text-2xl font-bold text-white mb-1">
-                {opportunity.title}
-              </h2>
+              <p className="font-mono text-[10px] uppercase tracking-wider text-ink-muted mb-2">Applying to</p>
+              <h2 className="text-2xl font-bold font-heading text-white mb-1">{opportunity.title}</h2>
               <Link
                 href={`/business/${opportunity.business.id}`}
-                className="text-gray-400 hover:text-gray-300 transition"
+                className="text-ink-muted font-mono text-sm hover:text-[#4EA8F3] transition"
               >
                 {opportunity.business.name} →
               </Link>
             </div>
-            <div className="text-right text-sm text-gray-500">
+            <div className="text-right font-mono text-sm text-ink-muted">
               <p>{opportunity.hours_available} hours</p>
               {opportunity.is_flexible && (
-                <span className="inline-block mt-1 bg-green-600/20 text-green-400 px-2 py-0.5 rounded-full text-xs border border-green-600/30">
+                <span className="inline-block mt-2 bg-[#4EA8F3]/10 text-[#4EA8F3] border border-[#4EA8F3]/50 px-2 py-0.5 rounded-full text-[10px] uppercase tracking-wider font-bold">
                   Flexible
                 </span>
               )}
@@ -416,12 +376,12 @@ export default function ApplyPage({ params }: { params: { id: string } }) {
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.05 }}
-          className="mb-8"
+          className="mb-10"
         >
-          <h1 className="text-4xl md:text-5xl font-bold font-display bg-gradient-to-r from-white via-gray-300 to-gray-400 bg-clip-text text-transparent mb-3">
+          <h1 className="text-4xl md:text-5xl font-bold font-heading tracking-tight text-white mb-3">
             Submit Your Application
           </h1>
-          <p className="text-gray-400 text-lg">
+          <p className="text-ink-muted text-lg font-mono">
             Fill out the form below to apply. Fields marked with * are required.
           </p>
         </motion.div>
@@ -429,12 +389,12 @@ export default function ApplyPage({ params }: { params: { id: string } }) {
         {/* Error Message */}
         {error && (
           <motion.div
-            initial={{ opacity: 0, y: -20 }}
-            animate={{ opacity: 1, y: 0 }}
-            className="mb-8 bg-red-600/20 border border-red-600/30 rounded-xl p-4 flex items-start space-x-4"
+            initial={{ opacity: 0, x: -20 }}
+            animate={{ opacity: 1, x: 0 }}
+            className="mb-8 bg-[#1a0f0f] border border-red-500/30 rounded-xl p-4 flex items-start space-x-4"
           >
-            <AlertCircle className="w-6 h-6 text-red-400 flex-shrink-0 mt-0.5" />
-            <p className="text-red-300">{error}</p>
+            <AlertCircle className="w-5 h-5 text-red-500 flex-shrink-0 mt-0.5" />
+            <p className="text-red-400 text-sm font-mono">{error}</p>
           </motion.div>
         )}
 
@@ -444,19 +404,19 @@ export default function ApplyPage({ params }: { params: { id: string } }) {
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.1 }}
-          className="space-y-6"
+          className="space-y-8"
         >
           {/* Basic Information Section */}
-          <div className="bg-gray-900/40 border border-gray-800/60 rounded-2xl p-8 backdrop-blur-sm">
-            <h3 className="text-xl font-bold text-white mb-6 flex items-center gap-3">
-              <MessageSquare className="w-5 h-5 text-gray-400" />
+          <div className="card-surface p-8">
+            <h3 className="text-xl font-bold font-heading text-white mb-6 flex items-center gap-3">
+              <MessageSquare className="w-5 h-5 text-ink-faint" />
               Basic Information
             </h3>
 
             <div className="space-y-6">
               {/* Why are you interested */}
               <div>
-                <label className="block text-sm font-semibold text-gray-300 mb-2">
+                <label className="block text-xs font-mono uppercase tracking-wider text-ink-muted mb-3">
                   Why are you interested in this opportunity? *
                 </label>
                 <textarea
@@ -465,17 +425,16 @@ export default function ApplyPage({ params }: { params: { id: string } }) {
                   placeholder="Tell the business why you'd be a great fit for this role..."
                   rows={5}
                   required
-                  className="w-full px-4 py-3 bg-gray-800/50 border border-gray-700/50 rounded-lg text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-gray-600 focus:border-transparent transition resize-none"
+                  className="w-full px-4 py-3 bg-[#0a0a0a] border border-[#2a2a2a] rounded-xl text-white placeholder-[#555] focus:outline-none focus:border-[#4EA8F3] transition-colors font-mono text-sm resize-none"
                 />
-                <p className="text-xs text-gray-500 mt-1">
-                  This is your chance to stand out — share your motivation and
-                  relevant experience.
+                <p className="text-[11px] font-mono text-ink-faint mt-2">
+                  This is your chance to stand out — share your motivation and relevant experience.
                 </p>
               </div>
 
               {/* Phone Number */}
               <div>
-                <label className="block text-sm font-semibold text-gray-300 mb-2">
+                <label className="block text-xs font-mono uppercase tracking-wider text-ink-muted mb-3">
                   <span className="flex items-center gap-2">
                     <Phone className="w-4 h-4" />
                     Phone Number
@@ -486,16 +445,16 @@ export default function ApplyPage({ params }: { params: { id: string } }) {
                   value={phoneNumber}
                   onChange={(e) => setPhoneNumber(e.target.value)}
                   placeholder="(555) 123-4567"
-                  className="w-full px-4 py-3 bg-gray-800/50 border border-gray-700/50 rounded-lg text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-gray-600 focus:border-transparent transition"
+                  className="w-full px-4 py-3 bg-[#0a0a0a] border border-[#2a2a2a] rounded-xl text-white placeholder-[#555] focus:outline-none focus:border-[#4EA8F3] transition-colors font-mono text-sm"
                 />
-                <p className="text-xs text-gray-500 mt-1">
+                <p className="text-[11px] font-mono text-ink-faint mt-2">
                   Optional — in case the business needs to reach you quickly.
                 </p>
               </div>
 
               {/* Availability */}
               <div>
-                <label className="block text-sm font-semibold text-gray-300 mb-2">
+                <label className="block text-xs font-mono uppercase tracking-wider text-ink-muted mb-3">
                   <span className="flex items-center gap-2">
                     <Calendar className="w-4 h-4" />
                     Availability
@@ -506,9 +465,9 @@ export default function ApplyPage({ params }: { params: { id: string } }) {
                   onChange={(e) => setAvailability(e.target.value)}
                   placeholder="e.g., Weekdays after 3 PM, Saturdays 9 AM–5 PM, flexible on weekends..."
                   rows={3}
-                  className="w-full px-4 py-3 bg-gray-800/50 border border-gray-700/50 rounded-lg text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-gray-600 focus:border-transparent transition resize-none"
+                  className="w-full px-4 py-3 bg-[#0a0a0a] border border-[#2a2a2a] rounded-xl text-white placeholder-[#555] focus:outline-none focus:border-[#4EA8F3] transition-colors font-mono text-sm resize-none"
                 />
-                <p className="text-xs text-gray-500 mt-1">
+                <p className="text-[11px] font-mono text-ink-faint mt-2">
                   Optional — let them know when you're free to volunteer.
                 </p>
               </div>
@@ -516,24 +475,22 @@ export default function ApplyPage({ params }: { params: { id: string } }) {
           </div>
 
           {/* Documents Section */}
-          <div className="bg-gray-900/40 border border-gray-800/60 rounded-2xl p-8 backdrop-blur-sm">
-            <h3 className="text-xl font-bold text-white mb-6 flex items-center gap-3">
-              <FileText className="w-5 h-5 text-gray-400" />
+          <div className="card-surface p-8">
+            <h3 className="text-xl font-bold font-heading text-white mb-6 flex items-center gap-3">
+              <FileText className="w-5 h-5 text-ink-faint" />
               Documents
             </h3>
 
             <div className="space-y-6">
               {/* Resume Upload */}
               <div>
-                <label className="block text-sm font-semibold text-gray-300 mb-2">
+                <label className="block text-xs font-mono uppercase tracking-wider text-ink-muted mb-3">
                   Resume / CV
                 </label>
                 <div className="flex items-center gap-4">
-                  <label className="flex-shrink-0 cursor-pointer px-4 py-3 bg-gray-800/50 border border-gray-700/50 rounded-lg text-gray-300 hover:bg-gray-700/50 transition flex items-center gap-2">
-                    <Upload className="w-5 h-5" />
-                    <span>
-                      {resumeFile ? resumeFile.name : "Upload Resume"}
-                    </span>
+                  <label className="flex-shrink-0 cursor-pointer px-5 py-3 bg-[#0a0a0a] border border-[#2a2a2a] rounded-xl text-ink-muted font-mono text-xs uppercase tracking-wider hover:border-[#4EA8F3] hover:text-white transition flex items-center gap-3">
+                    <Upload className="w-4 h-4" />
+                    <span>{resumeFile ? resumeFile.name : "Upload Resume"}</span>
                     <input
                       type="file"
                       accept=".pdf,.doc,.docx"
@@ -547,25 +504,25 @@ export default function ApplyPage({ params }: { params: { id: string } }) {
                     <button
                       type="button"
                       onClick={() => setResumeFile(null)}
-                      className="p-1 text-gray-500 hover:text-red-400 transition"
+                      className="p-2 text-ink-muted hover:text-red-500 transition-colors"
                     >
-                      <X className="w-4 h-4" />
+                      <X className="w-5 h-5" />
                     </button>
                   )}
                 </div>
-                <p className="text-xs text-gray-500 mt-1">
+                <p className="text-[11px] font-mono text-ink-faint mt-3">
                   Optional — PDF, DOC, or DOCX accepted.
                 </p>
               </div>
 
               {/* Reference Letter Upload */}
               <div>
-                <label className="block text-sm font-semibold text-gray-300 mb-2">
+                <label className="block text-xs font-mono uppercase tracking-wider text-ink-muted mb-3">
                   Reference Letter
                 </label>
                 <div className="flex items-center gap-4">
-                  <label className="flex-shrink-0 cursor-pointer px-4 py-3 bg-gray-800/50 border border-gray-700/50 rounded-lg text-gray-300 hover:bg-gray-700/50 transition flex items-center gap-2">
-                    <Upload className="w-5 h-5" />
+                  <label className="flex-shrink-0 cursor-pointer px-5 py-3 bg-[#0a0a0a] border border-[#2a2a2a] rounded-xl text-ink-muted font-mono text-xs uppercase tracking-wider hover:border-[#4EA8F3] hover:text-white transition flex items-center gap-3">
+                    <Upload className="w-4 h-4" />
                     <span>
                       {referenceLetterFile
                         ? referenceLetterFile.name
@@ -584,13 +541,13 @@ export default function ApplyPage({ params }: { params: { id: string } }) {
                     <button
                       type="button"
                       onClick={() => setReferenceLetterFile(null)}
-                      className="p-1 text-gray-500 hover:text-red-400 transition"
+                      className="p-2 text-ink-muted hover:text-red-500 transition-colors"
                     >
-                      <X className="w-4 h-4" />
+                      <X className="w-5 h-5" />
                     </button>
                   )}
                 </div>
-                <p className="text-xs text-gray-500 mt-1">
+                <p className="text-[11px] font-mono text-ink-faint mt-3">
                   Optional — PDF, DOC, or DOCX accepted.
                 </p>
               </div>
@@ -599,19 +556,19 @@ export default function ApplyPage({ params }: { params: { id: string } }) {
 
           {/* Custom Questions Section */}
           {customQuestions.length > 0 && (
-            <div className="bg-gray-900/40 border border-gray-800/60 rounded-2xl p-8 backdrop-blur-sm">
-              <h3 className="text-xl font-bold text-white mb-2 flex items-center gap-3">
-                <MessageSquare className="w-5 h-5 text-gray-400" />
+            <div className="card-surface p-8">
+              <h3 className="text-xl font-bold font-heading text-white mb-2 flex items-center gap-3">
+                <MessageSquare className="w-5 h-5 text-ink-faint" />
                 Additional Questions
               </h3>
-              <p className="text-sm text-gray-500 mb-6">
+              <p className="text-sm font-mono text-ink-muted mb-8">
                 The business has some additional questions for applicants.
               </p>
 
-              <div className="space-y-6">
+              <div className="space-y-8">
                 {customQuestions.map((q) => (
                   <div key={q.id}>
-                    <label className="block text-sm font-semibold text-gray-300 mb-2">
+                    <label className="block text-xs font-mono uppercase tracking-wider text-ink-muted mb-3">
                       {q.question} {q.required && "*"}
                     </label>
 
@@ -627,12 +584,12 @@ export default function ApplyPage({ params }: { params: { id: string } }) {
                         placeholder="Type your answer here..."
                         rows={3}
                         required={q.required}
-                        className="w-full px-4 py-3 bg-gray-800/50 border border-gray-700/50 rounded-lg text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-gray-600 focus:border-transparent transition resize-none"
+                        className="w-full px-4 py-3 bg-[#0a0a0a] border border-[#2a2a2a] rounded-xl text-white placeholder-[#555] focus:outline-none focus:border-[#4EA8F3] transition-colors font-mono text-sm resize-none"
                       />
                     ) : (
                       <div className="flex items-center gap-4">
-                        <label className="flex-shrink-0 cursor-pointer px-4 py-3 bg-gray-800/50 border border-gray-700/50 rounded-lg text-gray-300 hover:bg-gray-700/50 transition flex items-center gap-2">
-                          <Upload className="w-5 h-5" />
+                        <label className="flex-shrink-0 cursor-pointer px-5 py-3 bg-[#0a0a0a] border border-[#2a2a2a] rounded-xl text-ink-muted font-mono text-xs uppercase tracking-wider hover:border-[#4EA8F3] hover:text-white transition flex items-center gap-3">
+                          <Upload className="w-4 h-4" />
                           <span>
                             {customFiles[q.id]
                               ? customFiles[q.id]!.name
@@ -653,9 +610,9 @@ export default function ApplyPage({ params }: { params: { id: string } }) {
                           <button
                             type="button"
                             onClick={() => handleCustomFileChange(q.id, null)}
-                            className="p-1 text-gray-500 hover:text-red-400 transition"
+                            className="p-2 text-ink-muted hover:text-red-500 transition-colors"
                           >
-                            <X className="w-4 h-4" />
+                            <X className="w-5 h-5" />
                           </button>
                         )}
                       </div>
@@ -675,26 +632,29 @@ export default function ApplyPage({ params }: { params: { id: string } }) {
           >
             <Link
               href={`/opportunities/${params.id}`}
-              className="flex-1 px-6 py-4 bg-gray-800/50 text-gray-300 rounded-xl font-semibold hover:bg-gray-700/50 transition text-center"
+              className="flex-1 px-6 py-4 border border-[#333] text-white rounded-full font-bold hover:border-[#4EA8F3] transition text-center flex items-center justify-center"
             >
               Cancel
             </Link>
             <button
               type="submit"
               disabled={submitting || !message.trim()}
-              className="flex-1 flex items-center justify-center gap-2 px-6 py-4 bg-gradient-to-r from-gray-700 to-gray-600 text-white rounded-xl font-semibold hover:shadow-lg hover:shadow-gray-600/50 transition disabled:opacity-50 disabled:cursor-not-allowed"
+              className="btn-magnetic flex-1 flex bg-white text-black py-4 rounded-full text-base font-bold group hover:shadow-[0_0_30px_rgba(78,168,243,0.4)] transition-shadow duration-500 justify-center disabled:opacity-50"
             >
-              {submitting ? (
-                <>
-                  <Loader2 className="w-5 h-5 animate-spin" />
-                  Submitting...
-                </>
-              ) : (
-                <>
-                  <Send className="w-5 h-5" />
-                  Submit Application
-                </>
-              )}
+              <span className="relative z-10 flex items-center justify-center gap-2">
+                {submitting ? (
+                  <>
+                    <Loader2 className="w-5 h-5 animate-spin" />
+                    <span>Submitting...</span>
+                  </>
+                ) : (
+                  <>
+                    <Send className="w-5 h-5" />
+                    <span>Submit Application</span>
+                  </>
+                )}
+              </span>
+              <span className="btn-bg bg-[#4EA8F3] rounded-full"></span>
             </button>
           </motion.div>
         </motion.form>
@@ -704,33 +664,28 @@ export default function ApplyPage({ params }: { params: { id: string } }) {
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.4 }}
-          className="mt-12 bg-gray-800/20 border border-gray-700/30 rounded-2xl p-8"
+          className="mt-12 card-surface p-8"
         >
-          <h3 className="text-lg font-semibold text-white mb-4">
-            Application Tips
-          </h3>
-          <ul className="space-y-3 text-gray-300">
+          <h3 className="text-lg font-bold font-heading text-white mb-4">Application Tips</h3>
+          <ul className="space-y-4 text-ink-muted font-mono text-sm leading-relaxed">
             <li className="flex items-start space-x-3">
-              <span className="text-gray-600 mt-0.5">•</span>
-              <span>
-                Be specific about why you're interested and what skills you
-                bring
-              </span>
+              <span className="text-[#4EA8F3] mt-0.5">•</span>
+              <span>Be specific about why you're interested and what skills you bring</span>
             </li>
             <li className="flex items-start space-x-3">
-              <span className="text-gray-600 mt-0.5">•</span>
+              <span className="text-[#4EA8F3] mt-0.5">•</span>
               <span>
                 Include your availability so the business can plan accordingly
               </span>
             </li>
             <li className="flex items-start space-x-3">
-              <span className="text-gray-600 mt-0.5">•</span>
+              <span className="text-[#4EA8F3] mt-0.5">•</span>
               <span>
                 A resume or reference letter can help your application stand out
               </span>
             </li>
             <li className="flex items-start space-x-3">
-              <span className="text-gray-600 mt-0.5">•</span>
+              <span className="text-[#4EA8F3] mt-0.5">•</span>
               <span>Answer all required questions thoroughly</span>
             </li>
           </ul>

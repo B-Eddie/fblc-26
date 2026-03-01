@@ -44,8 +44,6 @@ export default function SignaturePad({
     const dpr = window.devicePixelRatio || 1;
     canvas.width = canvasWidth * dpr;
     canvas.height = height * dpr;
-    canvas.style.width = `${canvasWidth}px`;
-    canvas.style.height = `${height}px`;
     ctx.scale(dpr, dpr);
 
     // Style
@@ -60,20 +58,22 @@ export default function SignaturePad({
       const canvas = canvasRef.current;
       if (!canvas) return { x: 0, y: 0 };
       const rect = canvas.getBoundingClientRect();
+      const scaleX = canvasWidth / rect.width;
+      const scaleY = height / rect.height;
 
       if ("touches" in e) {
         const touch = e.touches[0];
         return {
-          x: touch.clientX - rect.left,
-          y: touch.clientY - rect.top,
+          x: (touch.clientX - rect.left) * scaleX,
+          y: (touch.clientY - rect.top) * scaleY,
         };
       }
       return {
-        x: (e as React.MouseEvent).clientX - rect.left,
-        y: (e as React.MouseEvent).clientY - rect.top,
+        x: ((e as React.MouseEvent).clientX - rect.left) * scaleX,
+        y: ((e as React.MouseEvent).clientY - rect.top) * scaleY,
       };
     },
-    [],
+    [canvasWidth, height],
   );
 
   const startDrawing = useCallback(
