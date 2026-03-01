@@ -266,6 +266,65 @@ export default function DashboardPage() {
           </motion.div>
         </motion.div>
 
+        {/* Signed Forms */}
+        {signatureRequests.filter((s) => s.status === "signed" && s.signed_pdf_url).length > 0 && (
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.25, duration: 0.6 }}
+            className="card-surface p-8 mb-8"
+          >
+            <h2 className="text-2xl font-bold font-heading text-white mb-2">Signed Forms</h2>
+            <p className="text-ink-muted text-sm mb-8 max-w-xl">
+              Your supervisor has signed these forms. Add your signatures to finalize, then download.
+            </p>
+            <div className="divide-y divide-[#1a1a1a]">
+              {signatureRequests
+                .filter((s) => s.status === "signed" && s.signed_pdf_url)
+                .map((sig) => {
+                  const app = sig.application;
+                  const opp = app?.opportunity;
+                  const biz = opp?.business;
+                  return (
+                    <div key={sig.id} className="py-6 first:pt-0 last:pb-0">
+                      <div className="flex items-start justify-between mb-4">
+                        <div>
+                          <h3 className="text-lg font-bold font-heading text-white">
+                            {opp?.title || "Volunteer Opportunity"}
+                          </h3>
+                          <p className="text-xs font-mono text-ink-muted mt-1">
+                            {biz?.name || "Business"} · {parseFloat(sig.total_hours).toFixed(1)} hrs
+                            {sig.signed_at && (
+                              <span className="text-[#10b981]"> · Signed {new Date(sig.signed_at).toLocaleDateString()}</span>
+                            )}
+                          </p>
+                        </div>
+                        <a
+                          href={sig.signed_pdf_url}
+                          download={`signed-volunteer-hours.pdf`}
+                          className="inline-flex items-center gap-2 text-xs font-mono text-ink-muted hover:text-white transition-colors shrink-0"
+                        >
+                          <Download className="w-3.5 h-3.5" />
+                          <span>Download</span>
+                        </a>
+                      </div>
+                      <PDFSigner
+                        role="volunteer"
+                        pdfUrl={sig.signed_pdf_url}
+                        volunteerName={profile?.full_name || ""}
+                        supervisorName={biz?.name || ""}
+                        totalHours={parseFloat(sig.total_hours) || 0}
+                        opportunityTitle={opp?.title || ""}
+                        applicationId={sig.application_id}
+                        signatureRequestId={sig.id}
+                      />
+                    </div>
+                  );
+                })}
+            </div>
+          </motion.div>
+        )}
+
         {/* Recent Applications */}
         <motion.div
           initial={{ opacity: 0, y: 20 }}

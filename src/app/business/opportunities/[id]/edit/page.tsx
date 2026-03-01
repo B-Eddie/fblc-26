@@ -669,6 +669,7 @@ export default function EditOpportunityPage({
               >
                 <span className="relative z-10 flex items-center justify-center gap-2">
                 {submitting ? "Saving..." : "Save Changes"}
+                </span>
               </motion.button>
             </motion.div>
           </div>

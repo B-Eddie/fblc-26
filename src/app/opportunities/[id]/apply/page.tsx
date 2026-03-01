@@ -40,9 +40,15 @@ export default function ApplyPage({ params }: { params: { id: string } }) {
   const [phoneNumber, setPhoneNumber] = useState("");
   const [availability, setAvailability] = useState("");
   const [resumeFile, setResumeFile] = useState<File | null>(null);
-  const [referenceLetterFile, setReferenceLetterFile] = useState<File | null>(null);
-  const [customAnswers, setCustomAnswers] = useState<Record<string, string>>({});
-  const [customFiles, setCustomFiles] = useState<Record<string, File | null>>({});
+  const [referenceLetterFile, setReferenceLetterFile] = useState<File | null>(
+    null,
+  );
+  const [customAnswers, setCustomAnswers] = useState<Record<string, string>>(
+    {},
+  );
+  const [customFiles, setCustomFiles] = useState<Record<string, File | null>>(
+    {},
+  );
 
   useEffect(() => {
     fetchData();
@@ -87,9 +93,9 @@ export default function ApplyPage({ params }: { params: { id: string } }) {
         .select("*")
         .eq("profile_id", currentUser.id)
         .eq("opportunity_id", params.id)
-        .single();
+        .limit(1);
 
-      if (appData) setHasApplied(true);
+      if (appData && appData.length > 0) setHasApplied(true);
     } catch (err) {
       console.error("Error fetching data:", err);
     } finally {
@@ -97,7 +103,10 @@ export default function ApplyPage({ params }: { params: { id: string } }) {
     }
   };
 
-  const uploadFile = async (file: File, folder: string): Promise<string | null> => {
+  const uploadFile = async (
+    file: File,
+    folder: string,
+  ): Promise<string | null> => {
     if (!user) return null;
     const ext = file.name.split(".").pop() || "pdf";
     const path = `${user.id}/${folder}/${Date.now()}-${Math.random().toString(36).slice(2)}.${ext}`;
@@ -148,7 +157,7 @@ export default function ApplyPage({ params }: { params: { id: string } }) {
         resumeUrl = await uploadFile(resumeFile, "resumes");
         if (!resumeUrl) {
           setError(
-            "Resume upload failed. Make sure the 'application-files' storage bucket exists in Supabase."
+            "Resume upload failed. Make sure the 'application-files' storage bucket exists in Supabase.",
           );
           setSubmitting(false);
           return;
@@ -158,10 +167,13 @@ export default function ApplyPage({ params }: { params: { id: string } }) {
       // Upload reference letter if provided
       let referenceLetterUrl: string | null = null;
       if (referenceLetterFile) {
-        referenceLetterUrl = await uploadFile(referenceLetterFile, "references");
+        referenceLetterUrl = await uploadFile(
+          referenceLetterFile,
+          "references",
+        );
         if (!referenceLetterUrl) {
           setError(
-            "Reference letter upload failed. Make sure the 'application-files' storage bucket exists in Supabase."
+            "Reference letter upload failed. Make sure the 'application-files' storage bucket exists in Supabase.",
           );
           setSubmitting(false);
           return;
@@ -184,19 +196,21 @@ export default function ApplyPage({ params }: { params: { id: string } }) {
       }
 
       // Submit the application
-      const { error: insertError } = await supabase.from("applications").insert([
-        {
-          profile_id: user.id,
-          opportunity_id: params.id,
-          message: message.trim() || null,
-          phone_number: phoneNumber.trim() || null,
-          availability: availability.trim() || null,
-          resume_url: resumeUrl,
-          reference_letter_url: referenceLetterUrl,
-          custom_answers: finalAnswers,
-          status: "pending",
-        },
-      ] as any);
+      const { error: insertError } = await supabase
+        .from("applications")
+        .insert([
+          {
+            profile_id: user.id,
+            opportunity_id: params.id,
+            message: message.trim() || null,
+            phone_number: phoneNumber.trim() || null,
+            availability: availability.trim() || null,
+            resume_url: resumeUrl,
+            reference_letter_url: referenceLetterUrl,
+            custom_answers: finalAnswers,
+            status: "pending",
+          },
+        ] as any);
 
       if (insertError) throw insertError;
 
@@ -480,7 +494,9 @@ export default function ApplyPage({ params }: { params: { id: string } }) {
                     <input
                       type="file"
                       accept=".pdf,.doc,.docx"
-                      onChange={(e) => setResumeFile(e.target.files?.[0] || null)}
+                      onChange={(e) =>
+                        setResumeFile(e.target.files?.[0] || null)
+                      }
                       className="hidden"
                     />
                   </label>
@@ -508,12 +524,16 @@ export default function ApplyPage({ params }: { params: { id: string } }) {
                   <label className="flex-shrink-0 cursor-pointer px-5 py-3 bg-[#0a0a0a] border border-[#2a2a2a] rounded-xl text-ink-muted font-mono text-xs uppercase tracking-wider hover:border-[#4EA8F3] hover:text-white transition flex items-center gap-3">
                     <Upload className="w-4 h-4" />
                     <span>
-                      {referenceLetterFile ? referenceLetterFile.name : "Upload Reference Letter"}
+                      {referenceLetterFile
+                        ? referenceLetterFile.name
+                        : "Upload Reference Letter"}
                     </span>
                     <input
                       type="file"
                       accept=".pdf,.doc,.docx"
-                      onChange={(e) => setReferenceLetterFile(e.target.files?.[0] || null)}
+                      onChange={(e) =>
+                        setReferenceLetterFile(e.target.files?.[0] || null)
+                      }
                       className="hidden"
                     />
                   </label>
@@ -578,7 +598,10 @@ export default function ApplyPage({ params }: { params: { id: string } }) {
                           <input
                             type="file"
                             onChange={(e) =>
-                              handleCustomFileChange(q.id, e.target.files?.[0] || null)
+                              handleCustomFileChange(
+                                q.id,
+                                e.target.files?.[0] || null,
+                              )
                             }
                             className="hidden"
                           />
@@ -651,11 +674,15 @@ export default function ApplyPage({ params }: { params: { id: string } }) {
             </li>
             <li className="flex items-start space-x-3">
               <span className="text-[#4EA8F3] mt-0.5">•</span>
-              <span>Include your availability so the business can plan accordingly</span>
+              <span>
+                Include your availability so the business can plan accordingly
+              </span>
             </li>
             <li className="flex items-start space-x-3">
               <span className="text-[#4EA8F3] mt-0.5">•</span>
-              <span>A resume or reference letter can help your application stand out</span>
+              <span>
+                A resume or reference letter can help your application stand out
+              </span>
             </li>
             <li className="flex items-start space-x-3">
               <span className="text-[#4EA8F3] mt-0.5">•</span>

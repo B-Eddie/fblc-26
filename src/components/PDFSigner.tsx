@@ -4,7 +4,6 @@ import { useState, useCallback } from "react";
 import { motion } from "framer-motion";
 import { PDFDocument } from "pdf-lib";
 import {
-  FileText,
   Download,
   Eye,
   PenTool,
@@ -265,25 +264,24 @@ export default function PDFSigner({
 
   return (
     <div className="space-y-6">
-      {/* Progress bar */}
-      <div className="flex items-center justify-center space-x-4 mb-6">
+      {/* Progress steps */}
+      <div className="flex items-center gap-1 mb-4">
         {stepDefs.map((s, i) => (
-          <div key={s.id} className="flex items-center">
+          <div key={s.id} className="flex items-center gap-1">
             {i > 0 && (
-              <div className={`w-12 h-0.5 mx-2 ${i <= stepIndex ? "bg-green-500" : "bg-gray-700"}`} />
+              <div className={`w-6 h-px ${i <= stepIndex ? "bg-[#4EA8F3]" : "bg-[#222]"}`} />
             )}
-            <div
-              className={`flex items-center space-x-2 px-3 py-2 rounded-lg text-sm font-medium ${
+            <span
+              className={`text-[10px] font-mono uppercase tracking-wider px-2 py-1 rounded-full transition-colors ${
                 step === s.id
-                  ? "bg-gray-700/60 text-white"
+                  ? "bg-[#4EA8F3]/10 text-[#4EA8F3] border border-[#4EA8F3]/30"
                   : i < stepIndex
-                    ? "text-green-400"
-                    : "text-gray-500"
+                    ? "text-[#10b981]"
+                    : "text-[#444]"
               }`}
             >
-              <s.icon className="w-4 h-4" />
-              <span className="hidden sm:inline">{s.label}</span>
-            </div>
+              {s.label}
+            </span>
           </div>
         ))}
       </div>
@@ -297,48 +295,38 @@ export default function PDFSigner({
 
       {/* ====== STEP 1 — Fill Form ====== */}
       {step === "fill" && (
-        <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="space-y-4">
-          <div className="bg-gray-800/30 border border-gray-700/40 rounded-xl p-6">
-            <h3 className="text-lg font-semibold text-white mb-1 flex items-center space-x-2">
-              <FileText className="w-5 h-5 text-gray-400" />
-              <span>Record of Community Involvement Hours</span>
-            </h3>
-            <p className="text-gray-400 text-sm mb-5">
-              Fill in the fields below. They will be written directly into the PDF form.
-            </p>
-
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              {visibleFields.filter((f) => !f.isSignature).map((f) => (
-                <div key={f.pdfFieldName} className={f.pdfFieldName === "Student Name" ? "md:col-span-2" : ""}>
-                  <label className="block text-sm font-medium text-gray-300 mb-1">{f.label}</label>
-                  <input
-                    type="text"
-                    value={formValues[f.pdfFieldName] ?? ""}
-                    onChange={(e) => setField(f.pdfFieldName, e.target.value)}
-                    className="w-full bg-gray-800/50 border border-gray-700/50 rounded-lg px-4 py-2.5 text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-gray-600 text-sm"
-                  />
-                </div>
-              ))}
-            </div>
+        <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="space-y-5">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-x-6 gap-y-4">
+            {visibleFields.filter((f) => !f.isSignature).map((f) => (
+              <div key={f.pdfFieldName} className={f.pdfFieldName === "Student Name" ? "md:col-span-2" : ""}>
+                <label className="block text-[11px] font-mono uppercase tracking-wider text-ink-muted mb-1.5">{f.label}</label>
+                <input
+                  type="text"
+                  value={formValues[f.pdfFieldName] ?? ""}
+                  onChange={(e) => setField(f.pdfFieldName, e.target.value)}
+                  className="w-full bg-transparent border-b border-[#2a2a2a] px-1 py-2 text-white placeholder-[#444] focus:outline-none focus:border-[#4EA8F3] transition-colors text-sm"
+                />
+              </div>
+            ))}
           </div>
 
-          <div className="flex space-x-3">
+          <div className="flex items-center gap-3 pt-2">
             <motion.button
               whileHover={{ scale: 1.02 }}
               whileTap={{ scale: 0.98 }}
               onClick={() => setStep("sign")}
-              className="flex items-center space-x-2 px-6 py-3 bg-gradient-to-r from-gray-700 to-gray-600 text-white rounded-lg font-semibold hover:shadow-lg hover:shadow-gray-600/50 transition"
+              className="flex items-center gap-2 px-5 py-2.5 bg-white text-black rounded-full text-sm font-bold hover:shadow-[0_0_20px_rgba(78,168,243,0.3)] transition-shadow"
             >
-              <PenTool className="w-5 h-5" />
-              <span>Next: Signatures</span>
+              <PenTool className="w-4 h-4" />
+              <span>Next: Sign</span>
             </motion.button>
             <a
               href="/record-of-community-involvement-hours.pdf"
               download
-              className="flex items-center space-x-2 px-6 py-3 border border-gray-700/50 text-gray-300 rounded-lg font-medium hover:bg-gray-800/50 transition"
+              className="flex items-center gap-2 text-xs font-mono text-ink-muted hover:text-white transition-colors"
             >
-              <Download className="w-5 h-5" />
-              <span>Download Blank</span>
+              <Download className="w-3.5 h-3.5" />
+              <span>Blank PDF</span>
             </a>
           </div>
         </motion.div>
@@ -346,28 +334,24 @@ export default function PDFSigner({
 
       {/* ====== STEP 2 — Signatures ====== */}
       {step === "sign" && (
-        <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="space-y-5">
+        <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="space-y-6">
           {visibleFields.filter((f) => f.isSignature).map((f) => (
-            <div key={f.pdfFieldName} className="bg-gray-800/30 border border-gray-700/40 rounded-xl p-6">
-              <h3 className="text-lg font-semibold text-white mb-1">{f.label}</h3>
-              <p className="text-gray-400 text-sm mb-3">
-                Draw your signature below. It will be placed inside the &ldquo;{f.label}&rdquo; box on the PDF.
-              </p>
+            <div key={f.pdfFieldName}>
+              <label className="block text-[11px] font-mono uppercase tracking-wider text-ink-muted mb-2">{f.label}</label>
 
               {signatures[f.pdfFieldName] ? (
-                <div className="space-y-3">
-                  <div className="border-2 border-green-600/40 rounded-xl p-3 bg-white flex items-center justify-center">
+                <div className="flex items-center gap-4">
+                  <div className="flex-1 rounded-xl bg-white p-2 flex items-center justify-center">
                     {/* eslint-disable-next-line @next/next/no-img-element */}
-                    <img src={signatures[f.pdfFieldName]} alt="Signature" className="max-h-24 object-contain" />
+                    <img src={signatures[f.pdfFieldName]} alt="Signature" className="max-h-20 object-contain" />
                   </div>
-                  <div className="flex space-x-3">
-                    <span className="flex items-center space-x-1 text-green-400 text-sm font-medium">
-                      <CheckCircle className="w-4 h-4" />
-                      <span>Captured</span>
+                  <div className="flex flex-col gap-1 shrink-0">
+                    <span className="flex items-center gap-1 text-[#10b981] text-xs font-mono">
+                      <CheckCircle className="w-3.5 h-3.5" /> Signed
                     </span>
                     <button
                       onClick={() => setSignatures((prev) => { const next = { ...prev }; delete next[f.pdfFieldName]; return next; })}
-                      className="text-gray-400 text-sm hover:text-white transition"
+                      className="text-xs font-mono text-ink-muted hover:text-white transition-colors"
                     >
                       Re-draw
                     </button>
@@ -381,49 +365,45 @@ export default function PDFSigner({
                   }}
                 />
               ) : (
-                <motion.button
-                  whileHover={{ scale: 1.02 }}
-                  whileTap={{ scale: 0.98 }}
+                <button
                   onClick={() => setActiveSigField(f.pdfFieldName)}
-                  className="flex items-center space-x-2 px-5 py-2.5 border border-gray-700/50 text-gray-300 rounded-lg font-medium hover:bg-gray-800/50 transition text-sm"
+                  className="flex items-center gap-2 px-4 py-2 border border-dashed border-[#333] text-ink-muted rounded-xl text-sm hover:border-[#4EA8F3] hover:text-white transition-colors w-full justify-center"
                 >
                   <PenTool className="w-4 h-4" />
-                  <span>Draw Signature</span>
-                </motion.button>
+                  <span>Tap to sign</span>
+                </button>
               )}
             </div>
           ))}
 
-          <div className="flex flex-wrap gap-3">
+          <div className="flex items-center gap-3 pt-2">
             <motion.button
               whileHover={{ scale: 1.02 }}
               whileTap={{ scale: 0.98 }}
               onClick={buildPdf}
               disabled={processing}
-              className="flex items-center space-x-2 px-6 py-3 bg-gradient-to-r from-gray-700 to-gray-600 text-white rounded-lg font-semibold hover:shadow-lg hover:shadow-gray-600/50 transition disabled:opacity-50"
+              className="flex items-center gap-2 px-5 py-2.5 bg-white text-black rounded-full text-sm font-bold hover:shadow-[0_0_20px_rgba(78,168,243,0.3)] transition-shadow disabled:opacity-50"
             >
-              <Eye className="w-5 h-5" />
-              <span>{processing ? "Building PDF..." : "Generate & Preview PDF"}</span>
+              <Eye className="w-4 h-4" />
+              <span>{processing ? "Building..." : "Generate PDF"}</span>
             </motion.button>
-            <motion.button
-              whileHover={{ scale: 1.02 }}
-              whileTap={{ scale: 0.98 }}
+            <button
               onClick={() => setStep("fill")}
-              className="flex items-center space-x-2 px-4 py-2.5 border border-gray-700/50 text-gray-300 rounded-lg font-medium hover:bg-gray-800/50 transition text-sm"
+              className="flex items-center gap-2 text-xs font-mono text-ink-muted hover:text-white transition-colors"
             >
-              <RotateCcw className="w-4 h-4" />
-              <span>Back to Form</span>
-            </motion.button>
+              <RotateCcw className="w-3.5 h-3.5" />
+              <span>Back</span>
+            </button>
           </div>
 
           {processing && (
-            <div className="flex items-center justify-center space-x-3 p-4 bg-gray-800/30 border border-gray-700/40 rounded-xl">
+            <div className="flex items-center justify-center gap-3 py-4">
               <motion.div
                 animate={{ rotate: 360 }}
                 transition={{ duration: 1, repeat: Infinity }}
-                className="w-5 h-5 border-2 border-gray-600/30 border-t-gray-400 rounded-full"
+                className="w-4 h-4 border-2 border-[#333] border-t-[#4EA8F3] rounded-full"
               />
-              <span className="text-gray-300 text-sm">Filling form fields &amp; embedding signatures...</span>
+              <span className="text-ink-muted text-xs font-mono">Embedding signatures…</span>
             </div>
           )}
         </motion.div>
@@ -431,53 +411,47 @@ export default function PDFSigner({
 
       {/* ====== STEP 3 — Review & Send ====== */}
       {step === "done" && signedPdfUrl && (
-        <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="space-y-4">
-          <div className="bg-green-600/10 border border-green-600/30 rounded-xl p-6 text-center">
-            <CheckCircle className="w-12 h-12 text-green-400 mx-auto mb-3" />
-            <h3 className="text-xl font-bold text-white mb-2">
-              {sent ? "Sent to Volunteer!" : "PDF Ready!"}
-            </h3>
-            <p className="text-gray-400 text-sm mb-4">
+        <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="space-y-5">
+          <div className="text-center py-4">
+            <CheckCircle className={`w-10 h-10 mx-auto mb-2 ${sent ? "text-[#10b981]" : "text-[#4EA8F3]"}`} />
+            <p className="text-white font-bold font-heading text-lg">
+              {sent ? "Sent to Volunteer!" : "PDF Ready"}
+            </p>
+            <p className="text-ink-muted text-xs font-mono mt-1">
               {sent
-                ? "The signed form is now available on the volunteer\u2019s dashboard."
-                : "Review the completed form below, then send it to the volunteer."}
+                ? "The signed form is now on their dashboard."
+                : "Review below, then send or download."}
             </p>
           </div>
 
-          <div className="bg-gray-800/30 border border-gray-700/40 rounded-xl p-4">
-            <iframe src={signedPdfUrl} className="w-full h-[500px] rounded-lg" title="Signed PDF Preview" />
-          </div>
+          <iframe src={signedPdfUrl} className="w-full h-[480px] rounded-xl border border-[#222]" title="Signed PDF Preview" />
 
-          <div className="flex flex-wrap gap-3">
+          <div className="flex flex-wrap items-center gap-3">
             {!sent && (
               <motion.button
                 whileHover={{ scale: 1.02 }}
                 whileTap={{ scale: 0.98 }}
                 onClick={sendToVolunteer}
-                className="flex items-center space-x-2 px-6 py-3 bg-gradient-to-r from-green-600 to-green-500 text-white rounded-lg font-semibold hover:shadow-lg hover:shadow-green-600/30 transition"
+                className="flex items-center gap-2 px-5 py-2.5 bg-[#10b981] text-black rounded-full text-sm font-bold hover:shadow-[0_0_20px_rgba(16,185,129,0.3)] transition-shadow"
               >
-                <Send className="w-5 h-5" />
+                <Send className="w-4 h-4" />
                 <span>Send to Volunteer</span>
               </motion.button>
             )}
-            <motion.button
-              whileHover={{ scale: 1.02 }}
-              whileTap={{ scale: 0.98 }}
+            <button
               onClick={downloadSignedPdf}
-              className="flex items-center space-x-2 px-6 py-3 border border-gray-700/50 text-gray-300 rounded-lg font-medium hover:bg-gray-800/50 transition"
+              className="flex items-center gap-2 text-xs font-mono text-ink-muted hover:text-white transition-colors"
             >
-              <Download className="w-5 h-5" />
-              <span>Download Copy</span>
-            </motion.button>
-            <motion.button
-              whileHover={{ scale: 1.02 }}
-              whileTap={{ scale: 0.98 }}
+              <Download className="w-3.5 h-3.5" />
+              <span>Download</span>
+            </button>
+            <button
               onClick={reset}
-              className="flex items-center space-x-2 px-6 py-3 border border-gray-700/50 text-gray-300 rounded-lg font-medium hover:bg-gray-800/50 transition"
+              className="flex items-center gap-2 text-xs font-mono text-ink-muted hover:text-white transition-colors"
             >
-              <RotateCcw className="w-5 h-5" />
-              <span>Start Over</span>
-            </motion.button>
+              <RotateCcw className="w-3.5 h-3.5" />
+              <span>Start over</span>
+            </button>
           </div>
         </motion.div>
       )}
