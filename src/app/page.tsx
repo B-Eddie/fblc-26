@@ -4,7 +4,7 @@ import React, { useEffect, useRef, useState } from 'react';
 import Link from 'next/link';
 import gsap from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
-import { ArrowRight, MousePointer2 } from 'lucide-react';
+import { ArrowRight, MousePointer2, Award } from 'lucide-react';
 
 gsap.registerPlugin(ScrollTrigger);
 
@@ -348,18 +348,34 @@ export default function LandingPage() {
             title: 'Earn',
             desc: 'Students gain hours, experience, and tangible recognition for their work.',
             visual: (
-              <svg className="w-64 h-32" viewBox="0 0 200 100">
-                <path 
-                  d="M0,50 L50,50 L60,20 L70,80 L80,50 L200,50" 
-                  fill="none" 
-                  stroke="#4EA8F3" 
-                  strokeWidth="2"
-                  className="animate-[dash_2s_linear_infinite]"
-                  strokeDasharray="200"
-                  strokeDashoffset="200"
-                  style={{ filter: 'drop-shadow(0 0 8px rgba(78,168,243,0.5))' }}
+              <div className="relative w-64 h-32 flex items-center justify-center">
+                {/* Animated progress ring (hours filling up) – loops so it’s always visible */}
+                <svg className="absolute w-40 h-40 -rotate-90" viewBox="0 0 36 36">
+                  <path
+                    className="text-[#1a1a1a]"
+                    stroke="currentColor"
+                    strokeWidth="2.5"
+                    fill="none"
+                    d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831"
+                  />
+                  <path
+                    className="animate-[progress-ring-loop_2.5s_ease-in-out_infinite]"
+                    stroke="#4EA8F3"
+                    strokeWidth="3"
+                    strokeLinecap="round"
+                    fill="none"
+                    strokeDasharray="100"
+                    strokeDashoffset="100"
+                    style={{ filter: 'drop-shadow(0 0 12px rgba(78,168,243,0.8))' }}
+                    d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831"
+                  />
+                </svg>
+                {/* Award icon with visible pulse */}
+                <Award
+                  className="w-20 h-20 text-[#4EA8F3] animate-[earn-pulse_2s_ease-in-out_infinite] drop-shadow-[0_0_16px_rgba(78,168,243,0.6)]"
+                  strokeWidth={1.5}
                 />
-              </svg>
+              </div>
             )
           }
         ].map((card, index) => (
@@ -488,6 +504,19 @@ export default function LandingPage() {
         @keyframes float {
           0%, 100% { transform: translateY(0) scale(1); }
           50% { transform: translateY(-20px) scale(1.05); }
+        }
+        @keyframes progress-ring {
+          to { stroke-dashoffset: 0; }
+        }
+        @keyframes progress-ring-loop {
+          0% { stroke-dashoffset: 100; }
+          45% { stroke-dashoffset: 0; }
+          55% { stroke-dashoffset: 0; }
+          100% { stroke-dashoffset: 100; }
+        }
+        @keyframes earn-pulse {
+          0%, 100% { opacity: 1; transform: scale(1); }
+          50% { opacity: 0.88; transform: scale(1.1); }
         }
       `}</style>
     </div>
