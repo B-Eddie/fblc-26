@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { motion } from "framer-motion";
 import { supabase } from "@/lib/supabase";
 import { Search, Filter, ArrowLeft } from "lucide-react";
@@ -39,16 +40,42 @@ const categories = [
 ];
 
 export default function BrowseBusinessesPage() {
+  const router = useRouter();
   const [businesses, setBusinesses] = useState<Business[]>([]);
   const [filteredBusinesses, setFilteredBusinesses] = useState<Business[]>([]);
   const [loading, setLoading] = useState(true);
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedCategory, setSelectedCategory] = useState("All");
   const [sortBy, setSortBy] = useState<"name" | "rating" | "coupons">("rating");
+  const [checkingRole, setCheckingRole] = useState(true);
 
   useEffect(() => {
+    const redirectBusinessUser = async () => {
+      const {
+        data: { user },
+      } = await supabase.auth.getUser();
+      if (!user) {
+        setCheckingRole(false);
+        return;
+      }
+      const { data: profile } = await supabase
+        .from("profiles")
+        .select("role")
+        .eq("id", user.id)
+        .single();
+      if ((profile as any)?.role === "business") {
+        router.replace("/business/dashboard");
+        return;
+      }
+      setCheckingRole(false);
+    };
+    redirectBusinessUser();
+  }, [router]);
+
+  useEffect(() => {
+    if (checkingRole) return;
     fetchBusinesses();
-  }, []);
+  }, [checkingRole]);
 
   useEffect(() => {
     filterAndSort();
@@ -143,6 +170,14 @@ export default function BrowseBusinessesPage() {
     setFilteredBusinesses(filtered);
   };
 
+  if (checkingRole) {
+    return (
+      <div className="min-h-screen bg-gradient-to-b from-black via-gray-950 to-black flex items-center justify-center">
+        <div className="w-10 h-10 border-2 border-gray-600 border-t-white rounded-full animate-spin" />
+      </div>
+    );
+  }
+
   return (
     <div className="min-h-screen bg-gradient-to-b from-black via-gray-950 to-black text-white">
       {/* Animated Background Elements */}
@@ -176,7 +211,11 @@ export default function BrowseBusinessesPage() {
                 className="w-10 h-10 rounded-lg flex items-center justify-center"
                 whileHover={{ scale: 1.05 }}
               >
-                <img src="/image.png" alt="Logo" className="w-12 h-12 object-contain" />
+                <img
+                  src="/image.png"
+                  alt="Logo"
+                  className="w-12 h-12 object-contain"
+                />
               </motion.div>
               <span className="text-2xl font-bold font-display bg-gradient-to-r from-gray-400 to-gray-300 bg-clip-text text-transparent">
                 Vertex
