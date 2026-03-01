@@ -391,33 +391,29 @@ export default function EmployeeManagementPage({
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.1, duration: 0.6 }}
-          className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-8"
+          className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8"
         >
           {[
             {
               icon: Clock,
               label: "Total Logged",
               value: `${totalLoggedHours.toFixed(1)}h`,
-              color: "from-blue-600/20 to-blue-700/20 border-blue-600/30",
             },
             {
               icon: CheckCircle,
               label: "Approved",
               value: `${approvedHours.toFixed(1)}h`,
-              color: "from-green-600/20 to-green-700/20 border-green-600/30",
             },
             {
               icon: AlertCircle,
-              label: "Pending Review",
+              label: "Pending",
               value: `${pendingHours.toFixed(1)}h`,
-              color: "from-yellow-600/20 to-yellow-700/20 border-yellow-600/30",
             },
             {
               icon: FileText,
               label: "Signatures",
               value: signatureRequests.filter((s) => s.status === "signed")
                 .length,
-              color: "from-purple-600/20 to-purple-700/20 border-purple-600/30",
             },
           ].map((stat, i) => (
             <motion.div
@@ -425,16 +421,16 @@ export default function EmployeeManagementPage({
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.1 + i * 0.05, duration: 0.6 }}
-              className={`bg-gradient-to-br ${stat.color} border rounded-2xl p-5 backdrop-blur-sm`}
+              className="card-surface p-6 hover:border-[#4EA8F3] transition-colors"
             >
               <div className="flex items-center justify-between">
                 <div>
-                  <p className="text-sm text-gray-400">{stat.label}</p>
-                  <p className="text-3xl font-bold text-white mt-1">
+                  <p className="font-mono text-[10px] uppercase tracking-wider text-ink-muted mb-2">{stat.label}</p>
+                  <p className="text-3xl font-bold font-heading text-white">
                     {stat.value}
                   </p>
                 </div>
-                <stat.icon className="w-10 h-10 text-gray-400 opacity-50" />
+                <stat.icon className="w-8 h-8 text-[#333]" />
               </div>
             </motion.div>
           ))}
@@ -445,7 +441,7 @@ export default function EmployeeManagementPage({
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.2, duration: 0.6 }}
-          className="flex space-x-1 bg-gray-900/40 border border-gray-800/60 rounded-xl p-1 mb-8"
+          className="flex space-x-2 bg-[#0a0a0a] border border-[#2a2a2a] rounded-2xl p-1.5 mb-8"
         >
           {(
             [
@@ -458,10 +454,10 @@ export default function EmployeeManagementPage({
             <button
               key={tab.id}
               onClick={() => setActiveTab(tab.id)}
-              className={`flex-1 flex items-center justify-center space-x-2 py-3 px-4 rounded-lg text-sm font-medium transition ${
+              className={`flex-1 flex items-center justify-center space-x-2 py-3 px-4 rounded-xl text-sm font-bold font-mono uppercase tracking-wider transition-colors ${
                 activeTab === tab.id
-                  ? "bg-gray-700/60 text-white"
-                  : "text-gray-400 hover:text-gray-200"
+                  ? "bg-[#1a1a1a] text-white shadow-sm border border-[#333]"
+                  : "text-ink-muted hover:text-white border border-transparent"
               }`}
             >
               <tab.icon className="w-4 h-4" />
@@ -480,26 +476,26 @@ export default function EmployeeManagementPage({
             className="space-y-6"
           >
             {/* Volunteer Profile */}
-            <div className="bg-gray-900/40 border border-gray-800/60 rounded-2xl p-8 backdrop-blur-sm">
-              <h2 className="text-2xl font-bold text-white mb-4">
+            <div className="card-surface p-8">
+              <h2 className="text-2xl font-bold font-heading text-white mb-6">
                 Volunteer Profile
               </h2>
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                <div className="flex items-center space-x-4 p-4 border border-gray-800/60 rounded-xl bg-gray-800/20">
-                  <div className="w-14 h-14 bg-gradient-to-br from-gray-600 to-gray-700 rounded-full flex items-center justify-center text-2xl font-bold text-white">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div className="flex items-center space-x-4 p-5 border border-[#2a2a2a] rounded-2xl bg-[#0a0a0a]">
+                  <div className="w-14 h-14 bg-[#1a1a1a] border border-[#333] rounded-full flex items-center justify-center text-2xl font-bold font-heading text-white">
                     {volunteer?.full_name?.charAt(0)?.toUpperCase() || "?"}
                   </div>
                   <div>
-                    <p className="text-white font-semibold text-lg">
+                    <p className="text-white font-bold text-lg font-heading">
                       {volunteer?.full_name}
                     </p>
-                    <p className="text-gray-400 text-sm">{volunteer?.email}</p>
+                    <p className="text-ink-muted text-sm font-mono">{volunteer?.email}</p>
                   </div>
                 </div>
-                <div className="flex items-center space-x-4 p-4 border border-gray-800/60 rounded-xl bg-gray-800/20">
-                  <Calendar className="w-6 h-6 text-gray-400" />
+                <div className="flex items-center space-x-4 p-5 border border-[#2a2a2a] rounded-2xl bg-[#0a0a0a]">
+                  <Calendar className="w-6 h-6 text-ink-faint" />
                   <div>
-                    <p className="text-sm text-gray-400">Applied</p>
+                    <p className="font-mono text-[10px] uppercase tracking-wider text-ink-muted mb-1">Applied</p>
                     <p className="text-white font-medium">
                       {new Date(application.created_at).toLocaleDateString()}
                     </p>
@@ -507,11 +503,11 @@ export default function EmployeeManagementPage({
                 </div>
               </div>
               {application.message && (
-                <div className="mt-6 p-4 border border-gray-800/60 rounded-xl bg-gray-800/20">
-                  <p className="text-sm text-gray-400 mb-1">
+                <div className="mt-6 p-5 border border-[#2a2a2a] rounded-2xl bg-[#0a0a0a]">
+                  <p className="font-mono text-[10px] uppercase tracking-wider text-ink-muted mb-2">
                     Application Message
                   </p>
-                  <p className="text-gray-200 italic">
+                  <p className="text-ink-muted italic leading-relaxed">
                     &quot;{application.message}&quot;
                   </p>
                 </div>
@@ -521,15 +517,15 @@ export default function EmployeeManagementPage({
               {((application as any).phone_number || (application as any).availability || (application as any).resume_url || (application as any).reference_letter_url) && (
                 <div className="mt-6 space-y-4">
                   {(application as any).phone_number && (
-                    <div className="p-4 border border-gray-800/60 rounded-xl bg-gray-800/20">
-                      <p className="text-sm text-gray-400 mb-1">Phone Number</p>
-                      <p className="text-gray-200">{(application as any).phone_number}</p>
+                    <div className="p-5 border border-[#2a2a2a] rounded-2xl bg-[#0a0a0a]">
+                      <p className="font-mono text-[10px] uppercase tracking-wider text-ink-muted mb-2">Phone Number</p>
+                      <p className="text-white">{(application as any).phone_number}</p>
                     </div>
                   )}
                   {(application as any).availability && (
-                    <div className="p-4 border border-gray-800/60 rounded-xl bg-gray-800/20">
-                      <p className="text-sm text-gray-400 mb-1">Availability</p>
-                      <p className="text-gray-200 whitespace-pre-wrap">{(application as any).availability}</p>
+                    <div className="p-5 border border-[#2a2a2a] rounded-2xl bg-[#0a0a0a]">
+                      <p className="font-mono text-[10px] uppercase tracking-wider text-ink-muted mb-2">Availability</p>
+                      <p className="text-white whitespace-pre-wrap">{(application as any).availability}</p>
                     </div>
                   )}
                   <div className="flex flex-wrap gap-3">
@@ -538,7 +534,7 @@ export default function EmployeeManagementPage({
                         href={(application as any).resume_url}
                         target="_blank"
                         rel="noopener noreferrer"
-                        className="inline-flex items-center gap-2 px-4 py-2 bg-gray-800/50 border border-gray-700/50 rounded-lg text-gray-300 hover:text-white hover:border-gray-600 transition text-sm"
+                        className="inline-flex items-center gap-2 px-5 py-2 border border-[#2a2a2a] rounded-full text-ink-muted hover:text-white hover:border-[#4EA8F3] transition text-sm font-mono"
                       >
                         <FileText className="w-4 h-4" />
                         View Resume
@@ -549,7 +545,7 @@ export default function EmployeeManagementPage({
                         href={(application as any).reference_letter_url}
                         target="_blank"
                         rel="noopener noreferrer"
-                        className="inline-flex items-center gap-2 px-4 py-2 bg-gray-800/50 border border-gray-700/50 rounded-lg text-gray-300 hover:text-white hover:border-gray-600 transition text-sm"
+                        className="inline-flex items-center gap-2 px-5 py-2 border border-[#2a2a2a] rounded-full text-ink-muted hover:text-white hover:border-[#4EA8F3] transition text-sm font-mono"
                       >
                         <FileText className="w-4 h-4" />
                         View Reference Letter
@@ -568,23 +564,23 @@ export default function EmployeeManagementPage({
                 if (!answeredQuestions.length) return null;
                 return (
                   <div className="mt-6">
-                    <h4 className="text-md font-semibold text-white mb-3">Custom Question Responses</h4>
+                    <h4 className="text-md font-bold font-heading text-white mb-3">Custom Question Responses</h4>
                     <div className="space-y-3">
                       {answeredQuestions.map((q: any) => (
-                        <div key={q.id} className="p-4 border border-gray-800/60 rounded-xl bg-gray-800/20">
-                          <p className="text-sm text-gray-400 mb-1">{q.question}</p>
+                        <div key={q.id} className="p-5 border border-[#2a2a2a] rounded-2xl bg-[#0a0a0a]">
+                          <p className="font-mono text-[10px] uppercase tracking-wider text-ink-muted mb-2">{q.question}</p>
                           {q.type === "file" ? (
                             <a
                               href={customAnswers[q.id]}
                               target="_blank"
                               rel="noopener noreferrer"
-                              className="inline-flex items-center gap-2 text-blue-400 hover:text-blue-300 text-sm transition"
+                              className="inline-flex items-center gap-2 text-[#4EA8F3] hover:text-white text-sm transition font-mono"
                             >
                               <FileText className="w-4 h-4" />
                               View Uploaded File
                             </a>
                           ) : (
-                            <p className="text-gray-200 whitespace-pre-wrap">{customAnswers[q.id]}</p>
+                            <p className="text-white whitespace-pre-wrap">{customAnswers[q.id]}</p>
                           )}
                         </div>
                       ))}
@@ -595,34 +591,34 @@ export default function EmployeeManagementPage({
             </div>
 
             {/* Opportunity Details */}
-            <div className="bg-gray-900/40 border border-gray-800/60 rounded-2xl p-8 backdrop-blur-sm">
-              <h2 className="text-2xl font-bold text-white mb-4">
+            <div className="card-surface p-8">
+              <h2 className="text-2xl font-bold font-heading text-white mb-6">
                 Opportunity Details
               </h2>
-              <h3 className="text-lg font-semibold text-white mb-2">
+              <h3 className="text-lg font-bold font-heading text-white mb-2">
                 {opportunity?.title}
               </h3>
-              <p className="text-gray-300 leading-relaxed whitespace-pre-wrap">
+              <p className="text-ink-muted leading-relaxed whitespace-pre-wrap">
                 {opportunity?.description}
               </p>
               {opportunity?.requirements && (
-                <div className="mt-4">
-                  <h4 className="text-md font-semibold text-white mb-1">
+                <div className="mt-6 pt-6 border-t border-[#2a2a2a]">
+                  <h4 className="text-md font-bold font-heading text-white mb-2">
                     Requirements
                   </h4>
-                  <p className="text-gray-400 whitespace-pre-wrap">
+                  <p className="text-ink-muted whitespace-pre-wrap">
                     {opportunity.requirements}
                   </p>
                 </div>
               )}
-              <div className="flex flex-wrap gap-4 mt-4 text-sm text-gray-400">
-                <span className="flex items-center space-x-1">
-                  <Clock className="w-4 h-4" />
+              <div className="flex flex-wrap gap-6 mt-6 pt-6 border-t border-[#2a2a2a] text-sm font-mono text-ink-muted">
+                <span className="flex items-center space-x-2">
+                  <Clock className="w-4 h-4 text-ink-faint" />
                   <span>{opportunity?.hours_available} hours available</span>
                 </span>
                 {opportunity?.is_flexible && (
-                  <span className="text-green-400 font-medium">
-                    ✓ Flexible Schedule
+                  <span className="text-[#4EA8F3] font-bold border border-[#4EA8F3]/50 px-3 py-1 rounded-full text-xs uppercase tracking-wider">
+                    Flexible Schedule
                   </span>
                 )}
               </div>
@@ -639,11 +635,11 @@ export default function EmployeeManagementPage({
           >
             {/* Pending Hours */}
             {hourLogs.filter((l) => l.status === "pending").length > 0 && (
-              <div className="bg-yellow-600/5 border border-yellow-600/30 rounded-2xl p-8 backdrop-blur-sm">
-                <h2 className="text-2xl font-bold text-white mb-2">
+              <div className="bg-[#0a0a0a] border border-[#f59e0b]/30 rounded-2xl p-8">
+                <h2 className="text-2xl font-bold font-heading text-white mb-2">
                   Pending Approval
                 </h2>
-                <p className="text-gray-400 text-sm mb-6">
+                <p className="text-ink-muted text-sm font-mono mb-6">
                   Review and approve or reject the volunteer&apos;s submitted
                   hours.
                 </p>
@@ -656,20 +652,20 @@ export default function EmployeeManagementPage({
                         initial={{ opacity: 0, x: -20 }}
                         animate={{ opacity: 1, x: 0 }}
                         transition={{ delay: i * 0.05 }}
-                        className="flex items-center justify-between p-4 border border-gray-800/60 rounded-xl bg-gray-800/20"
+                        className="flex items-center justify-between p-5 border border-[#2a2a2a] rounded-2xl bg-[#111] hover:border-[#444] transition-colors"
                       >
                         <div className="flex-1">
                           <div className="flex items-center space-x-3">
-                            <span className="text-white font-semibold text-lg">
+                            <span className="text-white font-bold font-heading text-lg">
                               {parseFloat(log.hours).toFixed(1)} hours
                             </span>
-                            <span className="text-gray-500">•</span>
-                            <span className="text-gray-400 text-sm">
+                            <span className="text-ink-faint">•</span>
+                            <span className="text-ink-muted text-xs font-mono uppercase tracking-wider">
                               {new Date(log.date).toLocaleDateString()}
                             </span>
                           </div>
                           {log.description && (
-                            <p className="text-sm text-gray-400 mt-1">
+                            <p className="text-sm text-ink-muted mt-1 leading-relaxed">
                               {log.description}
                             </p>
                           )}
@@ -682,7 +678,7 @@ export default function EmployeeManagementPage({
                               updateHourStatus(log.id, "approved")
                             }
                             disabled={updatingHour === log.id}
-                            className="flex items-center space-x-1 px-4 py-2 bg-green-600/20 text-green-400 border border-green-600/30 rounded-lg text-sm font-medium hover:bg-green-600/30 transition disabled:opacity-50"
+                            className="flex items-center space-x-1 px-5 py-2 bg-[#1a1a1a] text-[#10b981] border border-[#10b981]/30 rounded-full text-xs font-mono uppercase tracking-wider font-bold hover:border-[#10b981] transition disabled:opacity-50"
                           >
                             <CheckCircle className="w-4 h-4" />
                             <span>Approve</span>
@@ -694,7 +690,7 @@ export default function EmployeeManagementPage({
                               updateHourStatus(log.id, "rejected")
                             }
                             disabled={updatingHour === log.id}
-                            className="flex items-center space-x-1 px-4 py-2 bg-red-600/20 text-red-400 border border-red-600/30 rounded-lg text-sm font-medium hover:bg-red-600/30 transition disabled:opacity-50"
+                            className="flex items-center space-x-1 px-5 py-2 bg-[#1a1a1a] text-[#ef4444] border border-[#ef4444]/30 rounded-full text-xs font-mono uppercase tracking-wider font-bold hover:border-[#ef4444] transition disabled:opacity-50"
                           >
                             <XCircle className="w-4 h-4" />
                             <span>Reject</span>
@@ -707,12 +703,12 @@ export default function EmployeeManagementPage({
             )}
 
             {/* All Hour Logs */}
-            <div className="bg-gray-900/40 border border-gray-800/60 rounded-2xl p-8 backdrop-blur-sm">
-              <h2 className="text-2xl font-bold text-white mb-6">
+            <div className="card-surface p-8">
+              <h2 className="text-2xl font-bold font-heading text-white mb-6">
                 All Hour Logs
               </h2>
               {hourLogs.length === 0 ? (
-                <p className="text-gray-400 text-center py-8">
+                <p className="text-ink-muted font-mono text-center py-8">
                   No hours have been logged by this volunteer yet.
                 </p>
               ) : (
@@ -723,30 +719,29 @@ export default function EmployeeManagementPage({
                       initial={{ opacity: 0, x: -20 }}
                       animate={{ opacity: 1, x: 0 }}
                       transition={{ delay: i * 0.05 }}
-                      className="flex items-center justify-between p-4 border border-gray-800/60 rounded-xl bg-gray-800/20"
+                      className="flex items-center justify-between p-5 border border-[#2a2a2a] rounded-2xl bg-[#0a0a0a] hover:border-[#444] transition-colors"
                     >
                       <div className="flex-1">
                         <div className="flex items-center space-x-3">
-                          <span className="text-white font-semibold">
+                          <span className="text-white font-bold font-heading">
                             {parseFloat(log.hours).toFixed(1)} hours
                           </span>
-                          <span className="text-gray-500">•</span>
-                          <span className="text-gray-400 text-sm">
+                          <span className="text-ink-faint">•</span>
+                          <span className="text-ink-muted text-xs font-mono uppercase tracking-wider">
                             {new Date(log.date).toLocaleDateString()}
                           </span>
                         </div>
                         {log.description && (
-                          <p className="text-sm text-gray-400 mt-1">
+                          <p className="text-sm text-ink-muted mt-1 leading-relaxed">
                             {log.description}
                           </p>
                         )}
                       </div>
                       <div className="flex items-center space-x-2">
                         <span
-                          className={`px-3 py-1 rounded-lg text-xs font-medium ${statusColors[log.status]}`}
+                          className={`px-3 py-1 rounded-full text-[10px] font-mono uppercase tracking-wider font-bold ${statusColors[log.status]}`}
                         >
-                          {log.status.charAt(0).toUpperCase() +
-                            log.status.slice(1)}
+                          {log.status}
                         </span>
                         {log.status !== "pending" && (
                           <div className="flex space-x-1 ml-2">
@@ -758,7 +753,7 @@ export default function EmployeeManagementPage({
                                   updateHourStatus(log.id, "approved")
                                 }
                                 disabled={updatingHour === log.id}
-                                className="p-1.5 text-green-400 hover:bg-green-600/20 rounded-lg transition disabled:opacity-50"
+                                className="p-1.5 text-[#10b981] hover:bg-[#10b981]/10 rounded-full transition disabled:opacity-50"
                                 title="Approve"
                               >
                                 <CheckCircle className="w-4 h-4" />
@@ -772,7 +767,7 @@ export default function EmployeeManagementPage({
                                   updateHourStatus(log.id, "rejected")
                                 }
                                 disabled={updatingHour === log.id}
-                                className="p-1.5 text-red-400 hover:bg-red-600/20 rounded-lg transition disabled:opacity-50"
+                                className="p-1.5 text-[#ef4444] hover:bg-[#ef4444]/10 rounded-full transition disabled:opacity-50"
                                 title="Reject"
                               >
                                 <XCircle className="w-4 h-4" />
@@ -794,20 +789,22 @@ export default function EmployeeManagementPage({
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
-            className="bg-gray-900/40 border border-gray-800/60 rounded-2xl backdrop-blur-sm overflow-hidden"
+            className="card-surface overflow-hidden flex flex-col h-[600px]"
           >
-            <div className="p-6 border-b border-gray-800/60">
-              <h2 className="text-2xl font-bold text-white">
+            <div className="p-6 border-b border-[#2a2a2a] bg-[#0a0a0a]">
+              <h2 className="text-xl font-bold font-heading text-white">
                 Messages with {volunteer?.full_name}
               </h2>
             </div>
 
             {/* Messages List */}
-            <div className="h-96 overflow-y-auto p-6 space-y-4">
+            <div className="flex-1 overflow-y-auto p-6 space-y-6">
               {messages.length === 0 ? (
-                <p className="text-gray-400 text-center py-12">
-                  No messages yet. Start a conversation with your volunteer.
-                </p>
+                <div className="h-full flex items-center justify-center">
+                  <p className="text-ink-muted font-mono text-sm">
+                    No messages yet. Start a conversation with your volunteer.
+                  </p>
+                </div>
               ) : (
                 messages.map((msg) => (
                   <div
@@ -815,18 +812,18 @@ export default function EmployeeManagementPage({
                     className={`flex ${msg.sender_id === currentUser?.id ? "justify-end" : "justify-start"}`}
                   >
                     <div
-                      className={`max-w-[70%] rounded-2xl px-4 py-3 ${
+                      className={`max-w-[80%] rounded-2xl px-5 py-4 ${
                         msg.sender_id === currentUser?.id
-                          ? "bg-gray-700/60 text-white"
-                          : "bg-gray-800/60 text-gray-200 border border-gray-700/40"
+                          ? "bg-[#1a1a1a] text-white border border-[#333] rounded-tr-sm"
+                          : "bg-[#0a0a0a] text-white border border-[#2a2a2a] rounded-tl-sm"
                       }`}
                     >
-                      <p className="text-xs text-gray-400 mb-1">
+                      <p className="text-[10px] font-mono uppercase tracking-wider text-ink-muted mb-2">
                         {msg.sender?.full_name || "Unknown"}
                       </p>
-                      <p className="text-sm">{msg.content}</p>
-                      <p className="text-xs text-gray-500 mt-1">
-                        {new Date(msg.created_at).toLocaleString()}
+                      <p className="text-sm leading-relaxed">{msg.content}</p>
+                      <p className="text-[10px] text-ink-faint mt-3 text-right">
+                        {new Date(msg.created_at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
                       </p>
                     </div>
                   </div>
@@ -836,7 +833,7 @@ export default function EmployeeManagementPage({
             </div>
 
             {/* Message Input */}
-            <div className="p-4 border-t border-gray-800/60">
+            <div className="p-4 border-t border-[#2a2a2a]">
               <div className="flex space-x-3">
                 <input
                   type="text"
@@ -846,14 +843,14 @@ export default function EmployeeManagementPage({
                     e.key === "Enter" && !e.shiftKey && sendMessage()
                   }
                   placeholder="Type a message..."
-                  className="flex-1 bg-gray-800/50 border border-gray-700/50 rounded-lg px-4 py-3 text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-gray-600"
+                  className="flex-1 bg-[#0a0a0a] border border-[#2a2a2a] rounded-xl px-4 py-3 text-white placeholder-[#555] focus:outline-none focus:border-[#4EA8F3] transition-colors font-mono text-sm"
                 />
                 <motion.button
                   whileHover={{ scale: 1.05 }}
                   whileTap={{ scale: 0.95 }}
                   onClick={sendMessage}
                   disabled={submittingMessage || !newMessage.trim()}
-                  className="px-4 py-3 bg-gradient-to-r from-gray-700 to-gray-600 text-white rounded-lg hover:shadow-lg transition disabled:opacity-50"
+                  className="px-4 py-3 bg-white text-black rounded-full hover:shadow-[0_0_20px_rgba(78,168,243,0.3)] transition-shadow duration-500 disabled:opacity-50"
                 >
                   <Send className="w-5 h-5" />
                 </motion.button>
@@ -872,11 +869,11 @@ export default function EmployeeManagementPage({
             {/* Pending Signature Requests */}
             {signatureRequests.filter((s) => s.status === "pending").length >
               0 && (
-              <div className="bg-yellow-600/5 border border-yellow-600/30 rounded-2xl p-8 backdrop-blur-sm">
-                <h2 className="text-2xl font-bold text-white mb-2">
+              <div className="bg-[#0a0a0a] border border-[#f59e0b]/30 rounded-2xl p-8">
+                <h2 className="text-2xl font-bold font-heading text-white mb-2">
                   Pending Signature Requests
                 </h2>
-                <p className="text-gray-400 text-sm mb-6">
+                <p className="text-ink-muted text-sm font-mono mb-6">
                   The volunteer has requested you to sign their community
                   involvement hours form.
                 </p>
@@ -886,19 +883,19 @@ export default function EmployeeManagementPage({
                     .map((sig) => (
                       <div
                         key={sig.id}
-                        className="border border-gray-800/60 rounded-xl p-6 bg-gray-800/20"
+                        className="border border-[#2a2a2a] rounded-2xl p-6 bg-[#111]"
                       >
                         <div className="flex items-center justify-between mb-4">
                           <div>
-                            <p className="text-white font-semibold text-lg">
+                            <p className="text-white font-bold font-heading text-lg">
                               {parseFloat(sig.total_hours).toFixed(1)} hours
                             </p>
-                            <p className="text-sm text-gray-400">
+                            <p className="text-xs font-mono uppercase tracking-wider text-ink-muted">
                               Requested{" "}
                               {new Date(sig.created_at).toLocaleDateString()}
                             </p>
                           </div>
-                          <span className="px-3 py-1 rounded-lg text-xs font-medium bg-yellow-600/20 text-yellow-400 border border-yellow-600/30">
+                          <span className="px-3 py-1 rounded-full text-[10px] font-mono uppercase tracking-wider font-bold bg-[#1a1a1a] text-[#f59e0b] border border-[#f59e0b]/30">
                             Awaiting Signature
                           </span>
                         </div>
@@ -909,10 +906,13 @@ export default function EmployeeManagementPage({
                             whileHover={{ scale: 1.02 }}
                             whileTap={{ scale: 0.98 }}
                             onClick={() => setSigningRequest(sig.id)}
-                            className="flex items-center space-x-2 px-6 py-3 bg-gradient-to-r from-gray-700 to-gray-600 text-white rounded-lg font-semibold hover:shadow-lg hover:shadow-gray-600/50 transition"
+                            className="btn-magnetic flex bg-white text-black px-6 py-3 rounded-full text-sm font-bold group hover:shadow-[0_0_20px_rgba(78,168,243,0.3)] transition-shadow duration-500"
                           >
-                            <PenTool className="w-5 h-5" />
-                            <span>Open PDF &amp; Sign</span>
+                            <span className="relative z-10 flex items-center gap-2">
+                              <PenTool className="w-4 h-4" />
+                              <span>Open PDF &amp; Sign</span>
+                            </span>
+                            <span className="btn-bg bg-[#4EA8F3] rounded-full"></span>
                           </motion.button>
                         ) : (
                           <div className="mt-4">
@@ -940,11 +940,11 @@ export default function EmployeeManagementPage({
             )}
 
             {/* Quick Sign (no request needed) */}
-            <div className="bg-gray-900/40 border border-gray-800/60 rounded-2xl p-8 backdrop-blur-sm">
-              <h2 className="text-2xl font-bold text-white mb-2">
+            <div className="card-surface p-8">
+              <h2 className="text-2xl font-bold font-heading text-white mb-2">
                 Sign Volunteer Hours Form
               </h2>
-              <p className="text-gray-400 text-sm mb-6">
+              <p className="text-ink-muted text-sm font-mono mb-6">
                 You can also sign the community involvement hours form directly
                 without waiting for a request. This will embed your signature
                 into the official PDF.
@@ -961,12 +961,12 @@ export default function EmployeeManagementPage({
             </div>
 
             {/* Signature History */}
-            <div className="bg-gray-900/40 border border-gray-800/60 rounded-2xl p-8 backdrop-blur-sm">
-              <h2 className="text-2xl font-bold text-white mb-6">
+            <div className="card-surface p-8">
+              <h2 className="text-2xl font-bold font-heading text-white mb-6">
                 Signature History
               </h2>
               {signatureRequests.length === 0 ? (
-                <p className="text-gray-400 text-center py-8">
+                <p className="text-ink-muted font-mono text-center py-8">
                   No signature requests have been made.
                 </p>
               ) : (
@@ -977,28 +977,27 @@ export default function EmployeeManagementPage({
                       initial={{ opacity: 0, x: -20 }}
                       animate={{ opacity: 1, x: 0 }}
                       transition={{ delay: i * 0.05 }}
-                      className="flex items-center justify-between p-4 border border-gray-800/60 rounded-xl bg-gray-800/20"
+                      className="flex items-center justify-between p-5 border border-[#2a2a2a] rounded-2xl bg-[#0a0a0a] hover:border-[#444] transition-colors"
                     >
                       <div>
-                        <p className="text-white font-medium">
+                        <p className="text-white font-bold font-heading">
                           {parseFloat(sig.total_hours).toFixed(1)} hours
                         </p>
-                        <p className="text-sm text-gray-400">
+                        <p className="text-xs font-mono uppercase tracking-wider text-ink-muted">
                           Requested{" "}
                           {new Date(sig.created_at).toLocaleDateString()}
                         </p>
                         {sig.signed_at && (
-                          <p className="text-sm text-green-400">
+                          <p className="text-xs font-mono uppercase tracking-wider text-[#10b981] mt-1">
                             Signed{" "}
                             {new Date(sig.signed_at).toLocaleDateString()}
                           </p>
                         )}
                       </div>
                       <span
-                        className={`px-3 py-1 rounded-lg text-xs font-medium ${statusColors[sig.status]}`}
+                        className={`px-3 py-1 rounded-full text-[10px] font-mono uppercase tracking-wider font-bold ${statusColors[sig.status]}`}
                       >
-                        {sig.status.charAt(0).toUpperCase() +
-                          sig.status.slice(1)}
+                        {sig.status}
                       </span>
                     </motion.div>
                   ))}
