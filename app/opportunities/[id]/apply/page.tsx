@@ -40,9 +40,15 @@ export default function ApplyPage({ params }: { params: { id: string } }) {
   const [phoneNumber, setPhoneNumber] = useState("");
   const [availability, setAvailability] = useState("");
   const [resumeFile, setResumeFile] = useState<File | null>(null);
-  const [referenceLetterFile, setReferenceLetterFile] = useState<File | null>(null);
-  const [customAnswers, setCustomAnswers] = useState<Record<string, string>>({});
-  const [customFiles, setCustomFiles] = useState<Record<string, File | null>>({});
+  const [referenceLetterFile, setReferenceLetterFile] = useState<File | null>(
+    null,
+  );
+  const [customAnswers, setCustomAnswers] = useState<Record<string, string>>(
+    {},
+  );
+  const [customFiles, setCustomFiles] = useState<Record<string, File | null>>(
+    {},
+  );
 
   useEffect(() => {
     fetchData();
@@ -97,7 +103,10 @@ export default function ApplyPage({ params }: { params: { id: string } }) {
     }
   };
 
-  const uploadFile = async (file: File, folder: string): Promise<string | null> => {
+  const uploadFile = async (
+    file: File,
+    folder: string,
+  ): Promise<string | null> => {
     if (!user) return null;
     const ext = file.name.split(".").pop() || "pdf";
     const path = `${user.id}/${folder}/${Date.now()}-${Math.random().toString(36).slice(2)}.${ext}`;
@@ -148,7 +157,7 @@ export default function ApplyPage({ params }: { params: { id: string } }) {
         resumeUrl = await uploadFile(resumeFile, "resumes");
         if (!resumeUrl) {
           setError(
-            "Resume upload failed. Make sure the 'application-files' storage bucket exists in Supabase."
+            "Resume upload failed. Make sure the 'application-files' storage bucket exists in Supabase.",
           );
           setSubmitting(false);
           return;
@@ -158,10 +167,13 @@ export default function ApplyPage({ params }: { params: { id: string } }) {
       // Upload reference letter if provided
       let referenceLetterUrl: string | null = null;
       if (referenceLetterFile) {
-        referenceLetterUrl = await uploadFile(referenceLetterFile, "references");
+        referenceLetterUrl = await uploadFile(
+          referenceLetterFile,
+          "references",
+        );
         if (!referenceLetterUrl) {
           setError(
-            "Reference letter upload failed. Make sure the 'application-files' storage bucket exists in Supabase."
+            "Reference letter upload failed. Make sure the 'application-files' storage bucket exists in Supabase.",
           );
           setSubmitting(false);
           return;
@@ -184,19 +196,21 @@ export default function ApplyPage({ params }: { params: { id: string } }) {
       }
 
       // Submit the application
-      const { error: insertError } = await supabase.from("applications").insert([
-        {
-          profile_id: user.id,
-          opportunity_id: params.id,
-          message: message.trim() || null,
-          phone_number: phoneNumber.trim() || null,
-          availability: availability.trim() || null,
-          resume_url: resumeUrl,
-          reference_letter_url: referenceLetterUrl,
-          custom_answers: finalAnswers,
-          status: "pending",
-        },
-      ] as any);
+      const { error: insertError } = await supabase
+        .from("applications")
+        .insert([
+          {
+            profile_id: user.id,
+            opportunity_id: params.id,
+            message: message.trim() || null,
+            phone_number: phoneNumber.trim() || null,
+            availability: availability.trim() || null,
+            resume_url: resumeUrl,
+            reference_letter_url: referenceLetterUrl,
+            custom_answers: finalAnswers,
+            status: "pending",
+          },
+        ] as any);
 
       if (insertError) throw insertError;
 
@@ -229,8 +243,13 @@ export default function ApplyPage({ params }: { params: { id: string } }) {
     return (
       <div className="min-h-screen bg-gradient-to-b from-black via-gray-950 to-black flex items-center justify-center">
         <div className="text-center">
-          <h1 className="text-2xl font-bold text-white mb-4">Opportunity not found</h1>
-          <Link href="/browse" className="text-gray-400 hover:text-gray-300 transition">
+          <h1 className="text-2xl font-bold text-white mb-4">
+            Opportunity not found
+          </h1>
+          <Link
+            href="/browse"
+            className="text-gray-400 hover:text-gray-300 transition"
+          >
             Back to Browse
           </Link>
         </div>
@@ -249,7 +268,11 @@ export default function ApplyPage({ params }: { params: { id: string } }) {
             <div className="flex justify-between items-center">
               <Link href="/" className="flex items-center space-x-2">
                 <div className="w-10 h-10 rounded-lg flex items-center justify-center">
-                  <img src="/image.png" alt="Logo" className="w-8 h-8 object-contain" />
+                  <img
+                    src="/image.png"
+                    alt="Logo"
+                    className="w-8 h-8 object-contain"
+                  />
                 </div>
                 <span className="text-2xl font-bold text-white">Vertex</span>
               </Link>
@@ -270,11 +293,20 @@ export default function ApplyPage({ params }: { params: { id: string } }) {
             >
               <CheckCircle className="w-20 h-20 text-green-400 mx-auto mb-6" />
             </motion.div>
-            <h1 className="text-3xl font-bold text-white mb-3">Application Submitted!</h1>
+            <h1 className="text-3xl font-bold text-white mb-3">
+              Application Submitted!
+            </h1>
             <p className="text-gray-400 mb-8 max-w-md mx-auto">
-              Your application for <span className="text-white font-medium">{opportunity.title}</span> at{" "}
-              <span className="text-white font-medium">{opportunity.business.name}</span> has been
-              submitted. You'll be notified when the business reviews it.
+              Your application for{" "}
+              <span className="text-white font-medium">
+                {opportunity.title}
+              </span>{" "}
+              at{" "}
+              <span className="text-white font-medium">
+                {opportunity.business.name}
+              </span>{" "}
+              has been submitted. You'll be notified when the business reviews
+              it.
             </p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
               <Link
@@ -328,9 +360,16 @@ export default function ApplyPage({ params }: { params: { id: string } }) {
               >
                 <ArrowLeft className="w-6 h-6" />
               </Link>
-              <Link href="/" className="flex items-center space-x-3 hover:opacity-80 transition">
+              <Link
+                href="/"
+                className="flex items-center space-x-3 hover:opacity-80 transition"
+              >
                 <div className="w-10 h-10 rounded-lg flex items-center justify-center">
-                  <img src="/image.png" alt="Logo" className="w-12 h-12 object-contain" />
+                  <img
+                    src="/image.png"
+                    alt="Logo"
+                    className="w-12 h-12 object-contain"
+                  />
                 </div>
                 <span className="text-2xl font-bold font-display bg-gradient-to-r from-gray-400 to-gray-300 bg-clip-text text-transparent">
                   Vertex
@@ -351,7 +390,9 @@ export default function ApplyPage({ params }: { params: { id: string } }) {
           <div className="flex items-start justify-between">
             <div>
               <p className="text-sm text-gray-500 mb-1">Applying to</p>
-              <h2 className="text-2xl font-bold text-white mb-1">{opportunity.title}</h2>
+              <h2 className="text-2xl font-bold text-white mb-1">
+                {opportunity.title}
+              </h2>
               <Link
                 href={`/business/${opportunity.business.id}`}
                 className="text-gray-400 hover:text-gray-300 transition"
@@ -427,7 +468,8 @@ export default function ApplyPage({ params }: { params: { id: string } }) {
                   className="w-full px-4 py-3 bg-gray-800/50 border border-gray-700/50 rounded-lg text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-gray-600 focus:border-transparent transition resize-none"
                 />
                 <p className="text-xs text-gray-500 mt-1">
-                  This is your chance to stand out — share your motivation and relevant experience.
+                  This is your chance to stand out — share your motivation and
+                  relevant experience.
                 </p>
               </div>
 
@@ -489,11 +531,15 @@ export default function ApplyPage({ params }: { params: { id: string } }) {
                 <div className="flex items-center gap-4">
                   <label className="flex-shrink-0 cursor-pointer px-4 py-3 bg-gray-800/50 border border-gray-700/50 rounded-lg text-gray-300 hover:bg-gray-700/50 transition flex items-center gap-2">
                     <Upload className="w-5 h-5" />
-                    <span>{resumeFile ? resumeFile.name : "Upload Resume"}</span>
+                    <span>
+                      {resumeFile ? resumeFile.name : "Upload Resume"}
+                    </span>
                     <input
                       type="file"
                       accept=".pdf,.doc,.docx"
-                      onChange={(e) => setResumeFile(e.target.files?.[0] || null)}
+                      onChange={(e) =>
+                        setResumeFile(e.target.files?.[0] || null)
+                      }
                       className="hidden"
                     />
                   </label>
@@ -521,12 +567,16 @@ export default function ApplyPage({ params }: { params: { id: string } }) {
                   <label className="flex-shrink-0 cursor-pointer px-4 py-3 bg-gray-800/50 border border-gray-700/50 rounded-lg text-gray-300 hover:bg-gray-700/50 transition flex items-center gap-2">
                     <Upload className="w-5 h-5" />
                     <span>
-                      {referenceLetterFile ? referenceLetterFile.name : "Upload Reference Letter"}
+                      {referenceLetterFile
+                        ? referenceLetterFile.name
+                        : "Upload Reference Letter"}
                     </span>
                     <input
                       type="file"
                       accept=".pdf,.doc,.docx"
-                      onChange={(e) => setReferenceLetterFile(e.target.files?.[0] || null)}
+                      onChange={(e) =>
+                        setReferenceLetterFile(e.target.files?.[0] || null)
+                      }
                       className="hidden"
                     />
                   </label>
@@ -591,7 +641,10 @@ export default function ApplyPage({ params }: { params: { id: string } }) {
                           <input
                             type="file"
                             onChange={(e) =>
-                              handleCustomFileChange(q.id, e.target.files?.[0] || null)
+                              handleCustomFileChange(
+                                q.id,
+                                e.target.files?.[0] || null,
+                              )
                             }
                             className="hidden"
                           />
@@ -653,19 +706,28 @@ export default function ApplyPage({ params }: { params: { id: string } }) {
           transition={{ delay: 0.4 }}
           className="mt-12 bg-gray-800/20 border border-gray-700/30 rounded-2xl p-8"
         >
-          <h3 className="text-lg font-semibold text-white mb-4">Application Tips</h3>
+          <h3 className="text-lg font-semibold text-white mb-4">
+            Application Tips
+          </h3>
           <ul className="space-y-3 text-gray-300">
             <li className="flex items-start space-x-3">
               <span className="text-gray-600 mt-0.5">•</span>
-              <span>Be specific about why you're interested and what skills you bring</span>
+              <span>
+                Be specific about why you're interested and what skills you
+                bring
+              </span>
             </li>
             <li className="flex items-start space-x-3">
               <span className="text-gray-600 mt-0.5">•</span>
-              <span>Include your availability so the business can plan accordingly</span>
+              <span>
+                Include your availability so the business can plan accordingly
+              </span>
             </li>
             <li className="flex items-start space-x-3">
               <span className="text-gray-600 mt-0.5">•</span>
-              <span>A resume or reference letter can help your application stand out</span>
+              <span>
+                A resume or reference letter can help your application stand out
+              </span>
             </li>
             <li className="flex items-start space-x-3">
               <span className="text-gray-600 mt-0.5">•</span>
