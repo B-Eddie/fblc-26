@@ -6,19 +6,20 @@ import { useRouter } from "next/navigation";
 import dynamic from "next/dynamic";
 import { motion } from "framer-motion";
 import { supabase } from "@/lib/supabase";
-import { MapPin, Search, Filter, Bookmark } from "lucide-react";
+import { MapPin, Search, Filter, ArrowRight, Bookmark } from "lucide-react";
 import OpportunityCard from "@/components/OpportunityCard";
+import FloatingNav from "@/components/FloatingNav";
 
 // Dynamically import the map component (client-side only)
 const OpportunityMap = dynamic(() => import("@/components/OpportunityMap"), {
   ssr: false,
   loading: () => (
-    <div className="w-full h-96 bg-gray-800/50 rounded-xl flex items-center justify-center">
+    <div className="w-full h-96 bg-[#0a0a0a] rounded-2xl flex items-center justify-center border border-[#2a2a2a]">
       <motion.div
         animate={{ rotate: 360 }}
         transition={{ duration: 2, repeat: Infinity }}
       >
-        <div className="w-8 h-8 border-2 border-purple-600/30 border-t-purple-600 rounded-full" />
+        <div className="w-8 h-8 border-2 border-[#333] border-t-[#4EA8F3] rounded-full" />
       </motion.div>
     </div>
   ),
@@ -293,93 +294,34 @@ export default function BrowsePage() {
 
   if (checkingRole) {
     return (
-      <div className="min-h-screen bg-gradient-to-b from-black via-gray-950 to-black flex items-center justify-center">
-        <div className="w-10 h-10 border-2 border-gray-600 border-t-white rounded-full animate-spin" />
+      <div className="min-h-screen bg-[#050505] flex items-center justify-center">
+        <div className="w-10 h-10 border-2 border-[#333] border-t-white rounded-full animate-spin" />
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-black via-gray-950 to-black text-white">
-      {/* Animated Background Elements */}
-      <div className="fixed inset-0 overflow-hidden pointer-events-none">
-        <motion.div
-          className="absolute -top-40 -right-40 w-80 h-80 bg-gray-700/20 rounded-full blur-3xl"
-          animate={{ y: [0, 40, 0] }}
-          transition={{ duration: 8, repeat: Infinity }}
-        />
-        <motion.div
-          className="absolute -bottom-40 -left-40 w-80 h-80 bg-gray-600/20 rounded-full blur-3xl"
-          animate={{ y: [0, -40, 0] }}
-          transition={{ duration: 8, repeat: Infinity, delay: 1 }}
-        />
-      </div>
+    <div className="min-h-screen bg-[#050505] text-white font-sans selection:bg-white selection:text-black">
+      <FloatingNav />
 
-      {/* Header */}
-      <header className="border-b border-gray-800/50 sticky top-0 z-40 bg-black/80 backdrop-blur-lg">
-        <nav className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
-          <motion.div
-            className="flex justify-between items-center"
-            initial={{ opacity: 0, y: -20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6 }}
-          >
-            <Link
-              href="/"
-              className="flex items-center space-x-3 hover:opacity-80 transition"
-            >
-              <motion.div
-                className="w-10 h-10 rounded-lg flex items-center justify-center"
-                whileHover={{ scale: 1.05 }}
-              >
-                <img
-                  src="/image.png"
-                  alt="Logo"
-                  className="w-12 h-12 object-contain"
-                />
-              </motion.div>
-              <span className="text-2xl font-bold font-display bg-gradient-to-r from-gray-400 to-gray-300 bg-clip-text text-transparent">
-                Vertex
-              </span>
-            </Link>
-            <div className="flex items-center space-x-3">
-              <Link
-                href="/dashboard"
-                className="px-4 py-2 text-gray-300 hover:text-gray-100 transition font-medium"
-              >
-                Dashboard
-              </Link>
-              {!session && (
-                <motion.div
-                  whileHover={{ scale: 1.02 }}
-                  whileTap={{ scale: 0.98 }}
-                >
-                  <Link
-                    href="/auth/login"
-                    className="px-6 py-2 bg-gradient-to-r from-gray-700 to-gray-600 text-white rounded-lg font-semibold hover:shadow-lg hover:shadow-gray-600/50 transition"
-                  >
-                    Log In
-                  </Link>
-                </motion.div>
-              )}
-            </div>
-          </motion.div>
-        </nav>
-      </header>
+      <main className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-32 pb-12">
+        {/* Ambient Glow */}
+        <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[60vw] h-[60vw] bg-[#4EA8F3] mix-blend-screen filter blur-[150px] opacity-[0.15] pointer-events-none" />
 
-      <main className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
         {/* Header Section */}
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.6 }}
-          className="mb-10"
+          transition={{ duration: 0.6, ease: [0.25, 0.46, 0.45, 0.94] }}
+          className="mb-16 relative z-10"
         >
-          <h1 className="text-5xl md:text-6xl font-bold mb-3 font-display bg-gradient-to-r from-white via-gray-300 to-gray-400 bg-clip-text text-transparent">
-            Browse Opportunities
+          <p className="font-mono text-[#4EA8F3] text-sm uppercase tracking-widest mb-6">Discovery Protocol</p>
+          <h1 className="text-5xl md:text-7xl font-bold font-heading tracking-tighter text-white mb-6 leading-tight">
+            Find <span className="font-drama italic font-normal text-transparent bg-clip-text bg-gradient-to-r from-white to-white/60">meaningful</span> <br/>
+            <span className="text-[#4EA8F3]">local work.</span>
           </h1>
-          <p className="text-gray-400 text-lg">
-            Discover amazing volunteer opportunities in your area
+          <p className="text-ink-muted text-lg md:text-xl font-sans max-w-2xl leading-relaxed">
+            Scan for legitimate local opportunities. Real effort, tangible impact, zero friction.
           </p>
         </motion.div>
 
@@ -387,24 +329,27 @@ export default function BrowsePage() {
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.05, duration: 0.6 }}
-          className="mb-8"
+          transition={{ delay: 0.1, duration: 0.6, ease: [0.25, 0.46, 0.45, 0.94] }}
+          className="mb-12 relative group"
         >
+          <div className="absolute inset-0 bg-gradient-to-r from-[#4EA8F3]/20 to-transparent rounded-[2rem] blur-xl opacity-0 group-hover:opacity-100 transition-opacity duration-700 pointer-events-none" />
           <Link href="/browse/businesses">
-            <div className="bg-gradient-to-r from-purple-600/20 to-pink-600/20 border border-purple-500/30 rounded-2xl p-6 backdrop-blur-sm hover:border-purple-500/50 transition cursor-pointer group">
-              <div className="flex items-center justify-between">
-                <div>
-                  <h3 className="text-xl font-bold text-white mb-1 group-hover:text-purple-300 transition">
-                    Discover Local Businesses & Deals
-                  </h3>
-                  <p className="text-gray-300 text-sm">
-                    Browse businesses, view ratings, reviews, and find special
-                    coupons
-                  </p>
+            <div className="bg-[#0a0a0a] border border-[#222] rounded-[2rem] p-8 hover:border-[#4EA8F3]/50 transition-all duration-500 cursor-pointer flex flex-col md:flex-row items-start md:items-center justify-between relative overflow-hidden">
+              <div className="absolute top-0 right-0 w-64 h-64 bg-[#4EA8F3] opacity-5 blur-[100px] pointer-events-none" />
+              <div className="relative z-10 mb-4 md:mb-0">
+                <div className="flex items-center gap-3 mb-2">
+                  <div className="w-2 h-2 rounded-full bg-[#4EA8F3] pulse-dot" />
+                  <span className="font-mono text-[10px] uppercase tracking-wider text-[#4EA8F3]">Business Directory</span>
                 </div>
-                <motion.div whileHover={{ x: 5 }} className="text-2xl">
-                  →
-                </motion.div>
+                <h3 className="text-2xl font-bold font-heading text-white group-hover:text-[#4EA8F3] transition-colors">
+                  Explore Local Businesses
+                </h3>
+                <p className="text-ink-muted text-sm mt-2 max-w-md">
+                  View ratings, read student reviews, and unlock exclusive community deals.
+                </p>
+              </div>
+              <div className="relative z-10 w-12 h-12 rounded-full bg-[#111] border border-[#333] flex items-center justify-center group-hover:bg-[#4EA8F3] group-hover:border-[#4EA8F3] transition-all duration-500 flex-shrink-0">
+                <ArrowRight className="w-5 h-5 text-white group-hover:text-black transition-colors" />
               </div>
             </div>
           </Link>
@@ -412,22 +357,24 @@ export default function BrowsePage() {
 
         {/* Search and Filters */}
         <motion.div
-          className="mb-8 space-y-4"
+          className="mb-12 space-y-6"
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.1, duration: 0.6 }}
+          transition={{ delay: 0.15, duration: 0.6, ease: [0.25, 0.46, 0.45, 0.94] }}
         >
           {/* Search Bar */}
           <div className="relative group">
-            <div className="absolute inset-0 bg-gradient-to-r from-gray-600/20 to-gray-700/20 rounded-xl opacity-0 group-focus-within:opacity-100 blur transition duration-300" />
-            <div className="relative flex items-center">
-              <Search className="absolute left-4 text-gray-500 w-5 h-5" />
+            <div className="absolute inset-0 bg-[#4EA8F3] rounded-[1.5rem] opacity-0 group-focus-within:opacity-10 blur-md transition duration-500 pointer-events-none" />
+            <div className="relative flex items-center bg-[#0a0a0a] border border-[#222] rounded-[1.5rem] p-2 transition-colors duration-300 group-focus-within:border-[#4EA8F3]/50">
+              <div className="pl-4 pr-2">
+                <Search className="text-ink-faint w-5 h-5 group-focus-within:text-[#4EA8F3] transition-colors" />
+              </div>
               <input
                 type="text"
-                placeholder="Search by title, business, or keyword..."
+                placeholder="Scan for roles, businesses, or keywords..."
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
-                className="w-full pl-12 pr-4 py-4 bg-gray-900/50 border border-gray-800/60 rounded-xl text-white placeholder-gray-600 focus:ring-2 focus:ring-gray-600 focus:border-transparent transition backdrop-blur-sm"
+                className="w-full py-4 bg-transparent text-white placeholder-ink-faint focus:outline-none font-mono text-sm"
               />
             </div>
           </div>
@@ -438,15 +385,15 @@ export default function BrowsePage() {
               <motion.button
                 key={category}
                 onClick={() => setSelectedCategory(category)}
-                whileHover={{ scale: 1.05 }}
-                whileTap={{ scale: 0.95 }}
+                whileHover={{ scale: 1.02 }}
+                whileTap={{ scale: 0.98 }}
                 initial={{ opacity: 0, x: -10 }}
                 animate={{ opacity: 1, x: 0 }}
                 transition={{ delay: i * 0.05 }}
-                className={`px-6 py-2 rounded-full font-medium transition whitespace-nowrap ${
+                className={`px-5 py-2 rounded-full font-mono text-xs uppercase tracking-wider transition-colors border ${
                   selectedCategory === category
-                    ? "bg-gradient-to-r from-gray-700 to-gray-600 text-white shadow-lg shadow-gray-600/50"
-                    : "bg-gray-800/50 text-gray-300 hover:bg-gray-800 border border-gray-700/50 backdrop-blur-sm"
+                    ? "bg-white text-black border-white"
+                    : "bg-[#0a0a0a] text-ink-muted border-[#2a2a2a] hover:border-[#4EA8F3] hover:text-white"
                 }`}
               >
                 {category}
@@ -456,54 +403,51 @@ export default function BrowsePage() {
 
           {/* Sort and View Options */}
           <motion.div
-            className="flex justify-between items-center flex-wrap gap-4"
+            className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 pt-4 border-t border-[#222]"
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             transition={{ delay: 0.2 }}
           >
-            <div className="flex items-center space-x-4">
-              <Filter className="w-5 h-5 text-gray-400" />
-              <label className="text-sm font-medium text-gray-300">
-                Sort by:
-              </label>
-              <motion.select
+            <div className="flex items-center space-x-4 w-full sm:w-auto">
+              <Filter className="w-5 h-5 text-ink-faint" />
+              <span className="text-sm font-mono text-ink-muted uppercase tracking-wider">
+                Sort:
+              </span>
+              <select
                 value={sortBy}
                 onChange={(e) => setSortBy(e.target.value as any)}
-                className="px-4 py-2 bg-gray-800/50 border border-gray-700/50 rounded-lg text-white focus:ring-2 focus:ring-gray-600 transition backdrop-blur-sm cursor-pointer"
-                whileFocus={{ scale: 1.02 }}
+                className="flex-1 sm:flex-none px-4 py-2 bg-[#0a0a0a] border border-[#2a2a2a] rounded-lg text-white focus:outline-none focus:border-[#4EA8F3] transition-colors font-mono text-sm cursor-pointer"
               >
                 <option value="rating">Highest Rated</option>
                 <option value="flexible">Most Flexible</option>
                 <option value="distance">Closest</option>
-              </motion.select>
+              </select>
             </div>
-            <div className="flex items-center space-x-2">
+            <div className="flex items-center gap-2">
               <motion.button
                 onClick={() => setShowBookmarksOnly(!showBookmarksOnly)}
-                whileHover={{ scale: 1.05 }}
-                whileTap={{ scale: 0.95 }}
-                className={`flex items-center space-x-2 px-6 py-2 rounded-lg font-medium transition ${
+                whileHover={{ scale: 1.02 }}
+                whileTap={{ scale: 0.98 }}
+                className={`flex items-center space-x-2 px-5 py-2 rounded-lg font-mono text-xs uppercase tracking-wider transition-colors border ${
                   showBookmarksOnly
-                    ? "bg-gradient-to-r from-gray-700 to-gray-600 text-white shadow-lg shadow-gray-600/50"
-                    : "bg-gray-800/50 text-gray-300 border border-gray-700/50 hover:border-gray-600/50 backdrop-blur-sm"
+                    ? "bg-[#4EA8F3] text-black border-[#4EA8F3]"
+                    : "bg-[#0a0a0a] text-white border-[#2a2a2a] hover:border-[#4EA8F3]"
                 }`}
               >
-                <Bookmark className="w-5 h-5" />
-                <span>
-                  {showBookmarksOnly ? "All Opportunities" : "Bookmarks"}
-                </span>
+                <Bookmark className="w-4 h-4" />
+                <span>{showBookmarksOnly ? "All" : "Bookmarks"}</span>
               </motion.button>
               <motion.button
                 onClick={() => setShowMap(!showMap)}
-                whileHover={{ scale: 1.05 }}
-                whileTap={{ scale: 0.95 }}
-                className={`flex items-center space-x-2 px-6 py-2 rounded-lg font-medium transition ${
+                whileHover={{ scale: 1.02 }}
+                whileTap={{ scale: 0.98 }}
+                className={`flex items-center space-x-2 px-5 py-2 rounded-lg font-mono text-xs uppercase tracking-wider transition-colors border ${
                   showMap
-                    ? "bg-gradient-to-r from-gray-700 to-gray-600 text-white shadow-lg shadow-gray-600/50"
-                    : "bg-gray-800/50 text-gray-300 border border-gray-700/50 hover:border-gray-600/50 backdrop-blur-sm"
+                    ? "bg-[#4EA8F3] text-black border-[#4EA8F3]"
+                    : "bg-[#0a0a0a] text-white border-[#2a2a2a] hover:border-[#4EA8F3]"
                 }`}
               >
-                <MapPin className="w-5 h-5" />
+                <MapPin className="w-4 h-4" />
                 <span>{showMap ? "Hide Map" : "Show Map"}</span>
               </motion.button>
             </div>
@@ -517,7 +461,7 @@ export default function BrowsePage() {
             animate={{ opacity: 1, height: "auto" }}
             exit={{ opacity: 0, height: 0 }}
             transition={{ duration: 0.3 }}
-            className="mb-8 bg-gray-900/40 rounded-2xl border border-gray-800/60 overflow-hidden backdrop-blur-sm"
+            className="mb-8 card-surface overflow-hidden"
           >
             <OpportunityMap opportunities={filteredOpportunities} />
           </motion.div>
@@ -525,26 +469,24 @@ export default function BrowsePage() {
 
         {/* Results Counter */}
         <motion.div
-          className="mb-6 flex items-center space-x-2"
+          className="mb-6 flex items-center"
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           transition={{ delay: 0.3 }}
         >
-          <p className="text-gray-400">
-            Found{" "}
-            <span className="font-semibold text-white">
-              {filteredOpportunities.length}
-            </span>{" "}
-            {filteredOpportunities.length === 1
-              ? "opportunity"
-              : "opportunities"}
-          </p>
+          <div className="flex items-center gap-2 bg-[#1a1a1a] px-3 py-1.5 rounded-full border border-[#333]">
+            <div className="w-2 h-2 rounded-full bg-[#4EA8F3] pulse-dot" />
+            <span className="font-mono text-[10px] uppercase tracking-wider text-ink-muted">
+              <span className="text-white font-bold">{filteredOpportunities.length}</span>{" "}
+              {filteredOpportunities.length === 1 ? "match found" : "matches found"}
+            </span>
+          </div>
         </motion.div>
 
         {/* Opportunities Grid */}
         {loading ? (
           <motion.div
-            className="text-center py-16"
+            className="text-center py-20"
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
           >
@@ -552,20 +494,17 @@ export default function BrowsePage() {
               <motion.div
                 animate={{ rotate: 360 }}
                 transition={{ duration: 2, repeat: Infinity, ease: "linear" }}
-                className="w-12 h-12 border-4 border-purple-600/30 border-t-purple-600 rounded-full"
+                className="w-12 h-12 border-4 border-[#333] border-t-[#4EA8F3] rounded-full"
               />
             </div>
-            <p className="mt-4 text-gray-400 text-lg">
-              Loading opportunities...
-            </p>
           </motion.div>
         ) : filteredOpportunities.length === 0 ? (
           <motion.div
-            className="text-center py-16 bg-gray-900/40 border border-gray-800/60 rounded-2xl backdrop-blur-sm"
+            className="text-center py-20 card-surface"
             initial={{ opacity: 0, scale: 0.95 }}
             animate={{ opacity: 1, scale: 1 }}
           >
-            <p className="text-gray-400 text-lg">
+            <p className="text-ink-muted font-mono">
               No opportunities found. Try adjusting your filters.
             </p>
           </motion.div>

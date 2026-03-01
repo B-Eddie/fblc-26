@@ -39,6 +39,7 @@ export default function HoursProgressChart({
       <XAxis dataKey="month" stroke="#9ca3af" tick={{ fontSize: 12 }} />
       <YAxis stroke="#9ca3af" tick={{ fontSize: 12 }} />
       <Tooltip
+        cursor={{ fill: "transparent" }}
         contentStyle={{
           backgroundColor: "#111827",
           border: "1px solid #374151",

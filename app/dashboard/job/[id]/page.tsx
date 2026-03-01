@@ -246,20 +246,20 @@ export default function JobDetailPage({ params }: { params: { id: string } }) {
     .filter((log) => log.status === "pending")
     .reduce((sum, log) => sum + parseFloat(log.hours), 0);
 
-  const statusColors: Record<string, string> = {
-    pending: "bg-yellow-600/20 text-yellow-400 border border-yellow-600/30",
-    approved: "bg-green-600/20 text-green-400 border border-green-600/30",
-    rejected: "bg-red-600/20 text-red-400 border border-red-600/30",
-    signed: "bg-green-600/20 text-green-400 border border-green-600/30",
+  const statusStyles: Record<string, string> = {
+    pending: "bg-[#1a1a1a] text-[#f59e0b] border-[#f59e0b]/30",
+    approved: "bg-[#1a1a1a] text-[#10b981] border-[#10b981]/30",
+    rejected: "bg-[#1a1a1a] text-[#ef4444] border-[#ef4444]/30",
+    signed: "bg-[#1a1a1a] text-[#4EA8F3] border-[#4EA8F3]/30",
   };
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-gradient-to-b from-black via-gray-950 to-black flex items-center justify-center">
+      <div className="min-h-screen bg-[#050505] flex items-center justify-center">
         <motion.div
           animate={{ rotate: 360 }}
           transition={{ duration: 2, repeat: Infinity }}
-          className="w-12 h-12 border-4 border-gray-700/30 border-t-gray-700 rounded-full"
+          className="w-12 h-12 border-4 border-[#333] border-t-[#4EA8F3] rounded-full"
         />
       </div>
     );
@@ -271,23 +271,9 @@ export default function JobDetailPage({ params }: { params: { id: string } }) {
   const opportunity = application.opportunity;
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-black via-gray-950 to-black text-white">
-      {/* Animated Background */}
-      <div className="fixed inset-0 overflow-hidden pointer-events-none">
-        <motion.div
-          className="absolute -top-40 -right-40 w-80 h-80 bg-gray-700/20 rounded-full blur-3xl"
-          animate={{ y: [0, 40, 0] }}
-          transition={{ duration: 8, repeat: Infinity }}
-        />
-        <motion.div
-          className="absolute -bottom-40 -left-40 w-80 h-80 bg-gray-600/20 rounded-full blur-3xl"
-          animate={{ y: [0, -40, 0] }}
-          transition={{ duration: 8, repeat: Infinity, delay: 1 }}
-        />
-      </div>
-
+    <div className="min-h-screen bg-[#050505] text-white font-sans selection:bg-white selection:text-black">
       {/* Header */}
-      <header className="border-b border-gray-800/50 sticky top-0 z-40 bg-black/80 backdrop-blur-lg">
+      <header className="border-b border-[#222] sticky top-0 z-40 bg-[#0a0a0a]/80 backdrop-blur-xl">
         <nav className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
           <motion.div
             className="flex justify-between items-center"
@@ -300,22 +286,22 @@ export default function JobDetailPage({ params }: { params: { id: string } }) {
               className="flex items-center space-x-3 hover:opacity-80 transition"
             >
               <motion.div
-                className="w-10 h-10 rounded-lg flex items-center justify-center"
+                className="w-8 h-8 rounded-lg flex items-center justify-center"
                 whileHover={{ scale: 1.05 }}
               >
                 <img
-                  src="/image.png"
+                  src="/logo.png"
                   alt="Logo"
-                  className="w-12 h-12 object-contain"
+                  className="w-8 h-8 object-contain"
                 />
               </motion.div>
-              <span className="text-2xl font-bold font-display bg-gradient-to-r from-gray-400 to-gray-300 bg-clip-text text-transparent">
-                Vertex
+              <span className="text-xl font-bold font-heading tracking-tight text-white">
+                Pilot
               </span>
             </Link>
             <Link
               href="/dashboard"
-              className="flex items-center space-x-2 px-4 py-2 text-gray-300 hover:text-white transition"
+              className="flex items-center space-x-2 text-sm font-medium text-ink-muted hover:text-white transition-colors"
             >
               <ArrowLeft className="w-4 h-4" />
               <span>Back to Dashboard</span>
@@ -332,29 +318,28 @@ export default function JobDetailPage({ params }: { params: { id: string } }) {
           transition={{ duration: 0.6 }}
           className="mb-8"
         >
-          <div className="flex items-start justify-between flex-wrap gap-4">
+          <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-6">
             <div>
-              <h1 className="text-4xl md:text-5xl font-bold font-display bg-gradient-to-r from-white via-gray-300 to-gray-400 bg-clip-text text-transparent mb-2">
+              <h1 className="text-4xl md:text-5xl font-bold font-heading tracking-tight text-white mb-3">
                 {opportunity?.title}
               </h1>
-              <div className="flex items-center space-x-3 text-gray-400">
-                <Building2 className="w-5 h-5" />
-                <span className="text-lg">{business?.name}</span>
-                <span className="text-gray-600">•</span>
-                <span className="capitalize">{business?.category}</span>
+              <div className="flex items-center space-x-3 text-ink-muted font-mono text-sm uppercase tracking-wider">
+                <Building2 className="w-4 h-4" />
+                <span className="font-bold text-white">{business?.name}</span>
+                <span className="text-ink-faint">•</span>
+                <span>{business?.category}</span>
               </div>
             </div>
             <motion.span
-              className={`px-4 py-2 rounded-lg text-sm font-medium ${
+              className={`px-4 py-2 border rounded-full text-xs font-mono uppercase tracking-wider font-bold ${
                 application.status === "accepted"
-                  ? "bg-green-600/20 text-green-400 border border-green-600/30"
+                  ? "bg-[#1a1a1a] text-[#10b981] border-[#10b981]/30"
                   : application.status === "completed"
-                    ? "bg-blue-600/20 text-blue-400 border border-blue-600/30"
-                    : "bg-yellow-600/20 text-yellow-400 border border-yellow-600/30"
+                    ? "bg-[#1a1a1a] text-[#4EA8F3] border-[#4EA8F3]/30"
+                    : "bg-[#1a1a1a] text-[#f59e0b] border-[#f59e0b]/30"
               }`}
             >
-              {application.status.charAt(0).toUpperCase() +
-                application.status.slice(1)}
+              {application.status}
             </motion.span>
           </div>
         </motion.div>
@@ -364,33 +349,29 @@ export default function JobDetailPage({ params }: { params: { id: string } }) {
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.1, duration: 0.6 }}
-          className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-8"
+          className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8"
         >
           {[
             {
               icon: Clock,
               label: "Total Logged",
               value: `${totalLoggedHours.toFixed(1)}h`,
-              color: "from-blue-600/20 to-blue-700/20 border-blue-600/30",
             },
             {
               icon: CheckCircle,
               label: "Approved",
               value: `${approvedHours.toFixed(1)}h`,
-              color: "from-green-600/20 to-green-700/20 border-green-600/30",
             },
             {
               icon: AlertCircle,
               label: "Pending",
               value: `${pendingHours.toFixed(1)}h`,
-              color: "from-yellow-600/20 to-yellow-700/20 border-yellow-600/30",
             },
             {
               icon: FileText,
               label: "Signatures",
               value: signatureRequests.filter((s) => s.status === "signed")
                 .length,
-              color: "from-purple-600/20 to-purple-700/20 border-purple-600/30",
             },
           ].map((stat, i) => (
             <motion.div
@@ -398,16 +379,16 @@ export default function JobDetailPage({ params }: { params: { id: string } }) {
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.1 + i * 0.05, duration: 0.6 }}
-              className={`bg-gradient-to-br ${stat.color} border rounded-2xl p-5 backdrop-blur-sm`}
+              className="card-surface p-6 hover:border-[#4EA8F3] transition-colors"
             >
               <div className="flex items-center justify-between">
                 <div>
-                  <p className="text-sm text-gray-400">{stat.label}</p>
-                  <p className="text-3xl font-bold text-white mt-1">
+                  <p className="font-mono text-[10px] uppercase tracking-wider text-ink-muted mb-2">{stat.label}</p>
+                  <p className="text-3xl font-bold font-heading text-white">
                     {stat.value}
                   </p>
                 </div>
-                <stat.icon className="w-10 h-10 text-gray-400 opacity-50" />
+                <stat.icon className="w-8 h-8 text-[#333]" />
               </div>
             </motion.div>
           ))}
@@ -418,7 +399,7 @@ export default function JobDetailPage({ params }: { params: { id: string } }) {
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.2, duration: 0.6 }}
-          className="flex space-x-1 bg-gray-900/40 border border-gray-800/60 rounded-xl p-1 mb-8"
+          className="flex space-x-2 bg-[#0a0a0a] border border-[#2a2a2a] rounded-2xl p-1.5 mb-8"
         >
           {(
             [
@@ -431,10 +412,10 @@ export default function JobDetailPage({ params }: { params: { id: string } }) {
             <button
               key={tab.id}
               onClick={() => setActiveTab(tab.id)}
-              className={`flex-1 flex items-center justify-center space-x-2 py-3 px-4 rounded-lg text-sm font-medium transition ${
+              className={`flex-1 flex items-center justify-center space-x-2 py-3 px-4 rounded-xl text-sm font-bold font-mono uppercase tracking-wider transition-colors ${
                 activeTab === tab.id
-                  ? "bg-gray-700/60 text-white"
-                  : "text-gray-400 hover:text-gray-200"
+                  ? "bg-[#1a1a1a] text-white shadow-sm border border-[#333]"
+                  : "text-ink-muted hover:text-white border border-transparent"
               }`}
             >
               <tab.icon className="w-4 h-4" />
@@ -448,70 +429,70 @@ export default function JobDetailPage({ params }: { params: { id: string } }) {
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
-            className="space-y-6"
+            className="space-y-8"
           >
             {/* Job Description */}
-            <div className="bg-gray-900/40 border border-gray-800/60 rounded-2xl p-8 backdrop-blur-sm">
-              <h2 className="text-2xl font-bold text-white mb-4">
+            <div className="card-surface p-8">
+              <h2 className="text-2xl font-bold font-heading text-white mb-6">
                 Job Description
               </h2>
-              <p className="text-gray-300 leading-relaxed whitespace-pre-wrap">
+              <p className="text-ink-muted leading-relaxed whitespace-pre-wrap">
                 {opportunity?.description}
               </p>
               {opportunity?.requirements && (
-                <div className="mt-6">
-                  <h3 className="text-lg font-semibold text-white mb-2">
+                <div className="mt-8 pt-8 border-t border-[#2a2a2a]">
+                  <h3 className="text-lg font-bold font-heading text-white mb-4">
                     Requirements
                   </h3>
-                  <p className="text-gray-400 whitespace-pre-wrap">
+                  <p className="text-ink-muted whitespace-pre-wrap">
                     {opportunity.requirements}
                   </p>
                 </div>
               )}
               {opportunity?.perks && (
-                <div className="mt-6">
-                  <h3 className="text-lg font-semibold text-white mb-2">
+                <div className="mt-8 pt-8 border-t border-[#2a2a2a]">
+                  <h3 className="text-lg font-bold font-heading text-white mb-4">
                     Perks
                   </h3>
-                  <p className="text-gray-400 whitespace-pre-wrap">
+                  <p className="text-ink-muted whitespace-pre-wrap">
                     {opportunity.perks}
                   </p>
                 </div>
               )}
-              <div className="flex flex-wrap gap-4 mt-6 text-sm text-gray-400">
-                <span className="flex items-center space-x-1">
-                  <Clock className="w-4 h-4" />
+              <div className="flex flex-wrap gap-6 mt-8 pt-8 border-t border-[#2a2a2a] text-sm font-mono text-ink-muted">
+                <span className="flex items-center space-x-2">
+                  <Clock className="w-4 h-4 text-ink-faint" />
                   <span>{opportunity?.hours_available} hours available</span>
                 </span>
-                <span className="flex items-center space-x-1">
-                  <Calendar className="w-4 h-4" />
+                <span className="flex items-center space-x-2">
+                  <Calendar className="w-4 h-4 text-ink-faint" />
                   <span>
-                    Applied{" "}
+                    Applied:{" "}
                     {new Date(application.created_at).toLocaleDateString()}
                   </span>
                 </span>
                 {opportunity?.is_flexible && (
-                  <span className="text-green-400 font-medium">
-                    ✓ Flexible Schedule
+                  <span className="text-[#4EA8F3] font-bold border border-[#4EA8F3]/50 px-3 py-1 rounded-full text-xs uppercase tracking-wider">
+                    Flexible Schedule
                   </span>
                 )}
               </div>
             </div>
 
             {/* Business Contact Info */}
-            <div className="bg-gray-900/40 border border-gray-800/60 rounded-2xl p-8 backdrop-blur-sm">
-              <h2 className="text-2xl font-bold text-white mb-4">
+            <div className="card-surface p-8">
+              <h2 className="text-2xl font-bold font-heading text-white mb-6">
                 Contact Your Supervisor
               </h2>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 {business?.phone && (
                   <a
                     href={`tel:${business.phone}`}
-                    className="flex items-center space-x-3 p-4 border border-gray-800/60 rounded-xl hover:border-gray-600/40 transition bg-gray-800/20"
+                    className="flex items-center space-x-4 p-5 border border-[#2a2a2a] rounded-2xl hover:border-[#4EA8F3] transition-colors bg-[#0a0a0a]"
                   >
-                    <Phone className="w-5 h-5 text-green-400" />
+                    <Phone className="w-5 h-5 text-[#4EA8F3]" />
                     <div>
-                      <p className="text-sm text-gray-400">Phone</p>
+                      <p className="font-mono text-[10px] uppercase tracking-wider text-ink-muted mb-1">Phone</p>
                       <p className="text-white font-medium">{business.phone}</p>
                     </div>
                   </a>
@@ -519,12 +500,12 @@ export default function JobDetailPage({ params }: { params: { id: string } }) {
                 {business?.email && (
                   <a
                     href={`mailto:${business.email}`}
-                    className="flex items-center space-x-3 p-4 border border-gray-800/60 rounded-xl hover:border-gray-600/40 transition bg-gray-800/20"
+                    className="flex items-center space-x-4 p-5 border border-[#2a2a2a] rounded-2xl hover:border-[#4EA8F3] transition-colors bg-[#0a0a0a]"
                   >
-                    <Mail className="w-5 h-5 text-blue-400" />
+                    <Mail className="w-5 h-5 text-[#4EA8F3]" />
                     <div>
-                      <p className="text-sm text-gray-400">Email</p>
-                      <p className="text-white font-medium">{business.email}</p>
+                      <p className="font-mono text-[10px] uppercase tracking-wider text-ink-muted mb-1">Email</p>
+                      <p className="text-white font-medium truncate max-w-[200px]">{business.email}</p>
                     </div>
                   </a>
                 )}
@@ -533,23 +514,23 @@ export default function JobDetailPage({ params }: { params: { id: string } }) {
                     href={business.website}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="flex items-center space-x-3 p-4 border border-gray-800/60 rounded-xl hover:border-gray-600/40 transition bg-gray-800/20"
+                    className="flex items-center space-x-4 p-5 border border-[#2a2a2a] rounded-2xl hover:border-[#4EA8F3] transition-colors bg-[#0a0a0a]"
                   >
-                    <Globe className="w-5 h-5 text-purple-400" />
+                    <Globe className="w-5 h-5 text-[#4EA8F3]" />
                     <div>
-                      <p className="text-sm text-gray-400">Website</p>
-                      <p className="text-white font-medium">
+                      <p className="font-mono text-[10px] uppercase tracking-wider text-ink-muted mb-1">Website</p>
+                      <p className="text-white font-medium truncate max-w-[200px]">
                         {business.website}
                       </p>
                     </div>
                   </a>
                 )}
                 {business?.address && (
-                  <div className="flex items-center space-x-3 p-4 border border-gray-800/60 rounded-xl bg-gray-800/20">
-                    <MapPin className="w-5 h-5 text-orange-400" />
+                  <div className="flex items-center space-x-4 p-5 border border-[#2a2a2a] rounded-2xl bg-[#0a0a0a]">
+                    <MapPin className="w-5 h-5 text-[#4EA8F3]" />
                     <div>
-                      <p className="text-sm text-gray-400">Address</p>
-                      <p className="text-white font-medium">
+                      <p className="font-mono text-[10px] uppercase tracking-wider text-ink-muted mb-1">Address</p>
+                      <p className="text-white font-medium text-sm">
                         {business.address}, {business.city},{" "}
                         {business.province}
                       </p>
@@ -565,16 +546,16 @@ export default function JobDetailPage({ params }: { params: { id: string } }) {
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
-            className="space-y-6"
+            className="space-y-8"
           >
             {/* Log New Hours */}
-            <div className="bg-gray-900/40 border border-gray-800/60 rounded-2xl p-8 backdrop-blur-sm">
-              <h2 className="text-2xl font-bold text-white mb-6">
+            <div className="card-surface p-8">
+              <h2 className="text-2xl font-bold font-heading text-white mb-6">
                 Register Hours
               </h2>
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
                 <div>
-                  <label className="block text-sm text-gray-400 mb-1">
+                  <label className="block text-xs font-mono uppercase tracking-wider text-ink-muted mb-2">
                     Hours Worked
                   </label>
                   <input
@@ -584,22 +565,22 @@ export default function JobDetailPage({ params }: { params: { id: string } }) {
                     value={newHours}
                     onChange={(e) => setNewHours(e.target.value)}
                     placeholder="e.g., 3.5"
-                    className="w-full bg-gray-800/50 border border-gray-700/50 rounded-lg px-4 py-3 text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-gray-600"
+                    className="w-full bg-[#0a0a0a] border border-[#2a2a2a] rounded-xl px-4 py-3 text-white placeholder-[#555] focus:outline-none focus:border-[#4EA8F3] transition-colors font-mono text-sm"
                   />
                 </div>
                 <div>
-                  <label className="block text-sm text-gray-400 mb-1">
+                  <label className="block text-xs font-mono uppercase tracking-wider text-ink-muted mb-2">
                     Date
                   </label>
                   <input
                     type="date"
                     value={newHoursDate}
                     onChange={(e) => setNewHoursDate(e.target.value)}
-                    className="w-full bg-gray-800/50 border border-gray-700/50 rounded-lg px-4 py-3 text-white focus:outline-none focus:ring-2 focus:ring-gray-600"
+                    className="w-full bg-[#0a0a0a] border border-[#2a2a2a] rounded-xl px-4 py-3 text-white focus:outline-none focus:border-[#4EA8F3] transition-colors font-mono text-sm"
                   />
                 </div>
                 <div>
-                  <label className="block text-sm text-gray-400 mb-1">
+                  <label className="block text-xs font-mono uppercase tracking-wider text-ink-muted mb-2">
                     Description
                   </label>
                   <input
@@ -607,65 +588,65 @@ export default function JobDetailPage({ params }: { params: { id: string } }) {
                     value={newHoursDescription}
                     onChange={(e) => setNewHoursDescription(e.target.value)}
                     placeholder="What did you work on?"
-                    className="w-full bg-gray-800/50 border border-gray-700/50 rounded-lg px-4 py-3 text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-gray-600"
+                    className="w-full bg-[#0a0a0a] border border-[#2a2a2a] rounded-xl px-4 py-3 text-white placeholder-[#555] focus:outline-none focus:border-[#4EA8F3] transition-colors font-mono text-sm"
                   />
                 </div>
               </div>
-              <motion.button
-                whileHover={{ scale: 1.02 }}
-                whileTap={{ scale: 0.98 }}
+              <button
                 onClick={submitHourLog}
                 disabled={submittingHours || !newHours}
-                className="flex items-center space-x-2 px-6 py-3 bg-gradient-to-r from-gray-700 to-gray-600 text-white rounded-lg font-semibold hover:shadow-lg hover:shadow-gray-600/50 transition disabled:opacity-50"
+                className="btn-magnetic w-full md:w-auto flex bg-white text-black px-8 py-3 rounded-full text-sm font-bold group hover:shadow-[0_0_20px_rgba(78,168,243,0.3)] transition-shadow duration-500 justify-center disabled:opacity-50"
               >
-                <Plus className="w-5 h-5" />
-                <span>
-                  {submittingHours ? "Submitting..." : "Log Hours"}
+                <span className="relative z-10 flex items-center justify-center gap-2">
+                  <Plus className="w-4 h-4" />
+                  <span>
+                    {submittingHours ? "Submitting..." : "Log Hours"}
+                  </span>
                 </span>
-              </motion.button>
+                <span className="btn-bg bg-[#4EA8F3] rounded-full"></span>
+              </button>
             </div>
 
             {/* Hour Logs Table */}
-            <div className="bg-gray-900/40 border border-gray-800/60 rounded-2xl p-8 backdrop-blur-sm">
-              <h2 className="text-2xl font-bold text-white mb-6">
+            <div className="card-surface p-8">
+              <h2 className="text-2xl font-bold font-heading text-white mb-6">
                 Hours History
               </h2>
               {hourLogs.length === 0 ? (
-                <p className="text-gray-400 text-center py-8">
+                <p className="text-ink-muted font-mono text-center py-8">
                   No hours logged yet. Start by registering your first hours
                   above.
                 </p>
               ) : (
-                <div className="space-y-3">
+                <div className="space-y-4">
                   {hourLogs.map((log, i) => (
                     <motion.div
                       key={log.id}
                       initial={{ opacity: 0, x: -20 }}
                       animate={{ opacity: 1, x: 0 }}
                       transition={{ delay: i * 0.05 }}
-                      className="flex items-center justify-between p-4 border border-gray-800/60 rounded-xl bg-gray-800/20"
+                      className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 p-5 border border-[#2a2a2a] rounded-2xl bg-[#0a0a0a] hover:border-[#444] transition-colors"
                     >
                       <div className="flex-1">
-                        <div className="flex items-center space-x-3">
-                          <span className="text-white font-semibold">
+                        <div className="flex items-center space-x-3 mb-2">
+                          <span className="text-white font-bold font-heading text-lg">
                             {parseFloat(log.hours).toFixed(1)} hours
                           </span>
-                          <span className="text-gray-500">•</span>
-                          <span className="text-gray-400 text-sm">
+                          <span className="text-ink-faint">•</span>
+                          <span className="text-ink-muted text-xs font-mono uppercase tracking-wider">
                             {new Date(log.date).toLocaleDateString()}
                           </span>
                         </div>
                         {log.description && (
-                          <p className="text-sm text-gray-400 mt-1">
+                          <p className="text-sm text-ink-muted leading-relaxed">
                             {log.description}
                           </p>
                         )}
                       </div>
                       <span
-                        className={`px-3 py-1 rounded-lg text-xs font-medium ${statusColors[log.status]}`}
+                        className={`px-3 py-1 border rounded-full text-[10px] font-mono uppercase tracking-wider font-bold whitespace-nowrap self-start sm:self-auto ${statusStyles[log.status]}`}
                       >
-                        {log.status.charAt(0).toUpperCase() +
-                          log.status.slice(1)}
+                        {log.status}
                       </span>
                     </motion.div>
                   ))}
@@ -679,20 +660,22 @@ export default function JobDetailPage({ params }: { params: { id: string } }) {
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
-            className="bg-gray-900/40 border border-gray-800/60 rounded-2xl backdrop-blur-sm overflow-hidden"
+            className="card-surface overflow-hidden flex flex-col h-[600px]"
           >
-            <div className="p-6 border-b border-gray-800/60">
-              <h2 className="text-2xl font-bold text-white">
+            <div className="p-6 border-b border-[#2a2a2a] bg-[#0a0a0a]">
+              <h2 className="text-xl font-bold font-heading text-white">
                 Messages with {business?.name}
               </h2>
             </div>
 
             {/* Messages List */}
-            <div className="h-96 overflow-y-auto p-6 space-y-4">
+            <div className="flex-1 overflow-y-auto p-6 space-y-6">
               {messages.length === 0 ? (
-                <p className="text-gray-400 text-center py-12">
-                  No messages yet. Start a conversation with your supervisor.
-                </p>
+                <div className="h-full flex items-center justify-center">
+                  <p className="text-ink-muted font-mono text-sm">
+                    No messages yet. Start a conversation with your supervisor.
+                  </p>
+                </div>
               ) : (
                 messages.map((msg) => (
                   <div
@@ -700,18 +683,18 @@ export default function JobDetailPage({ params }: { params: { id: string } }) {
                     className={`flex ${msg.sender_id === currentUser?.id ? "justify-end" : "justify-start"}`}
                   >
                     <div
-                      className={`max-w-[70%] rounded-2xl px-4 py-3 ${
+                      className={`max-w-[80%] rounded-2xl px-5 py-4 ${
                         msg.sender_id === currentUser?.id
-                          ? "bg-gray-700/60 text-white"
-                          : "bg-gray-800/60 text-gray-200 border border-gray-700/40"
+                          ? "bg-[#1a1a1a] text-white border border-[#333] rounded-tr-sm"
+                          : "bg-[#0a0a0a] text-white border border-[#2a2a2a] rounded-tl-sm"
                       }`}
                     >
-                      <p className="text-xs text-gray-400 mb-1">
+                      <p className="text-[10px] font-mono uppercase tracking-wider text-ink-muted mb-2">
                         {msg.sender?.full_name || "You"}
                       </p>
-                      <p className="text-sm">{msg.content}</p>
-                      <p className="text-xs text-gray-500 mt-1">
-                        {new Date(msg.created_at).toLocaleString()}
+                      <p className="text-sm leading-relaxed">{msg.content}</p>
+                      <p className="text-[10px] text-ink-faint mt-3 text-right">
+                        {new Date(msg.created_at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
                       </p>
                     </div>
                   </div>
@@ -721,8 +704,8 @@ export default function JobDetailPage({ params }: { params: { id: string } }) {
             </div>
 
             {/* Message Input */}
-            <div className="p-4 border-t border-gray-800/60">
-              <div className="flex space-x-3">
+            <div className="p-5 border-t border-[#2a2a2a] bg-[#0a0a0a]">
+              <div className="flex gap-3">
                 <input
                   type="text"
                   value={newMessage}
@@ -731,17 +714,15 @@ export default function JobDetailPage({ params }: { params: { id: string } }) {
                     e.key === "Enter" && !e.shiftKey && sendMessage()
                   }
                   placeholder="Type a message..."
-                  className="flex-1 bg-gray-800/50 border border-gray-700/50 rounded-lg px-4 py-3 text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-gray-600"
+                  className="flex-1 bg-[#111] border border-[#2a2a2a] rounded-xl px-4 py-3 text-white placeholder-[#555] focus:outline-none focus:border-[#4EA8F3] transition-colors font-mono text-sm"
                 />
-                <motion.button
-                  whileHover={{ scale: 1.05 }}
-                  whileTap={{ scale: 0.95 }}
+                <button
                   onClick={sendMessage}
                   disabled={submittingMessage || !newMessage.trim()}
-                  className="px-4 py-3 bg-gradient-to-r from-gray-700 to-gray-600 text-white rounded-lg hover:shadow-lg transition disabled:opacity-50"
+                  className="px-5 bg-white text-black rounded-xl hover:bg-gray-200 transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center"
                 >
                   <Send className="w-5 h-5" />
-                </motion.button>
+                </button>
               </div>
             </div>
           </motion.div>
@@ -751,63 +732,65 @@ export default function JobDetailPage({ params }: { params: { id: string } }) {
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
-            className="space-y-6"
+            className="space-y-8"
           >
             {/* Request Signature */}
-            <div className="bg-gray-900/40 border border-gray-800/60 rounded-2xl p-8 backdrop-blur-sm">
-              <h2 className="text-2xl font-bold text-white mb-4">
+            <div className="card-surface p-8">
+              <h2 className="text-2xl font-bold font-heading text-white mb-4">
                 Request Volunteer Hour Signature
               </h2>
-              <p className="text-gray-400 mb-6">
+              <p className="text-ink-muted leading-relaxed mb-8 max-w-2xl">
                 Request your supervisor to sign off on your approved volunteer
                 hours. The Record of Community Involvement Hours form will be
-                available for download.
+                available for download once requested.
               </p>
               <div className="flex flex-wrap gap-4">
-                <motion.button
-                  whileHover={{ scale: 1.02 }}
-                  whileTap={{ scale: 0.98 }}
+                <button
                   onClick={requestSignature}
                   disabled={requestingSignature || !canRequestSignature}
-                  className="flex items-center space-x-2 px-6 py-3 bg-gradient-to-r from-gray-700 to-gray-600 text-white rounded-lg font-semibold hover:shadow-lg hover:shadow-gray-600/50 transition disabled:opacity-50"
+                  className="btn-magnetic flex bg-white text-black px-6 py-3 rounded-full text-sm font-bold group hover:shadow-[0_0_20px_rgba(78,168,243,0.3)] transition-shadow duration-500 disabled:opacity-50"
                 >
-                  <FileText className="w-5 h-5" />
-                  <span>
-                    {requestingSignature
-                      ? "Requesting..."
-                      : canRequestSignature
+                  <span className="relative z-10 flex items-center gap-2">
+                    <FileText className="w-4 h-4" />
+                    <span>
+                      {requestingSignature
+                        ? "Requesting..."
+                        : canRequestSignature
                         ? `Request Signature (${newHoursToRequest.toFixed(1)}h new)`
-                        : "All approved hours requested"}
+                        : "All hours requested"}
+                    </span>
                   </span>
-                </motion.button>
+                  <span className="btn-bg bg-[#4EA8F3] rounded-full"></span>
+                </button>
                 <a
                   href="/record-of-community-involvement-hours.pdf"
                   download
-                  className="flex items-center space-x-2 px-6 py-3 border border-gray-700/50 text-gray-300 rounded-lg font-semibold hover:bg-gray-800/50 transition"
+                  className="flex items-center space-x-2 px-6 py-3 border border-[#333] text-white rounded-full font-bold text-sm hover:border-[#4EA8F3] transition-colors"
                 >
-                  <Download className="w-5 h-5" />
+                  <Download className="w-4 h-4" />
                   <span>Download Blank Form</span>
                 </a>
               </div>
               {!canRequestSignature && (
-                <p className="text-yellow-400 text-sm mt-3 flex items-center space-x-1">
+                <p className="text-[#f59e0b] text-xs font-mono uppercase tracking-wider mt-4 flex items-center gap-2">
                   <AlertCircle className="w-4 h-4" />
                   <span>
                     {approvedHours === 0
                       ? "You need approved hours before requesting a signature."
                       : "You have already requested signatures for all your approved hours. Log more hours to request again."}
                   </span>
+                  <span>You need approved hours before requesting a signature.</span>
                 </p>
               )}
             </div>
 
             {/* Signature History */}
-            <div className="bg-gray-900/40 border border-gray-800/60 rounded-2xl p-8 backdrop-blur-sm">
-              <h2 className="text-2xl font-bold text-white mb-6">
+            <div className="card-surface p-8">
+              <h2 className="text-2xl font-bold font-heading text-white mb-6">
                 Signature Requests
               </h2>
               {signatureRequests.length === 0 ? (
-                <p className="text-gray-400 text-center py-8">
+                <p className="text-ink-muted font-mono text-center py-8">
                   No signature requests yet.
                 </p>
               ) : (
@@ -818,45 +801,47 @@ export default function JobDetailPage({ params }: { params: { id: string } }) {
                       initial={{ opacity: 0, x: -20 }}
                       animate={{ opacity: 1, x: 0 }}
                       transition={{ delay: i * 0.05 }}
-                      className="border border-gray-800/60 rounded-xl bg-gray-800/20 overflow-hidden"
+                      className="flex flex-col gap-4 p-5 border border-[#2a2a2a] rounded-2xl bg-[#0a0a0a] hover:border-[#444] transition-colors overflow-hidden"
                     >
-                      <div className="flex items-center justify-between p-4">
+                      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
                         <div>
-                          <p className="text-white font-medium">
+                          <p className="text-white font-bold font-heading text-lg mb-2">
                             {parseFloat(sig.total_hours).toFixed(1)} hours
                           </p>
-                          <p className="text-sm text-gray-400">
-                            Requested{" "}
-                            {new Date(sig.created_at).toLocaleDateString()}
-                          </p>
-                          {sig.signed_at && (
-                            <p className="text-sm text-green-400">
-                              Signed{" "}
-                              {new Date(sig.signed_at).toLocaleDateString()}
-                            </p>
-                          )}
+                          <div className="flex items-center gap-3 text-xs font-mono text-ink-muted uppercase tracking-wider">
+                            <span>
+                              Requested: {new Date(sig.created_at).toLocaleDateString()}
+                            </span>
+                            {sig.signed_at && (
+                              <>
+                                <span className="text-ink-faint">•</span>
+                                <span className="text-[#10b981]">
+                                  Signed: {new Date(sig.signed_at).toLocaleDateString()}
+                                </span>
+                              </>
+                            )}
+                          </div>
                           {sig.notes && (
-                            <p className="text-sm text-gray-400 mt-1 italic">
+                            <p className="text-sm text-ink-muted mt-3 leading-relaxed border-l-2 border-[#333] pl-3">
                               {sig.notes}
                             </p>
                           )}
                         </div>
                         <span
-                          className={`px-3 py-1 rounded-lg text-xs font-medium ${statusColors[sig.status]}`}
+                          className={`px-3 py-1 border rounded-full text-[10px] font-mono uppercase tracking-wider font-bold whitespace-nowrap self-start sm:self-auto ${statusStyles[sig.status]}`}
                         >
-                          {sig.status.charAt(0).toUpperCase() +
-                            sig.status.slice(1)}
+                          {sig.status}
                         </span>
                       </div>
 
                       {/* Show volunteer PDFSigner to add student signatures */}
                       {sig.status === "signed" && sig.signed_pdf_url && (
-                        <div className="px-4 pb-4 space-y-4">
-                          <div className="bg-gray-900/60 border border-gray-700/40 rounded-xl p-4">
+                        <div className="pt-4 border-t border-[#222] space-y-4">
+                          <div className="bg-[#111] border border-[#222] rounded-xl p-4">
                             <h3 className="text-lg font-semibold text-white mb-2">
                               Complete Your Signatures
                             </h3>
-                            <p className="text-sm text-gray-400 mb-4">
+                            <p className="text-sm text-ink-muted mb-4">
                               Your supervisor has signed the form. Add your
                               signatures below to finalize it.
                             </p>
@@ -874,7 +859,7 @@ export default function JobDetailPage({ params }: { params: { id: string } }) {
                           <a
                             href={sig.signed_pdf_url}
                             download={`signed-volunteer-hours.pdf`}
-                            className="inline-flex items-center space-x-2 px-4 py-2 border border-gray-700/50 text-gray-300 rounded-lg text-sm font-medium hover:bg-gray-800/50 transition"
+                            className="inline-flex items-center space-x-2 px-4 py-2 border border-[#333] text-ink-muted rounded-lg text-sm font-medium hover:bg-[#111] hover:text-white transition"
                           >
                             <Download className="w-4 h-4" />
                             <span>Download Supervisor-Signed PDF</span>

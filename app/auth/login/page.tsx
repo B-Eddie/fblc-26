@@ -72,62 +72,52 @@ export default function LoginPage() {
 
   if (checkingAuth) {
     return (
-      <div className="min-h-screen bg-gradient-to-b from-black via-gray-950 to-black flex items-center justify-center">
+      <div className="min-h-screen bg-[#050505] flex items-center justify-center">
         <div className="w-10 h-10 border-2 border-gray-600 border-t-white rounded-full animate-spin" />
       </div>
     )
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-black via-gray-950 to-black flex items-center justify-center px-4 py-12 overflow-hidden">
-      {/* Animated Background */}
-      <div className="fixed inset-0 overflow-hidden pointer-events-none">
-        <motion.div
-          className="absolute -top-40 -right-40 w-80 h-80 bg-gray-700/20 rounded-full blur-3xl"
-          animate={{ y: [0, 40, 0] }}
-          transition={{ duration: 8, repeat: Infinity }}
-        />
-        <motion.div
-          className="absolute -bottom-40 -left-40 w-80 h-80 bg-gray-600/20 rounded-full blur-3xl"
-          animate={{ y: [0, -40, 0] }}
-          transition={{ duration: 8, repeat: Infinity, delay: 1 }}
-        />
-      </div>
+    <div className="min-h-screen bg-[#050505] flex items-center justify-center px-4 py-12 overflow-hidden relative">
+      {/* Ambient Glow */}
+      <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[60vw] h-[60vw] bg-[#4EA8F3] mix-blend-screen filter blur-[150px] opacity-[0.15] pointer-events-none" />
 
       <motion.div
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.6 }}
+        transition={{ duration: 0.6, ease: [0.25, 0.46, 0.45, 0.94] }}
         className="w-full max-w-md relative z-10"
       >
-        <div className="text-center mb-8">
+        <div className="text-center mb-10">
           <motion.div
             initial={{ scale: 0.8, opacity: 0 }}
             animate={{ scale: 1, opacity: 1 }}
-            transition={{ delay: 0.1, duration: 0.6 }}
+            transition={{ delay: 0.1, duration: 0.6, ease: [0.25, 0.46, 0.45, 0.94] }}
           >
-            <Link href="/" className="inline-flex items-center space-x-2 mb-8 hover:opacity-80 transition">
-              <img src="/image.png" alt="Logo" className="w-12 h-12 object-contain" />
-
-              <span className="text-3xl font-bold font-display bg-gradient-to-r from-gray-400 to-gray-300 bg-clip-text text-transparent">Vertex</span>
+            <Link href="/" className="inline-flex items-center space-x-3 mb-8 hover:opacity-80 transition">
+              <img src="/logo.png" alt="Logo" className="w-10 h-10 object-contain filter grayscale brightness-200" />
+              <span className="text-3xl font-bold font-heading text-white tracking-tight">Pilot</span>
             </Link>
           </motion.div>
           <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            transition={{ delay: 0.2, duration: 0.6 }}
+            initial={{ opacity: 0, y: 10 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.2, duration: 0.6, ease: [0.25, 0.46, 0.45, 0.94] }}
           >
-            <h1 className="text-3xl font-bold text-white mt-8 font-display">Welcome Back</h1>
-            <p className="text-gray-400 mt-2">Log in to your account</p>
+            <h1 className="text-4xl font-bold font-heading text-white tracking-tight">
+              Welcome <span className="font-drama italic font-normal text-[#4EA8F3]">Back</span>
+            </h1>
+            <p className="text-ink-muted mt-3 font-mono text-sm uppercase tracking-widest">System Authentication</p>
           </motion.div>
         </div>
 
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.3, duration: 0.6 }}
-          className="bg-gray-900/40 border border-gray-800/60 rounded-2xl p-8 backdrop-blur-sm"
+          transition={{ delay: 0.3, duration: 0.6, ease: [0.25, 0.46, 0.45, 0.94] }}
         >
+          <div className="card-surface p-8 backdrop-blur-xl bg-[#0a0a0a]/80 border-[#222]">
           <form onSubmit={handleLogin} className="space-y-6">
             {error && (
               <motion.div
@@ -144,7 +134,7 @@ export default function LoginPage() {
               animate={{ opacity: 1 }}
               transition={{ delay: 0.4 }}
             >
-              <label htmlFor="email" className="block text-sm font-medium text-gray-300 mb-2">
+              <label htmlFor="email" className="block text-xs font-mono uppercase tracking-wider text-ink-muted mb-2">
                 Email
               </label>
               <input
@@ -153,7 +143,7 @@ export default function LoginPage() {
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 required
-                className="w-full px-4 py-3 bg-gray-800/50 border border-gray-700/60 rounded-lg text-white placeholder-gray-500 focus:ring-2 focus:ring-gray-600 focus:border-transparent transition backdrop-blur-sm"
+                className="w-full px-4 py-3 bg-[#0a0a0a] border border-[#2a2a2a] rounded-lg text-white focus:outline-none focus:border-[#4EA8F3] transition-colors font-mono text-sm"
                 placeholder="you@example.com"
               />
             </motion.div>
@@ -163,7 +153,7 @@ export default function LoginPage() {
               animate={{ opacity: 1 }}
               transition={{ delay: 0.5 }}
             >
-              <label htmlFor="password" className="block text-sm font-medium text-gray-300 mb-2">
+              <label htmlFor="password" className="block text-xs font-mono uppercase tracking-wider text-ink-muted mb-2">
                 Password
               </label>
               <input
@@ -172,7 +162,7 @@ export default function LoginPage() {
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
                 required
-                className="w-full px-4 py-3 bg-gray-800/50 border border-gray-700/60 rounded-lg text-white placeholder-gray-500 focus:ring-2 focus:ring-gray-600 focus:border-transparent transition backdrop-blur-sm"
+                className="w-full px-4 py-3 bg-[#0a0a0a] border border-[#2a2a2a] rounded-lg text-white focus:outline-none focus:border-[#4EA8F3] transition-colors font-mono text-sm"
                 placeholder="••••••••"
               />
             </motion.div>
@@ -182,8 +172,9 @@ export default function LoginPage() {
               whileTap={{ scale: 0.98 }}
               type="submit"
               disabled={loading}
-              className="w-full py-3 bg-gradient-to-r from-gray-700 to-gray-600 text-white rounded-lg font-semibold hover:shadow-lg hover:shadow-gray-600/50 disabled:opacity-50 disabled:cursor-not-allowed transition"
+              className="btn-magnetic w-full flex bg-white text-black py-4 rounded-full text-sm font-bold group hover:shadow-[0_0_30px_rgba(78,168,243,0.4)] transition-shadow duration-500 justify-center disabled:opacity-50"
             >
+              <span className="relative z-10 flex items-center justify-center">
               {loading ? (
                 <span className="flex items-center justify-center">
                   <motion.div
@@ -196,9 +187,10 @@ export default function LoginPage() {
               ) : (
                 <span className="flex items-center justify-center">
                   Log In
-                  <ArrowRight className="ml-2 w-4 h-4" />
+                  <ArrowRight className="ml-2 w-4 h-4 group-hover:translate-x-1 transition-transform" />
                 </span>
               )}
+              <span className="btn-bg bg-[#4EA8F3] rounded-full"></span>
             </motion.button>
           </form>
 
@@ -208,9 +200,9 @@ export default function LoginPage() {
             transition={{ delay: 0.6 }}
             className="mt-6 text-center"
           >
-            <p className="text-gray-400">
+            <p className="text-ink-muted text-sm font-mono">
               Don't have an account?{' '}
-              <Link href="/auth/signup" className="text-gray-300 hover:text-white font-semibold transition">
+              <Link href="/auth/signup" className="text-white hover:text-[#4EA8F3] font-bold transition-colors">
                 Sign up
               </Link>
             </p>
