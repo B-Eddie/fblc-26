@@ -190,6 +190,7 @@ export default function LoginPage() {
                   <ArrowRight className="ml-2 w-4 h-4 group-hover:translate-x-1 transition-transform" />
                 </span>
               )}
+              </span>
               <span className="btn-bg bg-[#4EA8F3] rounded-full"></span>
             </motion.button>
           </form>
@@ -207,6 +208,7 @@ export default function LoginPage() {
               </Link>
             </p>
           </motion.div>
+          </div>
         </motion.div>
       </motion.div>
     </div>
