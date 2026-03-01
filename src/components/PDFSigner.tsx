@@ -420,24 +420,13 @@ export default function PDFSigner({
             <p className="text-ink-muted text-xs font-mono mt-1">
               {sent
                 ? "The signed form is now on their dashboard."
-                : "Review below, then send or download."}
+                : "Review below, then download."}
             </p>
           </div>
 
           <iframe src={signedPdfUrl} className="w-full h-[480px] rounded-xl border border-[#222]" title="Signed PDF Preview" />
 
           <div className="flex flex-wrap items-center gap-3">
-            {!sent && (
-              <motion.button
-                whileHover={{ scale: 1.02 }}
-                whileTap={{ scale: 0.98 }}
-                onClick={sendToVolunteer}
-                className="flex items-center gap-2 px-5 py-2.5 bg-[#10b981] text-black rounded-full text-sm font-bold hover:shadow-[0_0_20px_rgba(16,185,129,0.3)] transition-shadow"
-              >
-                <Send className="w-4 h-4" />
-                <span>Send to Volunteer</span>
-              </motion.button>
-            )}
             <button
               onClick={downloadSignedPdf}
               className="flex items-center gap-2 text-xs font-mono text-ink-muted hover:text-white transition-colors"
