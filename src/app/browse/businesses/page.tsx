@@ -198,7 +198,15 @@ export default function BrowseBusinessesPage() {
                 className="w-8 h-8 rounded-lg flex items-center justify-center"
                 whileHover={{ scale: 1.05 }}
               >
+<<<<<<< Updated upstream
+                <img
+                  src="/image.png"
+                  alt="Logo"
+                  className="w-12 h-12 object-contain"
+                />
+=======
                 <img src="/logo.png" alt="Logo" className="w-8 h-8 object-contain" />
+>>>>>>> Stashed changes
               </motion.div>
               <span className="text-xl font-bold font-heading tracking-tight text-white">
                 Pilot

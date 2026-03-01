@@ -801,47 +801,71 @@ export default function JobDetailPage({ params }: { params: { id: string } }) {
                       initial={{ opacity: 0, x: -20 }}
                       animate={{ opacity: 1, x: 0 }}
                       transition={{ delay: i * 0.05 }}
-                      className="flex flex-col gap-4 p-5 border border-[#2a2a2a] rounded-2xl bg-[#0a0a0a] hover:border-[#444] transition-colors overflow-hidden"
+<<<<<<< Updated upstream
+                      className="border border-gray-800/60 rounded-xl bg-gray-800/20 overflow-hidden"
                     >
-                      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+                      <div className="flex items-center justify-between p-4">
                         <div>
-                          <p className="text-white font-bold font-heading text-lg mb-2">
+                          <p className="text-white font-medium">
                             {parseFloat(sig.total_hours).toFixed(1)} hours
                           </p>
-                          <div className="flex items-center gap-3 text-xs font-mono text-ink-muted uppercase tracking-wider">
-                            <span>
-                              Requested: {new Date(sig.created_at).toLocaleDateString()}
-                            </span>
-                            {sig.signed_at && (
-                              <>
-                                <span className="text-ink-faint">•</span>
-                                <span className="text-[#10b981]">
-                                  Signed: {new Date(sig.signed_at).toLocaleDateString()}
-                                </span>
-                              </>
-                            )}
-                          </div>
+                          <p className="text-sm text-gray-400">
+                            Requested{" "}
+                            {new Date(sig.created_at).toLocaleDateString()}
+=======
+                      className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 p-5 border border-[#2a2a2a] rounded-2xl bg-[#0a0a0a] hover:border-[#444] transition-colors"
+                    >
+                      <div>
+                        <p className="text-white font-bold font-heading text-lg mb-2">
+                          {parseFloat(sig.total_hours).toFixed(1)} hours
+                        </p>
+                        <div className="flex items-center gap-3 text-xs font-mono text-ink-muted uppercase tracking-wider">
+                          <span>
+                            Requested: {new Date(sig.created_at).toLocaleDateString()}
+                          </span>
+                          {sig.signed_at && (
+                            <>
+                              <span className="text-ink-faint">•</span>
+                              <span className="text-[#10b981]">
+                                Signed: {new Date(sig.signed_at).toLocaleDateString()}
+                              </span>
+                            </>
+                          )}
+                        </div>
+                        {sig.notes && (
+                          <p className="text-sm text-ink-muted mt-3 leading-relaxed border-l-2 border-[#333] pl-3">
+                            {sig.notes}
+>>>>>>> Stashed changes
+                          </p>
+                          {sig.signed_at && (
+                            <p className="text-sm text-green-400">
+                              Signed{" "}
+                              {new Date(sig.signed_at).toLocaleDateString()}
+                            </p>
+                          )}
                           {sig.notes && (
-                            <p className="text-sm text-ink-muted mt-3 leading-relaxed border-l-2 border-[#333] pl-3">
+                            <p className="text-sm text-gray-400 mt-1 italic">
                               {sig.notes}
                             </p>
                           )}
                         </div>
                         <span
-                          className={`px-3 py-1 border rounded-full text-[10px] font-mono uppercase tracking-wider font-bold whitespace-nowrap self-start sm:self-auto ${statusStyles[sig.status]}`}
+                          className={`px-3 py-1 rounded-lg text-xs font-medium ${statusColors[sig.status]}`}
                         >
-                          {sig.status}
+                          {sig.status.charAt(0).toUpperCase() +
+                            sig.status.slice(1)}
                         </span>
                       </div>
+<<<<<<< Updated upstream
 
                       {/* Show volunteer PDFSigner to add student signatures */}
                       {sig.status === "signed" && sig.signed_pdf_url && (
-                        <div className="pt-4 border-t border-[#222] space-y-4">
-                          <div className="bg-[#111] border border-[#222] rounded-xl p-4">
+                        <div className="px-4 pb-4 space-y-4">
+                          <div className="bg-gray-900/60 border border-gray-700/40 rounded-xl p-4">
                             <h3 className="text-lg font-semibold text-white mb-2">
                               Complete Your Signatures
                             </h3>
-                            <p className="text-sm text-ink-muted mb-4">
+                            <p className="text-sm text-gray-400 mb-4">
                               Your supervisor has signed the form. Add your
                               signatures below to finalize it.
                             </p>
@@ -859,13 +883,20 @@ export default function JobDetailPage({ params }: { params: { id: string } }) {
                           <a
                             href={sig.signed_pdf_url}
                             download={`signed-volunteer-hours.pdf`}
-                            className="inline-flex items-center space-x-2 px-4 py-2 border border-[#333] text-ink-muted rounded-lg text-sm font-medium hover:bg-[#111] hover:text-white transition"
+                            className="inline-flex items-center space-x-2 px-4 py-2 border border-gray-700/50 text-gray-300 rounded-lg text-sm font-medium hover:bg-gray-800/50 transition"
                           >
                             <Download className="w-4 h-4" />
                             <span>Download Supervisor-Signed PDF</span>
                           </a>
                         </div>
                       )}
+=======
+                      <span
+                        className={`px-3 py-1 border rounded-full text-[10px] font-mono uppercase tracking-wider font-bold whitespace-nowrap self-start sm:self-auto ${statusStyles[sig.status]}`}
+                      >
+                        {sig.status}
+                      </span>
+>>>>>>> Stashed changes
                     </motion.div>
                   ))}
                 </div>
