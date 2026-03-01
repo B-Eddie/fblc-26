@@ -443,6 +443,18 @@ export default function BusinessDashboardPage() {
                       </motion.button>
                     </div>
                   )}
+                  {(app.status === "accepted" || app.status === "completed") && (
+                    <div className="flex space-x-3 mt-4 pt-4 border-t border-gray-700/50">
+                      <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
+                        <Link
+                          href={`/business/dashboard/employee/${app.id}`}
+                          className="inline-flex items-center space-x-2 px-6 py-2 bg-gradient-to-r from-gray-700 to-gray-600 text-white text-sm rounded-lg font-semibold hover:shadow-lg hover:shadow-gray-600/50 transition"
+                        >
+                          <span>Manage Employee →</span>
+                        </Link>
+                      </motion.div>
+                    </div>
+                  )}
                 </motion.div>
               ))}
             </div>
