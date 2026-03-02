@@ -62,19 +62,19 @@ const config: Config = {
   		},
   		fontFamily: {
   			heading: [
-  				'Space Grotesk"',
+  				'"Space Grotesk"',
   				'sans-serif'
   			],
   			drama: [
-  				'Playfair Display"',
+  				'"Playfair Display"',
   				'serif'
   			],
   			mono: [
-  				'JetBrains Mono"',
+  				'"JetBrains Mono"',
   				'monospace'
   			],
   			sans: [
-  				'Space Grotesk"',
+  				'"Space Grotesk"',
   				'system-ui',
   				'sans-serif'
   			]
