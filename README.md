@@ -4,6 +4,8 @@
 
 Vertex is a modern, full-featured web platform that bridges the gap between Ontario high school students who need to complete 40 hours of community service and local businesses offering volunteer opportunities. Built with cutting-edge technologies and designed for an intuitive, engaging user experience.
 
+This app was built for the Coding & Programming event for the 2026 Canadian National Leadership Conference (CNLC) by the Future Business Leaders of Canada (FBLC), and won 1st place in the nation.
+
 ![Tech Stack](https://img.shields.io/badge/Next.js-14-black)
 ![Supabase](https://img.shields.io/badge/Supabase-Database-green)
 ![TypeScript](https://img.shields.io/badge/TypeScript-5.3-blue)
