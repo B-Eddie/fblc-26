@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import "./globals.css";
 import RecaptchaProvider from "@/components/RecaptchaProvider";
+import { Analytics } from "@vercel/analytics/next";
 
 export const metadata: Metadata = {
   title: "Vertex — The fastest way for students to earn volunteer hours",
@@ -31,6 +32,7 @@ export default function RootLayout({
           <rect width="100%" height="100%" filter="url(#noise)" />
         </svg>
         <RecaptchaProvider>{children}</RecaptchaProvider>
+        <Analytics />
       </body>
     </html>
   );
